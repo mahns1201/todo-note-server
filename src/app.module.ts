@@ -12,7 +12,7 @@ import { UserModule } from './user/user.module';
       username: 'root',
       password: 'root',
       database: 'dev-to-do-note',
-      entities: [UserEntity],
+      autoLoadEntities: true,
       synchronize: true,
     }),
     UserModule,
