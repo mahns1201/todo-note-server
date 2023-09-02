@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
+import { GithubOauthModule } from './auth/github/github-oauth.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserModule } from './user/user.module';
         synchronize: true,
       }),
     }),
+    GithubOauthModule,
     UserModule,
   ],
   controllers: [],
