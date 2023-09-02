@@ -1,2 +1,3 @@
-# DEV To Do Notes Server
-By Github OAuth, Github API, Web Hook
+# DEV-TO-DO-NOTE-SERVER
+
+Github OAuth, Github API, Web Hook
