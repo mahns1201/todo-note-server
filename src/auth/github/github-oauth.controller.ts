@@ -2,7 +2,6 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { GithubOauthGuard } from './github-oauth.guard';
-
 @Controller('auth/github')
 export class GithubOauthController {
   // constructor() {}
@@ -21,12 +20,8 @@ export class GithubOauthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // Passport automatically creates a `user` object, based on the return value of our
-    // GithubOauthStrategy#validate() method, and assigns it to the Request object as `req.user`
+    // TODO callback 로직 처리
 
-    // console.log(req);
-    // const user = req.user as any;
-
-    return 'github oauth login is success';
+    return 'login success';
   }
 }
