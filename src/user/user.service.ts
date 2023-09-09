@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { UserEntity } from './entity/user.entity';
 import { InputCreateUserDto } from './dto/create-user.dto';
 import { ServiceResultDto } from 'src/common/common.dto';
 import { InputFindUserDto } from './dto/find-user.dto';
+import { InputGithubAccessTokenUpdateDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -44,13 +45,22 @@ export class UserService {
     return { item: user };
   }
 
+  async updateGithubAccessToken(
+    input: InputGithubAccessTokenUpdateDto,
+  ): Promise<ServiceResultDto<UpdateResult>> {
+    const { email, githubAccessToken } = input;
+    console.log('user.service email: ', email);
+
+    const user = await this.userRepository.update(
+      { email },
+      { githubAccessToken },
+    );
+
+    return { item: user };
+  }
+
   // async findAll(): Promise<UserEntity[]> {
   //   return this.userRepository.find();
-  // }
-
-  // async update(id: number, book: UserEntity): Promise<number> {
-  //   await this.userRepository.update(id, book);
-  //   return id;
   // }
 
   // async remove(id: number): Promise<number> {

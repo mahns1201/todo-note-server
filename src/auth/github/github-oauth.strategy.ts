@@ -1,9 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-github';
 import { InputCreateUserDto } from 'src/user/dto/create-user.dto';
 import { InputFindUserDto } from 'src/user/dto/find-user.dto';
+import { InputGithubAccessTokenUpdateDto } from 'src/user/dto/update-user.dto';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { UserService } from 'src/user/user.service';
 
@@ -33,16 +34,24 @@ export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
       isGithub: true,
       githubAccessToken: accessToken,
     };
+    const updateAccessTokenInput: InputGithubAccessTokenUpdateDto = {
+      email,
+      githubAccessToken: accessToken,
+    };
 
     const { item: user } = await this.userService.findUser(findUserInput);
 
     // email로 가입된 유저가 없으면 생성.
-    // TODO 1. update accessToken 필요.
-    // TODO 2. 비밀번호 난수 생성 필요.
+    // TODO 1. 비밀번호 난수 생성 필요.
     let createdUser: UserEntity;
     if (!user) {
       const { item } = await this.userService.createUser(createUserInput);
       createdUser = item;
+    } else {
+      const UpdateResult = await this.userService.updateGithubAccessToken(
+        updateAccessTokenInput,
+      );
+      Logger.log(`Github accessToken 업데이트: ${UpdateResult.item}`);
     }
 
     // 기존 유저도 없고 생성된 유저도 없으면 에러 발생
