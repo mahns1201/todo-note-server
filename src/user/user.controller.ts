@@ -20,24 +20,57 @@ export class UserController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: '유저 생성',
+    description: '새로운 유저를 생성합니다.',
+  })
+  @ApiResponse({
+    type: OutputFindUserDto,
+    status: HttpStatus.CREATED,
+    description: '유저를 성공적으로 생성하였습니다.',
+  })
+  @ApiResponse({
+    type: OutputFindUserDto,
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: '유저를  알 수 없는 이유로 생성할 수 없습니다.',
+  })
   async create(
     @Body() input: InputCreateUserDto,
   ): Promise<OutputCreateUserDto> {
     const { item } = await this.userService.createUser(input);
-    const httpStatus = !item ? HttpStatus.BAD_REQUEST : HttpStatus.CREATED;
-    const message = `성공적으로 유저가 생성되었습니다.`;
+    const httpStatus = !item
+      ? HttpStatus.INTERNAL_SERVER_ERROR
+      : HttpStatus.CREATED;
+    const message = !item
+      ? '유저 생성에 실패했습니다.'
+      : '유저가 성공적으로 생성되었습니다.';
 
     const result = { item, httpStatus, message };
     return result;
   }
 
   @Get('/:email')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '유저 조회',
+    description: 'parameter에 email을 넘겨 유저를 조회합니다.',
+  })
+  @ApiResponse({
+    type: OutputFindUserDto,
+    status: HttpStatus.OK,
+    description: '성공적으로 유저를 찾았을 때 반환합니다.',
+  })
+  @ApiResponse({
+    type: OutputFindUserDto,
+    status: HttpStatus.NOT_FOUND,
+    description: '이메일로 유저를 찾을 수 없을 때 반환합니다.',
+  })
   async findOne(@Param() input: InputFindUserDto): Promise<OutputFindUserDto> {
     const { item } = await this.userService.findUser(input);
     const httpStatus = !item ? HttpStatus.NOT_FOUND : HttpStatus.OK;
     const message = !item
-      ? '해당 이메일로 찾은 유저가 없습니다.'
-      : '유저를 찾았습니다.';
+      ? '유저를 해당 이메일로 찾을 수 없습니다.'
+      : '유저를 성공적으로 찾았습니다.';
 
     const result = { item, httpStatus, message };
     return result;
