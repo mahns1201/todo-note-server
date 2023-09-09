@@ -16,13 +16,14 @@ export class UserService {
   async createUser(
     input: InputCreateUserDto,
   ): Promise<ServiceResultDto<UserEntity>> {
-    const { email, password, avatarUrl, isGithub } = input;
+    const { email, password, avatarUrl, isGithub, githubAccessToken } = input;
 
     const newUser = this.userRepository.create({
       email,
       password,
       avatarUrl,
       isGithub,
+      githubAccessToken,
     });
 
     const result = await this.userRepository.save(newUser);
@@ -34,7 +35,6 @@ export class UserService {
     input: InputFindUserDto,
   ): Promise<ServiceResultDto<UserEntity>> {
     const { email } = input;
-
     const user = await this.userRepository.findOne({
       where: {
         email,

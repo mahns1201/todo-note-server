@@ -22,6 +22,6 @@ export class GithubOauthController {
   ) {
     // TODO callback 로직 처리
 
-    return 'login success';
+    return 'github login success';
   }
 }

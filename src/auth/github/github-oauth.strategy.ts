@@ -2,10 +2,17 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-github';
+import { InputCreateUserDto } from 'src/user/dto/create-user.dto';
+import { InputFindUserDto } from 'src/user/dto/find-user.dto';
+import { UserEntity } from 'src/user/entity/user.entity';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private userService: UserService,
+  ) {
     super({
       clientID: configService.get<string>('GITHUB_CLIENT_ID'),
       clientSecret: configService.get<string>('GITHUB_CLIENT_SECRET'),
@@ -16,13 +23,33 @@ export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
 
   async validate(accessToken: string, _refreshToken: string, profile: Profile) {
     // github oauth는 refreshToken을 제공하지 않는다.
+    const { email, avatar_url } = profile._json;
 
-    // TODO profile에서 필요한 정보 추출
+    const findUserInput: InputFindUserDto = { email };
+    const createUserInput: InputCreateUserDto = {
+      email,
+      password: null,
+      avatarUrl: avatar_url,
+      isGithub: true,
+      githubAccessToken: accessToken,
+    };
 
-    // TODO userService.findByEmail();
-    // TODO !user -> userService.createUser();
-    // TODO 예외처리 throw new UnauthorizedException();
+    const { item: user } = await this.userService.findUser(findUserInput);
 
-    return 'validate result';
+    // email로 가입된 유저가 없으면 생성.
+    // TODO 1. update accessToken 필요.
+    // TODO 2. 비밀번호 난수 생성 필요.
+    let createdUser: UserEntity;
+    if (!user) {
+      const { item } = await this.userService.createUser(createUserInput);
+      createdUser = item;
+    }
+
+    // 기존 유저도 없고 생성된 유저도 없으면 에러 발생
+    if (!user && !createdUser) {
+      throw new UnauthorizedException();
+    }
+
+    return user || createdUser;
   }
 }

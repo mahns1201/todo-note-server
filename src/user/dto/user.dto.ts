@@ -7,7 +7,6 @@ import {
   MaxLength,
   IsUrl,
   IsBoolean,
-  IsEmpty,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -18,7 +17,6 @@ export class UserDto {
   @ApiProperty()
   email: string;
 
-  @IsEmpty()
   @IsOptional()
   @IsString()
   @MinLength(8)
@@ -35,4 +33,9 @@ export class UserDto {
   @IsBoolean()
   @ApiProperty()
   isGithub: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @IsString()
+  githubAccessToken: string;
 }
