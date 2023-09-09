@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { UserEntity } from './entity/user.entity';
 import { InputCreateUserDto } from './dto/create-user.dto';
 import { ServiceResultDto } from 'src/common/common.dto';
+import { InputFindUserDto } from './dto/find-user.dto';
 
 @Injectable()
 export class UserService {
@@ -16,6 +17,7 @@ export class UserService {
     input: InputCreateUserDto,
   ): Promise<ServiceResultDto<UserEntity>> {
     const { email, password, avatarUrl, isGithub } = input;
+
     const newUser = this.userRepository.create({
       email,
       password,
@@ -28,12 +30,18 @@ export class UserService {
     return { item: result };
   }
 
-  async findUser(id: number): Promise<UserEntity> {
-    return await this.userRepository.findOne({
+  async findUser(
+    input: InputFindUserDto,
+  ): Promise<ServiceResultDto<UserEntity>> {
+    const { email } = input;
+
+    const user = await this.userRepository.findOne({
       where: {
-        id,
+        email,
       },
     });
+
+    return { item: user };
   }
 
   // async findAll(): Promise<UserEntity[]> {

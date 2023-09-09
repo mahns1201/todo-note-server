@@ -1,19 +1,17 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   Post,
-  Put,
 } from '@nestjs/common';
 
 import { UserService } from './user.service';
-import { UserEntity } from './entity/user.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { InputCreateUserDto, OutputCreateUserDto } from './dto/create-user.dto';
-import { SwaggerResponseDto } from 'src/common/common.dto';
+import { InputFindUserDto, OutputFindUserDto } from './dto/find-user.dto';
 
 @Controller('user')
 @ApiTags('user')
@@ -21,12 +19,11 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() input: InputCreateUserDto,
   ): Promise<OutputCreateUserDto> {
     const { item } = await this.userService.createUser(input);
-    console.log('item: ', item);
-
     const httpStatus = !item ? HttpStatus.BAD_REQUEST : HttpStatus.CREATED;
     const message = `성공적으로 유저가 생성되었습니다.`;
 
@@ -34,10 +31,17 @@ export class UserController {
     return result;
   }
 
-  // @Get(':id')
-  // async findOne(@Param('id') id: string): Promise<UserEntity> {
-  //   return this.userService.findOne(+id);
-  // }
+  @Get('/:email')
+  async findOne(@Param() input: InputFindUserDto): Promise<OutputFindUserDto> {
+    const { item } = await this.userService.findUser(input);
+    const httpStatus = !item ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+    const message = !item
+      ? '해당 이메일로 찾은 유저가 없습니다.'
+      : '유저를 찾았습니다.';
+
+    const result = { item, httpStatus, message };
+    return result;
+  }
 
   // @Get()
   // async findAll(): Promise<UserEntity[]> {
