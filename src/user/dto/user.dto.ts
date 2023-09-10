@@ -19,6 +19,11 @@ export class UserDto {
 
   @IsOptional()
   @IsString()
+  @ApiProperty()
+  githubId: string;
+
+  @IsOptional()
+  @IsString()
   @MinLength(8)
   @MaxLength(20)
   @ApiProperty()

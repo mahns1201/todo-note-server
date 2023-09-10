@@ -14,6 +14,10 @@ export class UserEntity extends BaseEntity {
 
   @Column({ nullable: true })
   @IsOptional()
+  githubId: string;
+
+  @Column({ nullable: true })
+  @IsOptional()
   password: string;
 
   @Column({ nullable: true })
