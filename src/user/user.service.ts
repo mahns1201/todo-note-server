@@ -17,10 +17,18 @@ export class UserService {
   async createUser(
     input: InputCreateUserDto,
   ): Promise<ServiceResultDto<UserEntity>> {
-    const { email, password, avatarUrl, isGithub, githubAccessToken } = input;
+    const {
+      email,
+      githubId,
+      password,
+      avatarUrl,
+      isGithub,
+      githubAccessToken,
+    } = input;
 
     const newUser = this.userRepository.create({
       email,
+      githubId,
       password,
       avatarUrl,
       isGithub,
