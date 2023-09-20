@@ -9,7 +9,7 @@ export class RepoBranchEntity extends BaseEntity {
   id: number;
 
   @ManyToOne(() => RepoEntity, (repo) => repo.id)
-  repoId: RepoEntity;
+  repo: RepoEntity;
 
   @Column()
   @IsNotEmpty()

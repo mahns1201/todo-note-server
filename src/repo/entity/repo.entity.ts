@@ -9,7 +9,7 @@ export class RepoEntity extends BaseEntity {
   id: number;
 
   @ManyToOne(() => UserEntity, (user) => user.id)
-  userId: UserEntity;
+  user: UserEntity;
 
   @Column()
   @IsNotEmpty()
