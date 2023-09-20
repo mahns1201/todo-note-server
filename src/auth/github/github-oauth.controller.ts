@@ -1,7 +1,15 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { Request, Response } from 'express';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Logger,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { Request } from 'express';
 
 import { GithubOauthGuard } from './github-oauth.guard';
+import { OutputGithubCallbackDto } from './dto/github-callback.dto';
 @Controller('auth/github')
 export class GithubOauthController {
   // constructor() {}
@@ -18,10 +26,20 @@ export class GithubOauthController {
   @UseGuards(GithubOauthGuard)
   async githubAuthCallback(
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    // TODO callback 로직 처리
+  ): Promise<OutputGithubCallbackDto> {
+    const {
+      user: { user, accessToken },
+    } = req;
 
-    return 'github login success';
+    const item = { user, accessToken };
+    const httpStatus = !accessToken
+      ? HttpStatus.INTERNAL_SERVER_ERROR
+      : HttpStatus.OK;
+    const message = !accessToken
+      ? 'Github 로그인을 알 수 없는 이유로 실패하였습니다.'
+      : 'Github 로그인을 성공하였습니다.';
+
+    const result = { item, httpStatus, message };
+    return result;
   }
 }
