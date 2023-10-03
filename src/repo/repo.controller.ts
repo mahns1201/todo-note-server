@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RepoService } from './repo.service';
 
 @Controller('repo')
@@ -52,6 +52,18 @@ export class RepoController {
     summary: '유저 레포지토리 조회',
     description: '유저의 레포지토리를 조회합니다.',
   })
+  @ApiQuery({
+    name: 'owner',
+    type: String,
+  })
+  @ApiQuery({
+    name: 'repo',
+    type: String,
+  })
+  @ApiQuery({
+    name: 'branch',
+    type: Boolean,
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: '유저 레포지토리 조회에 성공했습니다.',
@@ -62,9 +74,14 @@ export class RepoController {
   })
   async getRepo(@Headers() headers, @Query() input) {
     const { authorization } = headers;
-    const { owner, repo } = input;
+    const { owner, repo, branch } = input;
 
-    const { item } = await this.repoService.getRepo(authorization, owner, repo);
+    const { item } = await this.repoService.getRepo(
+      authorization,
+      owner,
+      repo,
+      branch,
+    );
     const httpStatus = !item ? HttpStatus.NOT_FOUND : HttpStatus.OK;
     const message = !item
       ? '유저의 레포지토리를 해당 이름으로 찾을 수 없습니다.'

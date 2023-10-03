@@ -30,7 +30,7 @@ export class RepoService {
     }
   }
 
-  async getRepo(authorization, owner, repo) {
+  async getRepo(authorization, owner, repo, branch) {
     const requestHeaders = {
       'Content-Type': REQUEST_INFO.GITHUB.CONTENT_TYPE,
       'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
@@ -38,8 +38,11 @@ export class RepoService {
     };
 
     try {
+      let requestUrl = `${REQUEST_INFO.GITHUB.PREFIX}/repos/${owner}/${repo}`;
+      branch ? (requestUrl += '/branches') : requestUrl;
+
       const observable = this.httpService
-        .get(`${REQUEST_INFO.GITHUB.PREFIX}/repos/${owner}/${repo}`, {
+        .get(requestUrl, {
           headers: requestHeaders,
         })
         .pipe(map((res) => res.data));
