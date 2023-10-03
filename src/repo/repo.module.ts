@@ -4,9 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { RepoController } from './repo.controller';
 import { RepoService } from './repo.service';
+import { RepoEntity } from './entity/repo.entity';
+import { RepoBranchEntity } from './entity/repo-branch.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity]), HttpModule],
+  imports: [
+    TypeOrmModule.forFeature([RepoEntity, RepoBranchEntity, UserEntity]),
+    HttpModule,
+  ],
   controllers: [RepoController],
   providers: [RepoService],
 })

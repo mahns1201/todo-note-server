@@ -76,4 +76,8 @@ export class RepoController {
       httpStatus,
     };
   }
+
+  // TODO sync-repo
+  // TODO sync-branch param: repoName
+  // TODO create-repo 레포지토리를 여기서 생성할 수도 있겠다. 생성 후 sync 맞추기 (웹 훅에서?)
 }
