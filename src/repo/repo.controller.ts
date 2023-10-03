@@ -124,9 +124,13 @@ export class RepoController {
     };
   }
 
-  // TODO sync-repos 전체 repo 동기화
+  // sync-repos 전체 repo 동기화
   @Post('github/sync')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: '유저 레포지토리 동기화',
+    description: '유저의 이메일로 레포지토리를 조회하여 db를 동기화 합니다',
+  })
   async syncRepos(@Headers() headers, @Body() input) {
     // param: user-email
     // userService에서 user를 찾아서 branch list를 받고 전체를 동기화
@@ -160,7 +164,53 @@ export class RepoController {
     return { message, httpStatus };
   }
 
-  // TODO sync-repo 단일 repo 동기화
   // TODO sync-branch param: repoName (단일 only)
+  @Post('github/sync/branch')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: '유저 레포지토리 브랜치 동기화',
+    description: '유저의 레포지토리 브랜치를 조회하여 db를 동기화 합니다',
+  })
+  async syncRepoBranch(@Headers() headers, @Body() input) {
+    const { authorization } = headers;
+    const { owner, repo, branch = true, email } = input;
+
+    const {
+      item: { id: userId },
+    } = await this.userService.findUser(email);
+
+    const { item: githubRepoBranches } =
+      await this.repoService.getRepoFromGithub(
+        authorization,
+        owner,
+        repo,
+        branch,
+      );
+
+    const {
+      item: { id: repoId },
+    } = await this.repoService.findUserRepo(userId, repo);
+
+    const { items: repoBranches } = await this.repoService.findRepoBranches(
+      repoId,
+    );
+
+    const {
+      item: { syncCount },
+    } = await this.repoService.syncRepoBranches(
+      repoId,
+      githubRepoBranches,
+      repoBranches,
+    );
+
+    const message = syncCount
+      ? `레포지토리 ${repo}의 브랜치 ${syncCount}개가 성공적으로 동기화 되었습니다.`
+      : '레포지토리 ${repo}의 브랜치 동기화 상태가 최신입니다.';
+    const httpStatus = syncCount ? HttpStatus.CREATED : HttpStatus.OK;
+
+    return { message, httpStatus };
+  }
+
+  // TODO sync-repo 단일 repo 동기화가 필요한가?
   // TODO create-repo 레포지토리를 여기서 생성할 수도 있겠다. 생성 후 sync 맞추기 (웹 훅에서?)
 }
