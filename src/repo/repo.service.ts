@@ -25,6 +25,46 @@ export class RepoService {
     return { items: userRepos };
   }
 
+  async syncUserRepo(userId, userRepo) {
+    const newUserRepo = this.repoRepository.create({
+      user: userId,
+      repoName: userRepo,
+    });
+
+    const result = await this.repoRepository.save(newUserRepo);
+
+    return { item: result };
+  }
+
+  async syncUserRepos(userId, userGithubRepos, userRepos) {
+    let syncCount = 0;
+
+    await Promise.all(
+      userGithubRepos.map(async (userGithubRepo) => {
+        // userRepos에 없으면 동기화
+        let sync = true;
+        userRepos.forEach((userRepo) => {
+          if (userRepo.repoName === userGithubRepo.name) {
+            sync = false;
+            return;
+          }
+        });
+
+        if (sync) {
+          const { item } = await this.syncUserRepo(userId, userGithubRepo.name);
+          if (item) {
+            syncCount++;
+            Logger.log(`${userGithubRepo.name} is synchronized`);
+          }
+        }
+      }),
+    );
+
+    const result = { item: { syncCount } };
+
+    return result;
+  }
+
   async getReposFromGithub(authorization) {
     const requestHeaders = {
       'Content-Type': REQUEST_INFO.GITHUB.CONTENT_TYPE,

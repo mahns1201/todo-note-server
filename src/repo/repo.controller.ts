@@ -5,6 +5,7 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
+  Logger,
   Param,
   Post,
   Query,
@@ -134,14 +135,29 @@ export class RepoController {
       item: { id: userId },
     } = await this.userService.findUser(email);
 
-    console.log('userId: ', userId);
-
     const { authorization } = headers;
-    const { items: userRepos } = await this.repoService.getReposFromGithub(
-      authorization,
+    const { items: userGithubRepos } =
+      await this.repoService.getReposFromGithub(authorization);
+
+    const { items: userRepoItems } = await this.repoService.findUserRepos(
+      userId,
+    );
+    const [userRepos] = userRepoItems;
+
+    const {
+      item: { syncCount },
+    } = await this.repoService.syncUserRepos(
+      userId,
+      userGithubRepos,
+      userRepos,
     );
 
-    console.log('userRepos: ', userRepos);
+    const message = syncCount
+      ? `레포지토리 ${syncCount}개가 성공적으로 동기화 되었습니다.`
+      : '레포지토리 동기화 상태가 최신입니다.';
+    const httpStatus = syncCount ? HttpStatus.CREATED : HttpStatus.OK;
+
+    return { message, httpStatus };
   }
 
   // TODO sync-repo 단일 repo 동기화
