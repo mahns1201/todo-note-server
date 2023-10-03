@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  HttpCode,
   HttpStatus,
   Logger,
   Req,
@@ -10,11 +11,18 @@ import { Request } from 'express';
 
 import { GithubOauthGuard } from './github-oauth.guard';
 import { OutputGithubCallbackDto } from './dto/github-callback.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 @Controller('auth/github')
+@ApiTags('oauth - github')
 export class GithubOauthController {
   // constructor() {}
 
   @Get()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Github OAuth',
+    description: 'Github OAuth 요청 컨트롤러',
+  })
   @UseGuards(GithubOauthGuard)
   async githubAuth() {
     // With `@UseGuards(GithubOauthGuard)` we are using an AuthGuard that @nestjs/passport
@@ -23,6 +31,11 @@ export class GithubOauthController {
   }
 
   @Get('callback')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Github OAuth Callback',
+    description: 'Github OAuth Callback 컨트롤러',
+  })
   @UseGuards(GithubOauthGuard)
   async githubAuthCallback(
     @Req() req: Request,
