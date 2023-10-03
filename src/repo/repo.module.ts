@@ -6,6 +6,7 @@ import { RepoController } from './repo.controller';
 import { RepoService } from './repo.service';
 import { RepoEntity } from './entity/repo.entity';
 import { RepoBranchEntity } from './entity/repo-branch.entity';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { RepoBranchEntity } from './entity/repo-branch.entity';
     HttpModule,
   ],
   controllers: [RepoController],
-  providers: [RepoService],
+  providers: [RepoService, UserService],
 })
 export class RepoModule {}

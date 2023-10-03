@@ -2,12 +2,30 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { lastValueFrom, map } from 'rxjs';
 import { REQUEST_INFO } from 'src/common/request-url';
+import { Repository } from 'typeorm';
+import { RepoEntity } from './entity/repo.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class RepoService {
-  constructor(private httpService: HttpService) {}
+  constructor(
+    @InjectRepository(RepoEntity)
+    private repoRepository: Repository<RepoEntity>,
 
-  async getRepos(authorization) {
+    private httpService: HttpService,
+  ) {}
+
+  async findUserRepos(userId) {
+    const userRepos = await this.repoRepository.findAndCount({
+      where: {
+        user: userId,
+      },
+    });
+
+    return { items: userRepos };
+  }
+
+  async getReposFromGithub(authorization) {
     const requestHeaders = {
       'Content-Type': REQUEST_INFO.GITHUB.CONTENT_TYPE,
       'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
@@ -30,7 +48,7 @@ export class RepoService {
     }
   }
 
-  async getRepo(authorization, owner, repo, branch) {
+  async getRepoFromGithub(authorization, owner, repo, branch) {
     const requestHeaders = {
       'Content-Type': REQUEST_INFO.GITHUB.CONTENT_TYPE,
       'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
