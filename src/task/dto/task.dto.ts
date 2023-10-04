@@ -25,11 +25,6 @@ export class TaskDto {
   @IsOptional()
   @IsString()
   @ApiProperty()
-  repoName: string;
-
-  @IsOptional()
-  @IsString()
-  @ApiProperty()
   title: string;
 
   @IsOptional()

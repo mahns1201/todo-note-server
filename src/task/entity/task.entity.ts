@@ -1,6 +1,6 @@
 import { BaseEntity } from 'src/common/common.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { RepoEntity } from 'src/repo/entity/repo.entity';
 import { RepoBranchEntity } from 'src/repo/entity/repo-branch.entity';
@@ -21,9 +21,11 @@ export class TaskEntity extends BaseEntity {
 
   @Column()
   @IsNotEmpty()
+  @IsString()
   title: string;
 
   @Column()
   @IsOptional()
+  @IsString()
   content: string;
 }

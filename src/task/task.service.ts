@@ -9,4 +9,21 @@ export class TaskService {
     @InjectRepository(TaskEntity)
     private taskRepository: Repository<TaskEntity>,
   ) {}
+
+  async createTask(input) {
+    const newTask = this.taskRepository.create(input);
+    const result = await this.taskRepository.save(newTask);
+
+    return { item: result };
+  }
+
+  async findTaskById(input) {
+    const { id } = input;
+    const task = await this.taskRepository.findOne({
+      where: { id },
+      relations: ['user', 'repo', 'repoBranch'], // left join
+    });
+
+    return { item: task };
+  }
 }
