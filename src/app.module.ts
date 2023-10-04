@@ -9,7 +9,7 @@ import { RepoModule } from './repo/repo.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['./config/.local.env'],
+      envFilePath: `./config/.${process.env.NODE_ENV}.env`,
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({

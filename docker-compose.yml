@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  db-local-mysql:
+  db:
     image: library/mysql:5.7
     container_name: dev-to-do-note
     volumes:

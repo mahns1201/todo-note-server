@@ -39,8 +39,8 @@ export class UserDto {
   @ApiProperty()
   isGithub: boolean;
 
-  @IsOptional()
-  @IsBoolean()
-  @IsString()
-  githubAccessToken: string;
+  // @IsOptional()
+  // @IsBoolean()
+  // @IsString()
+  // githubAccessToken: string;
 }
