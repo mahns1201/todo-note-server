@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { GithubOauthModule } from './auth/github/github-oauth.module';
 import { RepoModule } from './repo/repo.module';
 import { TaskModule } from './task/task.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { TaskModule } from './task/task.module';
     UserModule,
     RepoModule,
     TaskModule,
+    UploadModule,
   ],
   controllers: [],
   providers: [],
