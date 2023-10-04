@@ -5,7 +5,6 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
-  Logger,
   Param,
   Post,
   Query,
@@ -76,6 +75,7 @@ export class RepoController {
     };
   }
 
+  // TODO controller에 있을 필요가 있나? 고민해보자
   @Get('github')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

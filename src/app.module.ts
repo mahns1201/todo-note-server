@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { GithubOauthModule } from './auth/github/github-oauth.module';
 import { RepoModule } from './repo/repo.module';
+import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { RepoModule } from './repo/repo.module';
     GithubOauthModule,
     UserModule,
     RepoModule,
+    TaskModule,
   ],
   controllers: [],
   providers: [],
