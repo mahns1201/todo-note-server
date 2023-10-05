@@ -1,10 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as AWS from 'aws-sdk';
+import { UploadEntity } from './entity/upload.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UploadService {
-  constructor(private configService: ConfigService) {}
+  constructor(
+    @InjectRepository(UploadEntity)
+    private uploadRepository: Repository<UploadEntity>,
+
+    private configService: ConfigService,
+  ) {}
 
   AWS_S3_BUCKET = this.configService.get<string>('AWS_S3_BUCKET');
   s3 = new AWS.S3({
@@ -13,21 +21,11 @@ export class UploadService {
   });
 
   async uploadFile(file) {
-    const { originalname } = file;
-
-    return await this.s3_upload(
-      file.buffer,
-      this.AWS_S3_BUCKET,
-      `${new Date()}_${originalname}`,
-      file.mimetype,
-    );
-  }
-
-  async s3_upload(file, bucket, name, mimetype) {
+    const { buffer, originalname, mimetype, encoding } = file;
     const params = {
-      Bucket: bucket,
-      Key: String(name),
-      Body: file,
+      Bucket: this.AWS_S3_BUCKET,
+      Key: String(`${new Date()}_${originalname}`),
+      Body: buffer,
       ACL: 'public-read',
       ContentType: mimetype,
       ContentDisposition: 'inline',
@@ -38,9 +36,25 @@ export class UploadService {
 
     try {
       const s3Response = await this.s3.upload(params).promise();
-      return s3Response;
+      return { s3Response, originalname, mimetype, encoding };
     } catch (error) {
       Logger.error(error.message);
     }
+  }
+
+  async createUpload(input) {
+    const { userId, taskId, originalname, encoding, mimetype, url } = input;
+    const newUpload = this.uploadRepository.create({
+      user: userId,
+      task: taskId,
+      originalname,
+      encoding,
+      mimetype,
+      url,
+    });
+
+    const result = await this.uploadRepository.save(newUpload);
+
+    return { item: result };
   }
 }
