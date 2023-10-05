@@ -7,7 +7,7 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TaskService } from './task.service';
 
 @Controller('task')
@@ -41,13 +41,13 @@ export class TaskController {
     description: 'parameter에 id를 넘겨 태스크를 조회합니다.',
   })
   async findTaskById(@Param() input) {
-    const { item } = await this.taskService.findTaskById(input);
-    const httpStatus = !item ? HttpStatus.NOT_FOUND : HttpStatus.OK;
-    const message = !item
-      ? '태스크를 해당 이메일로 찾을 수 없습니다.'
+    const { items } = await this.taskService.findTaskById(input);
+    const httpStatus = !items ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+    const message = !items
+      ? '태스크를 해당 id로 찾을 수 없습니다.'
       : '태스크를 성공적으로 찾았습니다.';
 
-    const result = { item, httpStatus, message };
+    const result = { items, httpStatus, message };
     return result;
   }
 }

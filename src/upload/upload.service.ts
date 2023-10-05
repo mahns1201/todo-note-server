@@ -57,4 +57,15 @@ export class UploadService {
 
     return { item: result };
   }
+
+  async findUploadByTaskId(input) {
+    const { taskId, userId } = input;
+    const upload = await this.uploadRepository
+      .createQueryBuilder('upload')
+      .where('upload.taskId = :taskId', { taskId })
+      .where('upload.userId = :userId', { userId })
+      .getRawMany();
+
+    return { item: upload };
+  }
 }
