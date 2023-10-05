@@ -76,53 +76,52 @@ export class RepoController {
   }
 
   // TODO controller에 있을 필요가 있나? 고민해보자
-  @Get('github')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: '유저 레포지토리 조회',
-    description: '유저의 레포지토리를 조회합니다.',
-  })
-  @ApiQuery({
-    name: 'owner',
-    type: String,
-  })
-  @ApiQuery({
-    name: 'repo',
-    type: String,
-  })
-  @ApiQuery({
-    name: 'branch',
-    type: Boolean,
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '유저 레포지토리 조회에 성공했습니다.',
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: '유저 레포지토리 조회에 실패했습니다.',
-  })
-  async getRepoFromGithub(@Headers() headers, @Query() input) {
-    const { authorization } = headers;
-    const { owner, repo, branch } = input;
+  // @Get('github')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({
+  //   summary: '유저 레포지토리 조회',
+  //   description: '유저의 레포지토리를 조회합니다.',
+  // })
+  // @ApiQuery({
+  //   name: 'owner',
+  //   type: String,
+  // })
+  // @ApiQuery({
+  //   name: 'repo',
+  //   type: String,
+  // })
+  // @ApiQuery({
+  //   name: 'branch',
+  //   type: Boolean,
+  // })
+  // @ApiResponse({
+  //   status: HttpStatus.OK,
+  //   description: '유저 레포지토리 조회에 성공했습니다.',
+  // })
+  // @ApiResponse({
+  //   status: HttpStatus.NOT_FOUND,
+  //   description: '유저 레포지토리 조회에 실패했습니다.',
+  // })
+  // async getRepoFromGithub(@Headers() headers, @Query() input) {
+  //   const { authorization } = headers;
+  //   const { owner, repo, branch } = input;
+  //   const { item } = await this.repoService.getRepoFromGithub(
+  //     authorization,
+  //     owner,
+  //     repo,
+  //     branch,
+  //   );
+  //   const httpStatus = !item ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+  //   const message = !item
+  //     ? '유저의 레포지토리를 해당 이름으로 찾을 수 없습니다.'
+  //     : '유저의 레포지토리를 성공적으로 가지고 왔습니다.';
 
-    const { item } = await this.repoService.getRepoFromGithub(
-      authorization,
-      owner,
-      repo,
-      branch,
-    );
-    const httpStatus = !item ? HttpStatus.NOT_FOUND : HttpStatus.OK;
-    const message = !item
-      ? '유저의 레포지토리를 해당 이름으로 찾을 수 없습니다.'
-      : '유저의 레포지토리를 성공적으로 가지고 왔습니다.';
-
-    return {
-      item,
-      message,
-      httpStatus,
-    };
-  }
+  //   return {
+  //     item,
+  //     message,
+  //     httpStatus,
+  //   };
+  // }
 
   // sync-repos 전체 repo 동기화
   @Post('github/sync')
