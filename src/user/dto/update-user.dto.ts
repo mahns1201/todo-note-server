@@ -4,7 +4,7 @@ import { PickType } from '@nestjs/swagger';
 
 export class InputGithubAccessTokenUpdateDto extends PickType(UserDto, [
   'email',
-  // 'githubAccessToken',
+  'githubAccessToken',
 ] as const) {}
 
 export class OutputGithubAccessTokenUpdateDto extends SwaggerResponseDto<UserDto> {}

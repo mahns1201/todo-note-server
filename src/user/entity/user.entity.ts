@@ -28,7 +28,7 @@ export class UserEntity extends BaseEntity {
   @IsOptional()
   isGithub: boolean;
 
-  // @Column({ nullable: true })
-  // @IsOptional()
-  // githubAccessToken: string;
+  @Column({ nullable: true })
+  @IsOptional()
+  githubAccessToken: string;
 }

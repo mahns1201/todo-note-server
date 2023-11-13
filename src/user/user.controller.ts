@@ -6,14 +6,18 @@ import {
   HttpStatus,
   Param,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 
 import { UserService } from './user.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { InputCreateUserDto, OutputCreateUserDto } from './dto/create-user.dto';
 import { InputFindUserDto, OutputFindUserDto } from './dto/find-user.dto';
+import { AuthGuard } from 'src/auth/jwt/auth.guard';
 
 @Controller('user')
+@UseGuards(AuthGuard)
 @ApiTags('user')
 export class UserController {
   constructor(private userService: UserService) {}
@@ -49,7 +53,7 @@ export class UserController {
     return result;
   }
 
-  @Get('/:email')
+  @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: '유저 조회',
@@ -65,14 +69,17 @@ export class UserController {
     status: HttpStatus.NOT_FOUND,
     description: '이메일로 유저를 찾을 수 없을 때 반환합니다.',
   })
-  async findOne(@Param() input: InputFindUserDto): Promise<OutputFindUserDto> {
-    const { item } = await this.userService.findUser(input);
+  async findOne(@Request() request): Promise<OutputFindUserDto> {
+    const { email } = request.user;
+
+    const { item } = await this.userService.findUser({ email });
     const httpStatus = !item ? HttpStatus.NOT_FOUND : HttpStatus.OK;
     const message = !item
       ? '유저를 해당 이메일로 찾을 수 없습니다.'
       : '유저를 성공적으로 찾았습니다.';
 
     const result = { item, httpStatus, message };
+
     return result;
   }
 

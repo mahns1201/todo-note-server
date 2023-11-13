@@ -23,7 +23,7 @@ export class UserService {
       password,
       avatarUrl,
       isGithub,
-      // githubAccessToken,
+      githubAccessToken,
     } = input;
 
     const newUser = this.userRepository.create({
@@ -32,7 +32,7 @@ export class UserService {
       password,
       avatarUrl,
       isGithub,
-      // githubAccessToken,
+      githubAccessToken,
     });
 
     const result = await this.userRepository.save(newUser);
@@ -53,19 +53,20 @@ export class UserService {
     return { item: user };
   }
 
-  // async updateGithubAccessToken(
-  //   input: InputGithubAccessTokenUpdateDto,
-  // ): Promise<ServiceResultDto<UpdateResult>> {
-  //   const { email, githubAccessToken } = input;
-  //   // console.log('user.service email: ', email);
+  async updateGithubAccessToken(
+    input: InputGithubAccessTokenUpdateDto,
+  ): Promise<ServiceResultDto<UpdateResult>> {
+    const { email, githubAccessToken } = input;
 
-  //   const user = await this.userRepository.update(
-  //     { email },
-  //     { githubAccessToken },
-  //   );
+    const user = await this.userRepository.update(
+      { email },
+      { githubAccessToken },
+    );
 
-  //   return { item: user };
-  // }
+    console.log(user);
+
+    return { item: user };
+  }
 
   // async findAll(): Promise<UserEntity[]> {
   //   return this.userRepository.find();

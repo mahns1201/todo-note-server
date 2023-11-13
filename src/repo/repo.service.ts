@@ -135,11 +135,11 @@ export class RepoService {
     return result;
   }
 
-  async getReposFromGithub(authorization) {
+  async getReposFromGithub(githubAccessToken) {
     const requestHeaders = {
       'Content-Type': REQUEST_INFO.GITHUB.CONTENT_TYPE,
       'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
-      Authorization: authorization,
+      Authorization: `Bearer ${githubAccessToken}`,
     };
 
     try {
@@ -158,11 +158,11 @@ export class RepoService {
     }
   }
 
-  async getRepoFromGithub(authorization, owner, repo, branch) {
+  async getRepoFromGithub(githubAccessToken, owner, repo, branch) {
     const requestHeaders = {
       'Content-Type': REQUEST_INFO.GITHUB.CONTENT_TYPE,
       'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
-      Authorization: authorization,
+      Authorization: `Bearer ${githubAccessToken}`,
     };
 
     try {

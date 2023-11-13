@@ -7,12 +7,14 @@ import { InputFindUserDto } from 'src/user/dto/find-user.dto';
 import { InputGithubAccessTokenUpdateDto } from 'src/user/dto/update-user.dto';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { UserService } from 'src/user/user.service';
+import { AuthService } from '../jwt/auth.service';
 
 @Injectable()
 export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
   constructor(
     private configService: ConfigService,
     private userService: UserService,
+    private authService: AuthService,
   ) {
     super({
       clientID: configService.get<string>('GITHUB_CLIENT_ID'),
@@ -22,7 +24,11 @@ export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
     });
   }
 
-  async validate(accessToken: string, _refreshToken: string, profile: Profile) {
+  async validate(
+    githubAccessToken: string,
+    _refreshToken: string,
+    profile: Profile,
+  ) {
     // github oauth는 refreshToken을 제공하지 않는다.
     const { login: githubId, email, avatar_url } = profile._json;
 
@@ -33,12 +39,13 @@ export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
       password: null,
       avatarUrl: avatar_url,
       isGithub: true,
-      // githubAccessToken: accessToken,
+      githubAccessToken,
     };
-    // const updateAccessTokenInput: InputGithubAccessTokenUpdateDto = {
-    // email,
-    // githubAccessToken: accessToken,
-    // };
+
+    const updateAccessTokenInput: InputGithubAccessTokenUpdateDto = {
+      email,
+      githubAccessToken,
+    };
 
     const { item: user } = await this.userService.findUser(findUserInput);
 
@@ -49,16 +56,16 @@ export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
       const { item } = await this.userService.createUser(createUserInput);
       createdUser = item;
     } else {
-      // const UpdateResult = await this.userService.updateGithubAccessToken(
-      // updateAccessTokenInput,
-      // );
-      // Logger.log(`Github accessToken 업데이트: ${UpdateResult.item}`);
+      await this.userService.updateGithubAccessToken(updateAccessTokenInput);
+      Logger.log(`${user.email} Github accessToken 업데이트`);
     }
 
     // 기존 유저도 없고 생성된 유저도 없으면 에러 발생
     if (!user && !createdUser) {
       throw new UnauthorizedException();
     }
+
+    const { access_token: accessToken } = await this.authService.signIn(email);
 
     return { user, accessToken } || { createdUser, accessToken };
   }

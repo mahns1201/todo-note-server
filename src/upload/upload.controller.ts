@@ -4,14 +4,18 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Request,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/jwt/auth.guard';
 
 @Controller()
+@UseGuards(AuthGuard)
 @ApiTags('upload')
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
@@ -23,8 +27,14 @@ export class UploadController {
     description: '파일을 s3에 업로드하고 upload db를 생성합니다.',
   })
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File, @Body() input) {
-    const { userId, taskId } = input;
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Request() request,
+    @Body() input,
+  ) {
+    const { id: userId } = request.user;
+
+    const { taskId } = input;
     const {
       s3Response: { Location: url },
       originalname,
@@ -48,7 +58,6 @@ export class UploadController {
       ? '파일 업로드를 실패하였습니다.'
       : '파일 업로드를 성공하였습니다.';
 
-    const result = { item, httpStatus, message };
-    return result;
+    return { item, httpStatus, message };
   }
 }

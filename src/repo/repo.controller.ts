@@ -2,19 +2,21 @@ import {
   Body,
   Controller,
   Get,
-  Headers,
   HttpCode,
   HttpStatus,
-  Param,
+  Logger,
   Post,
-  Query,
+  Request,
+  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RepoService } from './repo.service';
 import { UserService } from 'src/user/user.service';
-import { InputFindUserReposDto } from './dto/find-user-repo.dto';
+import { AuthGuard } from 'src/auth/jwt/auth.guard';
 
 @Controller('repo')
+@UseGuards(AuthGuard)
 @ApiTags('repository')
 export class RepoController {
   constructor(
@@ -22,13 +24,10 @@ export class RepoController {
     private userService: UserService,
   ) {}
 
-  @Get('/:email')
+  @Get()
   @HttpCode(HttpStatus.OK)
-  async findUserRepos(@Param() input: InputFindUserReposDto) {
-    const {
-      item: { id: userId },
-    } = await this.userService.findUser(input);
-
+  async findUserRepos(@Request() request) {
+    const { id: userId } = request.user;
     const { items } = await this.repoService.findUserRepos(userId);
 
     const httpStatus = !items ? HttpStatus.NOT_FOUND : HttpStatus.OK;
@@ -57,10 +56,15 @@ export class RepoController {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: '유저 레포지토리 리스트 조회에 실패했습니다.',
   })
-  async getReposFromGithub(@Headers() headers) {
-    const { authorization } = headers;
+  async getReposFromGithub(@Request() request) {
+    const { email } = request.user;
+    const {
+      item: { githubAccessToken },
+    } = await this.userService.findUser({ email });
 
-    const { items } = await this.repoService.getReposFromGithub(authorization);
+    const { items } = await this.repoService.getReposFromGithub(
+      githubAccessToken,
+    );
     const httpStatus = !items
       ? HttpStatus.INTERNAL_SERVER_ERROR
       : HttpStatus.OK;
@@ -130,17 +134,22 @@ export class RepoController {
     summary: '유저 레포지토리 동기화',
     description: '유저의 이메일로 레포지토리를 조회하여 db를 동기화 합니다',
   })
-  async syncRepos(@Headers() headers, @Body() input) {
+  async syncRepos(@Request() request) {
+    const { id: userId, email } = request.user;
+
     // param: user-email
     // userService에서 user를 찾아서 branch list를 받고 전체를 동기화
-    const { email } = input;
     const {
-      item: { id: userId },
-    } = await this.userService.findUser(email);
+      item: { githubAccessToken },
+    } = await this.userService.findUser({ email });
 
-    const { authorization } = headers;
+    if (!githubAccessToken) {
+      Logger.error(`${email} github accessToken이 없습니다.`);
+      throw new UnauthorizedException();
+    }
+
     const { items: userGithubRepos } =
-      await this.repoService.getReposFromGithub(authorization);
+      await this.repoService.getReposFromGithub(githubAccessToken);
 
     const { items: userRepoItems } = await this.repoService.findUserRepos(
       userId,
@@ -170,17 +179,17 @@ export class RepoController {
     summary: '유저 레포지토리 브랜치 동기화',
     description: '유저의 레포지토리 브랜치를 조회하여 db를 동기화 합니다',
   })
-  async syncRepoBranch(@Headers() headers, @Body() input) {
-    const { authorization } = headers;
-    const { owner, repo, branch = true, email } = input;
+  async syncRepoBranch(@Request() request, @Body() input) {
+    const { id: userId, email } = request.user;
+    const { owner, repo, branch = true } = input;
 
     const {
-      item: { id: userId },
-    } = await this.userService.findUser(email);
+      item: { githubAccessToken },
+    } = await this.userService.findUser({ email });
 
     const { item: githubRepoBranches } =
       await this.repoService.getRepoFromGithub(
-        authorization,
+        githubAccessToken,
         owner,
         repo,
         branch,
