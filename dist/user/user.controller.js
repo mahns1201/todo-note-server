@@ -18,6 +18,7 @@ const user_service_1 = require("./user.service");
 const swagger_1 = require("@nestjs/swagger");
 const create_user_dto_1 = require("./dto/create-user.dto");
 const find_user_dto_1 = require("./dto/find-user.dto");
+const auth_guard_1 = require("../auth/jwt/auth.guard");
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -33,8 +34,9 @@ let UserController = class UserController {
         const result = { item, httpStatus, message };
         return result;
     }
-    async findOne(input) {
-        const { item } = await this.userService.findUser(input);
+    async findOne(request) {
+        const { email } = request.user;
+        const { item } = await this.userService.findUser({ email });
         const httpStatus = !item ? common_1.HttpStatus.NOT_FOUND : common_1.HttpStatus.OK;
         const message = !item
             ? '유저를 해당 이메일로 찾을 수 없습니다.'
@@ -66,7 +68,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)('/:email'),
+    (0, common_1.Get)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: '유저 조회',
@@ -82,13 +84,14 @@ __decorate([
         status: common_1.HttpStatus.NOT_FOUND,
         description: '이메일로 유저를 찾을 수 없을 때 반환합니다.',
     }),
-    __param(0, (0, common_1.Param)()),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [find_user_dto_1.InputFindUserDto]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findOne", null);
 UserController = __decorate([
     (0, common_1.Controller)('user'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, swagger_1.ApiTags)('user'),
     __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);

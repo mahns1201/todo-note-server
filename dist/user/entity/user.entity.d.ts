@@ -6,4 +6,5 @@ export declare class UserEntity extends BaseEntity {
     password: string;
     avatarUrl: string;
     isGithub: boolean;
+    githubAccessToken: string;
 }

@@ -17,14 +17,14 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const repo_service_1 = require("./repo.service");
 const user_service_1 = require("../user/user.service");
-const find_user_repo_dto_1 = require("./dto/find-user-repo.dto");
+const auth_guard_1 = require("../auth/jwt/auth.guard");
 let RepoController = class RepoController {
     constructor(repoService, userService) {
         this.repoService = repoService;
         this.userService = userService;
     }
-    async findUserRepos(input) {
-        const { item: { id: userId }, } = await this.userService.findUser(input);
+    async findUserRepos(request) {
+        const { id: userId } = request.user;
         const { items } = await this.repoService.findUserRepos(userId);
         const httpStatus = !items ? common_1.HttpStatus.NOT_FOUND : common_1.HttpStatus.OK;
         const message = !items
@@ -36,9 +36,10 @@ let RepoController = class RepoController {
             httpStatus,
         };
     }
-    async getReposFromGithub(headers) {
-        const { authorization } = headers;
-        const { items } = await this.repoService.getReposFromGithub(authorization);
+    async getReposFromGithub(request) {
+        const { email } = request.user;
+        const { item: { githubAccessToken }, } = await this.userService.findUser({ email });
+        const { items } = await this.repoService.getReposFromGithub(githubAccessToken);
         const httpStatus = !items
             ? common_1.HttpStatus.INTERNAL_SERVER_ERROR
             : common_1.HttpStatus.OK;
@@ -51,11 +52,14 @@ let RepoController = class RepoController {
             httpStatus,
         };
     }
-    async syncRepos(headers, input) {
-        const { email } = input;
-        const { item: { id: userId }, } = await this.userService.findUser(email);
-        const { authorization } = headers;
-        const { items: userGithubRepos } = await this.repoService.getReposFromGithub(authorization);
+    async syncRepos(request) {
+        const { id: userId, email } = request.user;
+        const { item: { githubAccessToken }, } = await this.userService.findUser({ email });
+        if (!githubAccessToken) {
+            common_1.Logger.error(`${email} github accessToken이 없습니다.`);
+            throw new common_1.UnauthorizedException();
+        }
+        const { items: userGithubRepos } = await this.repoService.getReposFromGithub(githubAccessToken);
         const { items: userRepoItems } = await this.repoService.findUserRepos(userId);
         const [userRepos] = userRepoItems;
         const { item: { syncCount }, } = await this.repoService.syncUserRepos(userId, userGithubRepos, userRepos);
@@ -65,11 +69,11 @@ let RepoController = class RepoController {
         const httpStatus = syncCount ? common_1.HttpStatus.CREATED : common_1.HttpStatus.OK;
         return { message, httpStatus };
     }
-    async syncRepoBranch(headers, input) {
-        const { authorization } = headers;
-        const { owner, repo, branch = true, email } = input;
-        const { item: { id: userId }, } = await this.userService.findUser(email);
-        const { item: githubRepoBranches } = await this.repoService.getRepoFromGithub(authorization, owner, repo, branch);
+    async syncRepoBranch(request, input) {
+        const { id: userId, email } = request.user;
+        const { owner, repo, branch = true } = input;
+        const { item: { githubAccessToken }, } = await this.userService.findUser({ email });
+        const { item: githubRepoBranches } = await this.repoService.getRepoFromGithub(githubAccessToken, owner, repo, branch);
         const { item: { id: repoId }, } = await this.repoService.findUserRepo(userId, repo);
         const { items: repoBranches } = await this.repoService.findRepoBranches(repoId);
         const { item: { syncCount }, } = await this.repoService.syncRepoBranches(repoId, githubRepoBranches, repoBranches);
@@ -81,11 +85,11 @@ let RepoController = class RepoController {
     }
 };
 __decorate([
-    (0, common_1.Get)('/:email'),
+    (0, common_1.Get)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    __param(0, (0, common_1.Param)()),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [find_user_repo_dto_1.InputFindUserReposDto]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], RepoController.prototype, "findUserRepos", null);
 __decorate([
@@ -103,7 +107,7 @@ __decorate([
         status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
         description: '유저 레포지토리 리스트 조회에 실패했습니다.',
     }),
-    __param(0, (0, common_1.Headers)()),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
@@ -115,10 +119,9 @@ __decorate([
         summary: '유저 레포지토리 동기화',
         description: '유저의 이메일로 레포지토리를 조회하여 db를 동기화 합니다',
     }),
-    __param(0, (0, common_1.Headers)()),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], RepoController.prototype, "syncRepos", null);
 __decorate([
@@ -128,7 +131,7 @@ __decorate([
         summary: '유저 레포지토리 브랜치 동기화',
         description: '유저의 레포지토리 브랜치를 조회하여 db를 동기화 합니다',
     }),
-    __param(0, (0, common_1.Headers)()),
+    __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
@@ -136,6 +139,7 @@ __decorate([
 ], RepoController.prototype, "syncRepoBranch", null);
 RepoController = __decorate([
     (0, common_1.Controller)('repo'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, swagger_1.ApiTags)('repository'),
     __metadata("design:paramtypes", [repo_service_1.RepoService,
         user_service_1.UserService])

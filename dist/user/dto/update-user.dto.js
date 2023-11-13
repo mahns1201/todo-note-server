@@ -6,6 +6,7 @@ const user_dto_1 = require("./user.dto");
 const swagger_1 = require("@nestjs/swagger");
 class InputGithubAccessTokenUpdateDto extends (0, swagger_1.PickType)(user_dto_1.UserDto, [
     'email',
+    'githubAccessToken',
 ]) {
 }
 exports.InputGithubAccessTokenUpdateDto = InputGithubAccessTokenUpdateDto;

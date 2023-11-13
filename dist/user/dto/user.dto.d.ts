@@ -4,4 +4,5 @@ export declare class UserDto {
     password: string;
     avatarUrl: string;
     isGithub: boolean;
+    githubAccessToken: string;
 }

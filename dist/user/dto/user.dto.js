@@ -47,5 +47,11 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", Boolean)
 ], UserDto.prototype, "isGithub", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UserDto.prototype, "githubAccessToken", void 0);
 exports.UserDto = UserDto;
 //# sourceMappingURL=user.dto.js.map

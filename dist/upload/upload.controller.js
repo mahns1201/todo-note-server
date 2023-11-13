@@ -17,12 +17,14 @@ const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const upload_service_1 = require("./upload.service");
 const swagger_1 = require("@nestjs/swagger");
+const auth_guard_1 = require("../auth/jwt/auth.guard");
 let UploadController = class UploadController {
     constructor(uploadService) {
         this.uploadService = uploadService;
     }
-    async uploadFile(file, input) {
-        const { userId, taskId } = input;
+    async uploadFile(file, request, input) {
+        const { id: userId } = request.user;
+        const { taskId } = input;
         const { s3Response: { Location: url }, originalname, mimetype, encoding, } = await this.uploadService.uploadFile(file);
         const { item } = await this.uploadService.createUpload({
             userId,
@@ -38,8 +40,7 @@ let UploadController = class UploadController {
         const message = !item
             ? '파일 업로드를 실패하였습니다.'
             : '파일 업로드를 성공하였습니다.';
-        const result = { item, httpStatus, message };
-        return result;
+        return { item, httpStatus, message };
     }
 };
 __decorate([
@@ -51,13 +52,15 @@ __decorate([
     }),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
     __param(0, (0, common_1.UploadedFile)()),
-    __param(1, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], UploadController.prototype, "uploadFile", null);
 UploadController = __decorate([
     (0, common_1.Controller)(),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, swagger_1.ApiTags)('upload'),
     __metadata("design:paramtypes", [upload_service_1.UploadService])
 ], UploadController);

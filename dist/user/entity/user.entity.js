@@ -45,6 +45,11 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
 ], UserEntity.prototype, "isGithub", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UserEntity.prototype, "githubAccessToken", void 0);
 UserEntity = __decorate([
     (0, typeorm_1.Entity)({ name: 'user' })
 ], UserEntity);

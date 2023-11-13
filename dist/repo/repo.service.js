@@ -110,11 +110,11 @@ let RepoService = class RepoService {
         const result = { item: { syncCount } };
         return result;
     }
-    async getReposFromGithub(authorization) {
+    async getReposFromGithub(githubAccessToken) {
         const requestHeaders = {
             'Content-Type': request_url_1.REQUEST_INFO.GITHUB.CONTENT_TYPE,
             'X-GitHub-Api-Version': request_url_1.REQUEST_INFO.GITHUB.API_VERSION,
-            Authorization: authorization,
+            Authorization: `Bearer ${githubAccessToken}`,
         };
         try {
             const observable = this.httpService
@@ -130,11 +130,11 @@ let RepoService = class RepoService {
             return { items: null };
         }
     }
-    async getRepoFromGithub(authorization, owner, repo, branch) {
+    async getRepoFromGithub(githubAccessToken, owner, repo, branch) {
         const requestHeaders = {
             'Content-Type': request_url_1.REQUEST_INFO.GITHUB.CONTENT_TYPE,
             'X-GitHub-Api-Version': request_url_1.REQUEST_INFO.GITHUB.API_VERSION,
-            Authorization: authorization,
+            Authorization: `Bearer ${githubAccessToken}`,
         };
         try {
             let requestUrl = `${request_url_1.REQUEST_INFO.GITHUB.PREFIX}/repos/${owner}/${repo}`;

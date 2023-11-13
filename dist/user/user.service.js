@@ -22,13 +22,14 @@ let UserService = class UserService {
         this.userRepository = userRepository;
     }
     async createUser(input) {
-        const { email, githubId, password, avatarUrl, isGithub, } = input;
+        const { email, githubId, password, avatarUrl, isGithub, githubAccessToken, } = input;
         const newUser = this.userRepository.create({
             email,
             githubId,
             password,
             avatarUrl,
             isGithub,
+            githubAccessToken,
         });
         const result = await this.userRepository.save(newUser);
         return { item: result };
@@ -40,6 +41,12 @@ let UserService = class UserService {
                 email,
             },
         });
+        return { item: user };
+    }
+    async updateGithubAccessToken(input) {
+        const { email, githubAccessToken } = input;
+        const user = await this.userRepository.update({ email }, { githubAccessToken });
+        console.log(user);
         return { item: user };
     }
 };

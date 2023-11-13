@@ -4,7 +4,7 @@ import { UploadService } from './upload.service';
 export declare class UploadController {
     private readonly uploadService;
     constructor(uploadService: UploadService);
-    uploadFile(file: Express.Multer.File, input: any): Promise<{
+    uploadFile(file: Express.Multer.File, request: any, input: any): Promise<{
         item: import("./entity/upload.entity").UploadEntity;
         httpStatus: HttpStatus;
         message: string;

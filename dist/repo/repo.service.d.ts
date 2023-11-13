@@ -32,10 +32,10 @@ export declare class RepoService {
             syncCount: number;
         };
     }>;
-    getReposFromGithub(authorization: any): Promise<{
+    getReposFromGithub(githubAccessToken: any): Promise<{
         items: any;
     }>;
-    getRepoFromGithub(authorization: any, owner: any, repo: any, branch: any): Promise<{
+    getRepoFromGithub(githubAccessToken: any, owner: any, repo: any, branch: any): Promise<{
         item: any;
     }>;
 }

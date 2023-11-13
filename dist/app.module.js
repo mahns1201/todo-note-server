@@ -13,6 +13,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const user_module_1 = require("./user/user.module");
 const github_oauth_module_1 = require("./auth/github/github-oauth.module");
 const repo_module_1 = require("./repo/repo.module");
+const auth_module_1 = require("./auth/jwt/auth.module");
 const task_module_1 = require("./task/task.module");
 const upload_module_1 = require("./upload/upload.module");
 let AppModule = class AppModule {
@@ -36,6 +37,7 @@ AppModule = __decorate([
                     synchronize: true,
                 }),
             }),
+            auth_module_1.AuthModule,
             github_oauth_module_1.GithubOauthModule,
             user_module_1.UserModule,
             repo_module_1.RepoModule,

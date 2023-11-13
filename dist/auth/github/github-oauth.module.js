@@ -13,13 +13,14 @@ const github_oauth_strategy_1 = require("./github-oauth.strategy");
 const user_service_1 = require("../../user/user.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("../../user/entity/user.entity");
+const auth_service_1 = require("../jwt/auth.service");
 let GithubOauthModule = class GithubOauthModule {
 };
 GithubOauthModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.UserEntity])],
         controllers: [github_oauth_controller_1.GithubOauthController],
-        providers: [github_oauth_strategy_1.GithubOauthStrategy, user_service_1.UserService],
+        providers: [github_oauth_strategy_1.GithubOauthStrategy, user_service_1.UserService, auth_service_1.AuthService],
     })
 ], GithubOauthModule);
 exports.GithubOauthModule = GithubOauthModule;
