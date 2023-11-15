@@ -1,1 +1,0 @@
-{"version":3,"file":"github-oauth.dto.js","sourceRoot":"","sources":["../../../../src/auth/github/dto/github-oauth.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,qDAAuD;AACvD,6CAA8C;AAC9C,kEAAyD;AAEzD,MAAa,cAAc;CAS1B;AARC;IAAC,IAAA,4BAAU,GAAE;IACZ,IAAA,qBAAW,GAAE;8BACR,wBAAU;4CAAC;AAEjB;IAAC,IAAA,4BAAU,GAAE;IACZ,IAAA,0BAAQ,GAAE;IACV,IAAA,qBAAW,GAAE;;mDACM;AARtB,wCASC"}
