@@ -7,6 +7,7 @@ import { RepoModule } from './repo/repo.module';
 import { AuthModule } from './auth/jwt/auth.module';
 import { TaskModule } from './task/task.module';
 import { UploadModule } from './upload/upload.module';
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UploadModule } from './upload/upload.module';
     UserModule,
     RepoModule,
     TaskModule,
+    ProjectModule,
     UploadModule,
   ],
   controllers: [],
