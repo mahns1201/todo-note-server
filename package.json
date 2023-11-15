@@ -36,6 +36,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "mysql2": "^3.6.0",
+    "octokit": "^3.1.1",
     "passport": "^0.6.0",
     "passport-github": "^1.1.0",
     "reflect-metadata": "^0.1.13",
