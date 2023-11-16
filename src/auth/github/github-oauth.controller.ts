@@ -3,7 +3,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param,
+  Query,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -14,7 +14,7 @@ import { GithubOauthService } from './github-oauth.service';
 export class GithubOauthController {
   constructor(private githubOauthService: GithubOauthService) {}
 
-  @Get('login')
+  @Get('url')
   @HttpCode(HttpStatus.FOUND)
   @ApiOperation({
     summary: '깃허브 oauth 로그인 url 요청',
@@ -26,16 +26,16 @@ export class GithubOauthController {
     return result;
   }
 
-  @Get(':code')
+  @Get('callback')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: '깃허브 oauth 로그인 authorize',
     description:
       '깃허브 oauth 로그인에 대해 지급된 code로 authorize를 수행하고 결과로 jwt 토큰을 발행한다.',
   })
-  async getAccessToken(@Param() param) {
+  async getAccessToken(@Query() query) {
     const tokenData = await this.githubOauthService.getGithubAccessToken(
-      param.code,
+      query.code,
     );
 
     // token validation check가 실패해도 status 200으로 떨어지고 token.data.error에 값을 담아준다.
