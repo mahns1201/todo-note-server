@@ -4,10 +4,9 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Logger,
   Post,
+  Query,
   Request,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -57,13 +56,14 @@ export class RepoController {
     description: '유저 레포지토리 리스트 조회에 실패했습니다.',
   })
   async getReposFromGithub(@Request() request) {
-    const { email } = request.user;
+    const { email, username } = request.user;
     const {
       item: { githubAccessToken },
     } = await this.userService.findUser({ email });
 
     const { items } = await this.repoService.getReposFromGithub(
       githubAccessToken,
+      username,
     );
     const httpStatus = !items
       ? HttpStatus.INTERNAL_SERVER_ERROR
@@ -128,49 +128,49 @@ export class RepoController {
   // }
 
   // sync-repos 전체 repo 동기화
-  @Post('github/sync')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({
-    summary: '유저 레포지토리 동기화',
-    description: '유저의 이메일로 레포지토리를 조회하여 db를 동기화 합니다',
-  })
-  async syncRepos(@Request() request) {
-    const { id: userId, email } = request.user;
+  // @Post('github/sync')
+  // @HttpCode(HttpStatus.CREATED)
+  // @ApiOperation({
+  //   summary: '유저 레포지토리 동기화',
+  //   description: '유저의 이메일로 레포지토리를 조회하여 db를 동기화 합니다',
+  // })
+  // async syncRepos(@Request() request) {
+  //   const { id: userId, email } = request.user;
 
-    // param: user-email
-    // userService에서 user를 찾아서 branch list를 받고 전체를 동기화
-    const {
-      item: { githubAccessToken },
-    } = await this.userService.findUser({ email });
+  //   // param: user-email
+  //   // userService에서 user를 찾아서 branch list를 받고 전체를 동기화
+  //   const {
+  //     item: { githubAccessToken },
+  //   } = await this.userService.findUser({ email });
 
-    if (!githubAccessToken) {
-      Logger.error(`${email} github accessToken이 없습니다.`);
-      throw new UnauthorizedException();
-    }
+  //   if (!githubAccessToken) {
+  //     Logger.error(`${email} github accessToken이 없습니다.`);
+  //     throw new UnauthorizedException();
+  //   }
 
-    const { items: userGithubRepos } =
-      await this.repoService.getReposFromGithub(githubAccessToken);
+  //   const { items: userGithubRepos } =
+  //     await this.repoService.getReposFromGithub(githubAccessToken);
 
-    const { items: userRepoItems } = await this.repoService.findUserRepos(
-      userId,
-    );
-    const [userRepos] = userRepoItems;
+  //   const { items: userRepoItems } = await this.repoService.findUserRepos(
+  //     userId,
+  //   );
+  //   const [userRepos] = userRepoItems;
 
-    const {
-      item: { syncCount },
-    } = await this.repoService.syncUserRepos(
-      userId,
-      userGithubRepos,
-      userRepos,
-    );
+  //   const {
+  //     item: { syncCount },
+  //   } = await this.repoService.syncUserRepos(
+  //     userId,
+  //     userGithubRepos,
+  //     userRepos,
+  //   );
 
-    const message = syncCount
-      ? `레포지토리 ${syncCount}개가 성공적으로 동기화 되었습니다.`
-      : '레포지토리 동기화 상태가 최신입니다.';
-    const httpStatus = syncCount ? HttpStatus.CREATED : HttpStatus.OK;
+  //   const message = syncCount
+  //     ? `레포지토리 ${syncCount}개가 성공적으로 동기화 되었습니다.`
+  //     : '레포지토리 동기화 상태가 최신입니다.';
+  //   const httpStatus = syncCount ? HttpStatus.CREATED : HttpStatus.OK;
 
-    return { message, httpStatus };
-  }
+  //   return { message, httpStatus };
+  // }
 
   // TODO sync-branch param: repoName (단일 only)
   @Post('github/sync/branch')

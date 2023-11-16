@@ -6,6 +6,7 @@ import { ProjectEntity } from './entity/project.entity';
 import { RepoEntity } from 'src/repo/entity/repo.entity';
 import { ProjectService } from './project.service';
 import { ProjectController } from './project.controller';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { ProjectController } from './project.controller';
     HttpModule,
   ],
   controllers: [ProjectController],
-  providers: [ProjectService],
+  providers: [ProjectService, UserService],
 })
 export class ProjectModule {}
