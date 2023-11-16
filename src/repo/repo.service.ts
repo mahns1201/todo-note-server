@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { RepoEntity } from './entity/repo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RepoBranchEntity } from './entity/repo-branch.entity';
+import { Octokit } from 'octokit';
 
 @Injectable()
 export class RepoService {
@@ -135,27 +136,22 @@ export class RepoService {
     return result;
   }
 
-  async getReposFromGithub(githubAccessToken) {
-    const requestHeaders = {
-      'Content-Type': REQUEST_INFO.GITHUB.CONTENT_TYPE,
-      'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
-      Authorization: `Bearer ${githubAccessToken}`,
-    };
+  async getReposFromGithub(githubAccessToken, username) {
+    const octokit = new Octokit({
+      auth: githubAccessToken,
+    });
 
-    try {
-      const observable = this.httpService
-        .get(`${REQUEST_INFO.GITHUB.PREFIX}/user/repos`, {
-          headers: requestHeaders,
-        })
-        .pipe(map((res) => res.data));
+    const { data: items } = await octokit.request(
+      'GET /users/{username}/repos',
+      {
+        username,
+        headers: {
+          'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
+        },
+      },
+    );
 
-      const items = await lastValueFrom(observable);
-
-      return { items };
-    } catch (error) {
-      Logger.error(`[RepoService][getRepos] message: ${error.message}`);
-      return { items: null };
-    }
+    return { items };
   }
 
   async getRepoFromGithub(githubAccessToken, owner, repo, branch) {
