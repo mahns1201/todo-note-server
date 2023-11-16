@@ -50,7 +50,7 @@ export class GithubOauthController {
       githubAccessToken,
     );
 
-    const result = { item: accessToken };
+    const result = { item: { accessToken } };
 
     return result;
   }
