@@ -65,8 +65,6 @@ export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
       throw new UnauthorizedException();
     }
 
-    console.log('!');
-
     const { access_token: accessToken } = await this.authService.signIn(email);
 
     return { user, accessToken } || { createdUser, accessToken };
