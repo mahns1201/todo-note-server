@@ -6,7 +6,7 @@ import {
   Query,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { GithubOauthService } from './github-oauth.service';
 
 @Controller('auth/github')
@@ -15,7 +15,7 @@ export class GithubOauthController {
   constructor(private githubOauthService: GithubOauthService) {}
 
   @Get('url')
-  @HttpCode(HttpStatus.FOUND)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: '깃허브 oauth 로그인 url 요청',
     description: '깃허브 oauth 로그인 url을 리턴한다.',
@@ -28,6 +28,10 @@ export class GithubOauthController {
 
   @Get('callback')
   @HttpCode(HttpStatus.OK)
+  @ApiQuery({
+    name: 'code',
+    type: String,
+  })
   @ApiOperation({
     summary: '깃허브 oauth 로그인 authorize',
     description:
