@@ -44,6 +44,19 @@ export class UserService {
     return { item: result };
   }
 
+  async findOne(id) {
+    const result = await this.userRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    return result;
+  }
+
+  /**
+   * @deprecated
+   */
   async findUser(
     input: InputFindUserDto,
   ): Promise<ServiceResultDto<UserEntity>> {
@@ -101,13 +114,13 @@ export class UserService {
 
     return result;
   }
-
-  // async findAll(): Promise<UserEntity[]> {
-  //   return this.userRepository.find();
-  // }
-
-  // async remove(id: number): Promise<number> {
-  //   await this.userRepository.delete(id);
-  //   return id;
-  // }
 }
+
+// async findAll(): Promise<UserEntity[]> {
+//   return this.userRepository.find();
+// }
+
+// async remove(id: number): Promise<number> {
+//   await this.userRepository.delete(id);
+//   return id;
+// }

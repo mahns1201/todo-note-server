@@ -1,6 +1,4 @@
-import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
-import { lastValueFrom, map } from 'rxjs';
 import { REQUEST_INFO } from 'src/common/request-url';
 import { Repository } from 'typeorm';
 import { RepoEntity } from './entity/repo.entity';
@@ -16,21 +14,29 @@ export class RepoService {
 
     @InjectRepository(RepoBranchEntity)
     private repoBranchRepository: Repository<RepoBranchEntity>,
-
-    private httpService: HttpService,
   ) {}
 
-  async findUserRepos(userId) {
-    const userRepos = await this.repoRepository.findAndCount({
+  // ********** repo **********
+  async findRepo(repoId) {
+    const result = await this.repoRepository.findOne({
+      where: {
+        id: repoId,
+      },
+    });
+
+    return result;
+  }
+  async findReposByUserId(userId) {
+    const result = await this.repoRepository.findAndCount({
       where: {
         user: userId,
       },
     });
 
-    return { items: userRepos };
+    return result;
   }
 
-  async findUserRepo(userId, repoName) {
+  async findRepoByUserIdAndRepoName(userId, repoName) {
     const [userRepo] = await this.repoRepository.find({
       where: {
         user: userId,
@@ -38,17 +44,29 @@ export class RepoService {
       },
     });
 
-    return { item: userRepo };
+    return userRepo;
   }
 
-  async findRepoBranches(repoId) {
-    const repoBranches = await this.repoBranchRepository.find({
+  // ********** repoBranch **********
+
+  async findRepoBranch(repoBranchId) {
+    const result = await this.repoBranchRepository.findOne({
+      where: {
+        id: repoBranchId,
+      },
+    });
+
+    return result;
+  }
+
+  async findRepoBranchesByRepoId(repoId) {
+    const result = await this.repoBranchRepository.find({
       where: {
         repo: repoId,
       },
     });
 
-    return { items: repoBranches };
+    return result;
   }
 
   // TODO sync 고도화
@@ -136,12 +154,12 @@ export class RepoService {
     return result;
   }
 
-  async getReposFromGithub(githubAccessToken, username) {
+  async getRepoListFromGithub(githubAccessToken, username) {
     const octokit = new Octokit({
       auth: githubAccessToken,
     });
 
-    const { data: items } = await octokit.request(
+    const { data: result } = await octokit.request(
       'GET /users/{username}/repos',
       {
         username,
@@ -151,33 +169,45 @@ export class RepoService {
       },
     );
 
-    return { items };
+    return result;
   }
 
-  async getRepoFromGithub(githubAccessToken, owner, repo, branch) {
-    const requestHeaders = {
-      'Content-Type': REQUEST_INFO.GITHUB.CONTENT_TYPE,
-      'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
-      Authorization: `Bearer ${githubAccessToken}`,
-    };
+  async getRepoFromGithub(githubAccessToken, owner, repo) {
+    const octokit = new Octokit({
+      auth: githubAccessToken,
+    });
 
-    try {
-      let requestUrl = `${REQUEST_INFO.GITHUB.PREFIX}/repos/${owner}/${repo}`;
-      branch ? (requestUrl += '/branches') : requestUrl;
+    const { data: result } = await octokit.request(
+      'GET /repos/{owner}/{repo}',
+      {
+        owner,
+        repo,
+        headers: {
+          'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
+        },
+      },
+    );
 
-      const observable = this.httpService
-        .get(requestUrl, {
-          headers: requestHeaders,
-        })
-        .pipe(map((res) => res.data));
+    return result;
+  }
 
-      const item = await lastValueFrom(observable);
+  async getRepoBranchesFromGithub(githubAccessToken, owner, repo) {
+    const octokit = new Octokit({
+      auth: githubAccessToken,
+    });
 
-      return { item };
-    } catch (error) {
-      Logger.error(`[RepoService][getRepo] message: ${error.message}`);
-      return { item: null };
-    }
+    const { data: result } = await octokit.request(
+      'GET /repos/{owner}/{repo}/branches',
+      {
+        owner,
+        repo,
+        headers: {
+          'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
+        },
+      },
+    );
+
+    return result;
   }
 
   // TODO updateRepo

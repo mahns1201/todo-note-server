@@ -1,4 +1,3 @@
-import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entity/user.entity';
@@ -11,7 +10,6 @@ import { UserService } from 'src/user/user.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([RepoEntity, RepoBranchEntity, UserEntity]),
-    HttpModule,
   ],
   controllers: [RepoController],
   providers: [RepoService, UserService],

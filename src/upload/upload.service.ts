@@ -39,6 +39,7 @@ export class UploadService {
       return { s3Response, originalname, mimetype, encoding };
     } catch (error) {
       Logger.error(error.message);
+      throw new Error(error);
     }
   }
 

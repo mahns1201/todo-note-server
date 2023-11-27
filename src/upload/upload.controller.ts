@@ -1,8 +1,8 @@
 import {
-  Body,
   Controller,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Request,
   UploadedFile,
@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/jwt/auth.guard';
 
 @Controller()
@@ -20,8 +20,16 @@ import { AuthGuard } from 'src/auth/jwt/auth.guard';
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
-  @Post('upload')
+  @Post('upload/task/:id')
   @HttpCode(HttpStatus.CREATED)
+  @ApiHeader({
+    name: 'JWT',
+    description: 'Bearer JWT 토큰을 해더에 담아서 요청',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'taskId',
+  })
   @ApiOperation({
     summary: '업로드 생성',
     description: '파일을 s3에 업로드하고 upload db를 생성합니다.',
@@ -30,11 +38,10 @@ export class UploadController {
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Request() request,
-    @Body() input,
+    @Param() param,
   ) {
     const { id: userId } = request.user;
-
-    const { taskId } = input;
+    const { id: taskId } = param;
     const {
       s3Response: { Location: url },
       originalname,
