@@ -22,6 +22,7 @@ export class ProjectService {
     const query = `query ($owner: String!, $pV2Number: Int!) {
       user(login: $owner) {
         projectsV2(first: $pV2Number) {
+          totalCount
           nodes {
             id
             title
@@ -46,7 +47,7 @@ export class ProjectService {
     return { items };
   }
 
-  async getProjectFromGithub(githubAccessToken, username) {
+  async getProjectFromGithub(githubAccessToken, username, pV2Number) {
     const octokit = new Octokit({
       auth: githubAccessToken,
     });
@@ -55,9 +56,24 @@ export class ProjectService {
       user(login: $owner) {
         projectV2(number: $pV2Number) {
           id
+          title
+          number
+          url
         }
       }
-      }`;
+    }`;
+
+    // projectV2
+    // field(name:"Status"){
+    //   __typename
+    //   ... on ProjectV2SingleSelectField{
+    //   id
+    //   options{
+    //     id
+    //     name
+    //   }
+    //   }
+    // }
 
     const item = await octokit.graphql<{
       user: {
@@ -65,12 +81,8 @@ export class ProjectService {
           id: string;
         };
       };
-    }>(query, { owner: username, pV2Number: 1 });
+    }>(query, { owner: username, pV2Number });
 
     return { item };
   }
 }
-
-// import { Octokit } from "octokit";
-// const octokit = new Octokit({ auth: "Here is your tokenTOKENtoken" });
-// getSomeProjectV2Data("LangLangBart", 5)

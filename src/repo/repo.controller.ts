@@ -36,8 +36,9 @@ export class RepoController {
   })
   async findUserRepos(@Request() request) {
     const { id: userId } = request.user;
-    const userRepos = await this.repoService.findReposByUserId(userId);
-
+    const [userRepos, totalCount] = await this.repoService.findReposByUserId(
+      userId,
+    );
     const httpStatus = !userRepos ? HttpStatus.NOT_FOUND : HttpStatus.OK;
     const message = !userRepos
       ? '유저의 레포지토리를 찾을 수 없습니다.'
@@ -46,7 +47,7 @@ export class RepoController {
     return {
       message,
       httpStatus,
-      items: userRepos,
+      items: { userRepos, totalCount },
     };
   }
 
@@ -110,8 +111,8 @@ export class RepoController {
   })
   async syncRepos(@Request() request) {
     const { id: userId, username, email } = request.user;
-    const { githubAccessToken } = await this.userService.findOne(userId);
-
+    const user = await this.userService.findOne(userId);
+    const { githubAccessToken } = user;
     if (!githubAccessToken) {
       Logger.error(`유저 [${email}]의 github accessToken이 없습니다.`);
       throw new UnauthorizedException();
@@ -122,12 +123,12 @@ export class RepoController {
       username,
     );
 
-    const [userRepos] = await this.repoService.findReposByUserId(userId);
+    const [userRepos] = await this.repoService.findReposByUserId(user);
 
     const {
       item: { syncCount },
     } = await this.repoService.syncUserRepos(
-      userId,
+      user,
       githubRepositories,
       userRepos,
     );

@@ -1,4 +1,4 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Request, UseGuards } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/jwt/auth.guard';
@@ -31,9 +31,10 @@ export class ProjectController {
     };
   }
 
-  @Get('/github')
-  async getProjectFromGithub(@Request() request) {
+  @Get('/github/:pV2Number')
+  async getProjectFromGithub(@Request() request, @Param() param) {
     const { email, username } = request.user;
+    const { pV2Number } = param;
 
     const {
       item: { githubAccessToken },
@@ -42,6 +43,7 @@ export class ProjectController {
     const { item } = await this.projectService.getProjectFromGithub(
       githubAccessToken,
       username,
+      Number(pV2Number),
     );
 
     return {

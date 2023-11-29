@@ -26,10 +26,10 @@ export class RepoService {
 
     return result;
   }
-  async findReposByUserId(userId) {
+  async findReposByUserId(user) {
     const result = await this.repoRepository.findAndCount({
       where: {
-        user: userId,
+        user,
       },
     });
 
@@ -72,9 +72,9 @@ export class RepoService {
   // TODO sync 고도화
   // 1. 삭제된 레포지토리 deletedAt: new Date() 추가
   // 2. ...
-  async syncUserRepo(userId, userRepo) {
+  async syncUserRepo(user, userRepo) {
     const newUserRepo = this.repoRepository.create({
-      user: userId,
+      user,
       repoName: userRepo,
     });
 
@@ -155,6 +155,7 @@ export class RepoService {
   }
 
   async getRepoListFromGithub(githubAccessToken, username) {
+    console.log(githubAccessToken, username);
     const octokit = new Octokit({
       auth: githubAccessToken,
     });
