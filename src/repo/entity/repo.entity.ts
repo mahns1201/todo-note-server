@@ -14,4 +14,22 @@ export class RepoEntity extends BaseEntity {
   @Column()
   @IsNotEmpty()
   repoName: string;
+
+  @Column({ nullable: true })
+  language: string;
+
+  @Column({ nullable: true })
+  imageUrl: string;
+
+  @Column({ nullable: true })
+  defaultBranch: string;
+
+  @Column({ nullable: true })
+  isPrivate: boolean;
+
+  @Column({ nullable: true })
+  htmlUrl: string;
+
+  @Column({ nullable: true })
+  description: string;
 }

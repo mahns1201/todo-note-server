@@ -17,4 +17,34 @@ export class RepoDto extends BaseTimeDto {
   @IsOptional()
   @IsString()
   repoName: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  language: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  imageUrl: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  defaultBranch: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  isPrivate: boolean;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  htmlUrl: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  description: string;
 }
