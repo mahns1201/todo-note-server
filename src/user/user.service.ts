@@ -66,21 +66,9 @@ export class UserService {
     input: InputFindUserDto,
   ): Promise<ServiceResultDto<string>> {
     const { id } = input;
-    const { githubAccessToken } = await this.userRepository.findOne({
-      where: {
-        id,
-        deletedAt: null,
-      },
-    });
+    const { item: user } = await this.findOne({ id });
 
-    if (!githubAccessToken) {
-      Logger.error(`유저 ${id}의 githubAccessToken을 얻을 수 없습니다.`);
-      throw new UnauthorizedException(
-        `유저 ${id}의 githubAccessToken을 얻을 수 없습니다.`,
-      );
-    }
-
-    return { item: githubAccessToken };
+    return { item: user?.githubAccessToken };
   }
 
   /**
