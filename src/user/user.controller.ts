@@ -3,7 +3,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -62,10 +61,6 @@ export class UserController {
     const { item: user } = await this.userService.findOne({ id });
     // eslint-disable-next-line
     const { password, githubAccessToken, ...outputUser } = user;
-
-    if (!user) {
-      throw new NotFoundException('유저를 찾을 수 없습니다.');
-    }
 
     return {
       httpStatus: HttpStatus.OK,

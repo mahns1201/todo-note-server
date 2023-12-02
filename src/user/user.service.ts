@@ -55,6 +55,10 @@ export class UserService {
       },
     });
 
+    if (!user) {
+      throw new UnauthorizedException(`id: ${id} 유저를 찾을 수 없습니다.`);
+    }
+
     return { item: user };
   }
 
