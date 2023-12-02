@@ -123,10 +123,8 @@ export class RepoController {
       username,
     );
 
-    const { items: userRepos } = await this.repoService.find({
+    const { items: userRepos } = await this.repoService.findAll({
       id: userId,
-      page: null,
-      limit: null,
     });
 
     const {

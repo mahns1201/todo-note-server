@@ -5,6 +5,7 @@ import { RepoDto } from './repo.dto';
 
 export class OutputReposDto extends OmitType(RepoDto, ['user'] as const) {}
 
+export class InputFindAllReposDto extends PickType(UserDto, ['id'] as const) {}
 export class InputFindReposDto extends PickType(UserDto, ['id'] as const) {
   page: number;
   limit: number;

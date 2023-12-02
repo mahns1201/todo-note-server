@@ -5,8 +5,11 @@ import { RepoEntity } from './entity/repo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RepoBranchEntity } from './entity/repo-branch.entity';
 import { Octokit } from 'octokit';
-import { InputFindReposDto } from './dto/find-repo.dto';
-import { ServicePagingResultDto } from 'src/common/common.dto';
+import { InputFindAllReposDto, InputFindReposDto } from './dto/find-repo.dto';
+import {
+  ServicePagingResultDto,
+  ServiceResultDto,
+} from 'src/common/common.dto';
 
 @Injectable()
 export class RepoService {
@@ -35,19 +38,11 @@ export class RepoService {
   async find(
     input: InputFindReposDto,
   ): Promise<ServicePagingResultDto<RepoEntity[]>> {
-    const { id: userId, page = null, limit = null } = input;
+    const { id: userId, page, limit } = input;
 
-    let queryBuilder = this.repoRepository
+    const queryBuilder = this.repoRepository
       .createQueryBuilder('repo')
       .where('userId = :userId', { userId });
-
-    if (page !== null) {
-      queryBuilder = queryBuilder.offset((page - 1) * limit);
-    }
-
-    if (limit !== null) {
-      queryBuilder = queryBuilder.limit(limit);
-    }
 
     const [repos, totalCount] = await queryBuilder.getManyAndCount();
 
@@ -58,6 +53,22 @@ export class RepoService {
     return {
       items: repos,
       totalCount,
+    };
+  }
+
+  async findAll(
+    input: InputFindAllReposDto,
+  ): Promise<ServiceResultDto<RepoEntity[]>> {
+    const { id: userId } = input;
+
+    const queryBuilder = this.repoRepository
+      .createQueryBuilder('repo')
+      .where('userId = :userId', { userId });
+
+    const repos = await queryBuilder.getMany();
+
+    return {
+      items: repos,
     };
   }
 
