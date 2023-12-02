@@ -42,7 +42,9 @@ export class RepoService {
 
     const queryBuilder = this.repoRepository
       .createQueryBuilder('repo')
-      .where('userId = :userId', { userId });
+      .where('userId = :userId', { userId })
+      .offset((page - 1) * limit)
+      .limit(limit);
 
     const [repos, totalCount] = await queryBuilder.getManyAndCount();
 
