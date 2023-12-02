@@ -3,42 +3,75 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Request,
+  NotFoundException,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { OutputFindUserDto } from './dto/find-user.dto';
 import { AuthGuard } from 'src/auth/jwt/auth.guard';
+import { ErrorResponseDto } from 'src/common/common.dto';
+import { User } from 'src/decorator/user.decorator';
+import { jwtUserT } from 'src/constant/jwt.constant';
 
 @Controller('user')
-@ApiTags('user')
+@ApiBearerAuth('accessToken')
+@ApiTags('USER')
 export class UserController {
   constructor(private userService: UserService) {}
-
   @Get()
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiHeader({
-    name: 'JWT',
-    description: 'Bearer JWT 토큰을 해더에 담아서 요청',
+  @ApiOperation({ summary: 'JWT 토큰으로 유저를 조회한다.' })
+  @ApiOkResponse({
+    type: OutputFindUserDto,
+    status: HttpStatus.OK,
   })
-  @ApiOperation({
-    summary: '유저 조회',
-    description: '유저를 id로 조회한다.',
+  @ApiBadRequestResponse({
+    type: ErrorResponseDto,
+    status: HttpStatus.BAD_REQUEST,
   })
-  async findOne(@Request() request): Promise<OutputFindUserDto> {
-    const { id: userId } = request.user;
+  @ApiUnauthorizedResponse({
+    type: ErrorResponseDto,
+    status: HttpStatus.UNAUTHORIZED,
+  })
+  @ApiNotFoundResponse({
+    type: ErrorResponseDto,
+    status: HttpStatus.NOT_FOUND,
+  })
+  @ApiNotFoundResponse({
+    type: ErrorResponseDto,
+    status: HttpStatus.NOT_FOUND,
+  })
+  @ApiInternalServerErrorResponse({
+    type: ErrorResponseDto,
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  })
+  async findOne(@User() jUser: jwtUserT): Promise<OutputFindUserDto> {
+    const { id } = jUser;
 
-    const user = await this.userService.findOne(userId);
-    const httpStatus = !user ? HttpStatus.NOT_FOUND : HttpStatus.OK;
-    const message = !user
-      ? '유저를 찾을 수 없습니다.'
-      : '유저를 성공적으로 찾았습니다.';
+    const { item: user } = await this.userService.findOne({ id });
+    // eslint-disable-next-line
+    const { password, githubAccessToken, ...outputUser } = user;
 
-    const result = { item: user, httpStatus, message };
+    if (!user) {
+      throw new NotFoundException('유저를 찾을 수 없습니다.');
+    }
 
-    return result;
+    return {
+      httpStatus: HttpStatus.OK,
+      message: '유저를 성공적으로 찾았습니다',
+      item: outputUser,
+    };
   }
 }
 
@@ -61,7 +94,7 @@ export class UserController {
 // async create(
 //   @Body() input: InputCreateUserDto,
 // ): Promise<OutputCreateUserDto> {
-//   const { item } = await this.userService.createUser(input);
+//   const { item } = await this.userService.create(input);
 //   const httpStatus = !item
 //     ? HttpStatus.INTERNAL_SERVER_ERROR
 //     : HttpStatus.CREATED;

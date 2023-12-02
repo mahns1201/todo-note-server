@@ -1,10 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { REQUEST_INFO } from 'src/common/request-url';
 import { Repository } from 'typeorm';
 import { RepoEntity } from './entity/repo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RepoBranchEntity } from './entity/repo-branch.entity';
 import { Octokit } from 'octokit';
+import { InputFindReposDto } from './dto/find-repo.dto';
+import { ServicePagingResultDto } from 'src/common/common.dto';
 
 @Injectable()
 export class RepoService {
@@ -17,6 +19,48 @@ export class RepoService {
   ) {}
 
   // ********** repo **********
+  async create(input) {
+    const { user, repoName } = input;
+
+    const newRepo = this.repoRepository.create({
+      user,
+      repoName,
+    });
+
+    const savedRepo = await this.repoRepository.save(newRepo);
+
+    return { item: savedRepo };
+  }
+
+  async find(
+    input: InputFindReposDto,
+  ): Promise<ServicePagingResultDto<RepoEntity[]>> {
+    const { id: userId, page = null, limit = null } = input;
+
+    let queryBuilder = this.repoRepository
+      .createQueryBuilder('repo')
+      .where('userId = :userId', { userId });
+
+    if (page !== null) {
+      queryBuilder = queryBuilder.offset((page - 1) * limit);
+    }
+
+    if (limit !== null) {
+      queryBuilder = queryBuilder.limit(limit);
+    }
+
+    const [repos, totalCount] = await queryBuilder.getManyAndCount();
+
+    if (!repos.length) {
+      throw new NotFoundException(`${page}p에 발견된 레포지토리가 없습니다.`);
+    }
+
+    return {
+      items: repos,
+      totalCount,
+    };
+  }
+
   async findRepo(repoId) {
     const result = await this.repoRepository.findOne({
       where: {
@@ -37,14 +81,21 @@ export class RepoService {
   }
 
   async findRepoByUserIdAndRepoName(userId, repoName) {
-    const [userRepo] = await this.repoRepository.find({
-      where: {
-        user: userId,
-        repoName,
-      },
-    });
+    const queryBuilder = this.repoRepository
+      .createQueryBuilder('repo')
+      .where('userId = :userId & repoName = :repoName', { userId, repoName });
 
-    return userRepo;
+    const userRepo = await queryBuilder.getOne();
+
+    if (!userRepo) {
+      throw new NotFoundException(
+        `${repoName}으로 발견된 레포지토리가 없습니다.`,
+      );
+    }
+
+    return {
+      item: userRepo,
+    };
   }
 
   // ********** repoBranch **********
@@ -96,6 +147,7 @@ export class RepoService {
 
   async syncUserRepos(userId, userGithubRepos, userRepos) {
     let syncCount = 0;
+    const syncRepoNames = [];
 
     await Promise.all(
       userGithubRepos.map(async (userGithubRepo) => {
@@ -112,19 +164,19 @@ export class RepoService {
           const { item } = await this.syncUserRepo(userId, userGithubRepo.name);
           if (item) {
             syncCount++;
+            syncRepoNames.push(userGithubRepo.name);
             Logger.log(`${userGithubRepo.name} is synchronized`);
           }
         }
       }),
     );
 
-    const result = { item: { syncCount } };
-
-    return result;
+    return { item: { syncRepoNames, syncCount } };
   }
 
   async syncRepoBranches(repoId, githubRepoBranches, repoBranches) {
     let syncCount = 0;
+    const syncBranchNames = [];
 
     await Promise.all(
       githubRepoBranches.map(async (githubRepoBranch) => {
@@ -143,19 +195,17 @@ export class RepoService {
           );
           if (item) {
             syncCount++;
+            syncBranchNames.push(githubRepoBranch.name);
             Logger.log(`${githubRepoBranch.name} is synchronized`);
           }
         }
       }),
     );
 
-    const result = { item: { syncCount } };
-
-    return result;
+    return { item: { syncBranchNames, syncCount } };
   }
 
   async getRepoListFromGithub(githubAccessToken, username) {
-    console.log(githubAccessToken, username);
     const octokit = new Octokit({
       auth: githubAccessToken,
     });

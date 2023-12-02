@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
 import { UserEntity } from './entity/user.entity';
@@ -16,7 +16,7 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async createUser(
+  async create(
     input: InputCreateUserDto,
   ): Promise<ServiceResultDto<UserEntity>> {
     const {
@@ -37,29 +37,52 @@ export class UserService {
       githubAccessToken,
     });
 
-    const result = await this.userRepository.save(newUser);
+    const savedUser = await this.userRepository.save(newUser);
 
     Logger.log(`유저: ${email} 회원가입 완료`);
 
-    return { item: result };
+    return { item: savedUser };
   }
 
-  async findOne(id) {
-    const result = await this.userRepository.findOne({
+  async findOne(
+    input: InputFindUserDto,
+  ): Promise<ServiceResultDto<UserEntity>> {
+    const { id } = input;
+    const user = await this.userRepository.findOne({
       where: {
         id,
+        deletedAt: null,
       },
     });
 
-    return result;
+    return { item: user };
+  }
+
+  async getGithubAccessToken(
+    input: InputFindUserDto,
+  ): Promise<ServiceResultDto<string>> {
+    const { id } = input;
+    const { githubAccessToken } = await this.userRepository.findOne({
+      where: {
+        id,
+        deletedAt: null,
+      },
+    });
+
+    if (!githubAccessToken) {
+      Logger.error(`유저 ${id}의 githubAccessToken을 얻을 수 없습니다.`);
+      throw new UnauthorizedException(
+        `유저 ${id}의 githubAccessToken을 얻을 수 없습니다.`,
+      );
+    }
+
+    return { item: githubAccessToken };
   }
 
   /**
    * @deprecated
    */
-  async findUser(
-    input: InputFindUserDto,
-  ): Promise<ServiceResultDto<UserEntity>> {
+  async findUser(input): Promise<ServiceResultDto<UserEntity>> {
     const { email } = input;
     const user = await this.userRepository.findOne({
       where: {

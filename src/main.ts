@@ -23,6 +23,17 @@ async function bootstrap() {
     .setDescription('Dev-To-Do-Notes API 문서')
     .setVersion('1.0')
     .addTag('dev-to-do-notes')
+    .addBearerAuth(
+      {
+        description: `accessToken`,
+        name: 'authorization',
+        bearerFormat: 'Bearer',
+        scheme: 'Bearer',
+        type: 'http',
+        in: 'Header',
+      },
+      'accessToken',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('토큰이 존재하지 않습니다.');
     }
 
     try {
@@ -27,7 +27,7 @@ export class AuthGuard implements CanActivate {
 
       request['user'] = payload;
     } catch (error) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('payload 객체 생성에 실패했습니다.');
     }
     return true;
   }

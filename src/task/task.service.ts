@@ -22,7 +22,7 @@ export class TaskService {
   async createOne(input) {
     const { userId, repoId, repoBranchId, title, content } = input;
 
-    const user = await this.userService.findOne(userId);
+    const { item: user } = await this.userService.findOne(userId);
     const repo = await this.repoService.findRepo(repoId);
     const repoBranch = await this.repoService.findRepoBranch(repoBranchId);
     const taskObj = { user, repo, repoBranch, title, content };

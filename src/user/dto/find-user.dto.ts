@@ -1,6 +1,14 @@
-import { SwaggerResponseDto } from 'src/common/common.dto';
+import { BaseResponseDto } from 'src/common/common.dto';
 import { UserDto } from './user.dto';
-import { PickType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
 
-export class InputFindUserDto extends PickType(UserDto, ['email'] as const) {}
-export class OutputFindUserDto extends SwaggerResponseDto<UserDto> {}
+class OutputUserDto extends OmitType(UserDto, [
+  'password',
+  'githubAccessToken',
+] as const) {}
+
+export class InputFindUserDto extends PickType(UserDto, ['id'] as const) {}
+export class OutputFindUserDto extends BaseResponseDto {
+  @ApiProperty()
+  item: OutputUserDto;
+}

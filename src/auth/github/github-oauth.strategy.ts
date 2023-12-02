@@ -32,7 +32,7 @@ export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
     // github oauth는 refreshToken을 제공하지 않는다.
     const { login: githubId, email, avatar_url } = profile._json;
 
-    const findUserInput: InputFindUserDto = { email };
+    const findUserInput = { email };
     const createUserInput: InputCreateUserDto = {
       email,
       githubId,
@@ -53,7 +53,7 @@ export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
     // TODO 1. 비밀번호 난수 생성 필요.
     let createdUser: UserEntity;
     if (!user) {
-      const { item } = await this.userService.createUser(createUserInput);
+      const { item } = await this.userService.create(createUserInput);
       createdUser = item;
     } else {
       await this.userService.updateGithubAccessToken(updateAccessTokenInput);
@@ -64,8 +64,6 @@ export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
     if (!user && !createdUser) {
       throw new UnauthorizedException();
     }
-
-    console.log('!');
 
     const { access_token: accessToken } = await this.authService.signIn(email);
 
