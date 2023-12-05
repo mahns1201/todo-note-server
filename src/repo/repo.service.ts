@@ -23,16 +23,33 @@ export class RepoService {
 
   // ********** repo **********
   async create(input) {
-    const { user, repoName } = input;
+    const { userId, repoName } = input;
 
     const newRepo = this.repoRepository.create({
-      user,
-      repoName,
+      user: userId,
+      ...input,
     });
 
     const savedRepo = await this.repoRepository.save(newRepo);
 
+    Logger.log(`유저 ${userId}, 레포지토리: ${repoName} 생성 완료`);
+
     return { item: savedRepo };
+  }
+
+  async createBranch(input) {
+    const { repoId, branchName } = input;
+
+    const newBranch = this.repoBranchRepository.create({
+      repo: repoId,
+      ...input,
+    });
+
+    const savedBranch = await this.repoBranchRepository.save(newBranch);
+
+    Logger.log(`브랜치 ${repoId}, 레포지토리: ${branchName} 생성 완료`);
+
+    return { item: savedBranch };
   }
 
   async find(
@@ -83,15 +100,6 @@ export class RepoService {
 
     return result;
   }
-  async findReposByUserId(user) {
-    const result = await this.repoRepository.findAndCount({
-      where: {
-        user,
-      },
-    });
-
-    return result;
-  }
 
   async findRepoByUserIdAndRepoName(userId, repoName) {
     const queryBuilder = this.repoRepository
@@ -136,17 +144,6 @@ export class RepoService {
   // TODO sync 고도화
   // 1. 삭제된 레포지토리 deletedAt: new Date() 추가
   // 2. ...
-  async syncUserRepo(user, userRepo) {
-    const newUserRepo = this.repoRepository.create({
-      user,
-      repoName: userRepo,
-    });
-
-    const result = await this.repoRepository.save(newUserRepo);
-
-    return { item: result };
-  }
-
   async syncRepoBranch(repoId, branchName) {
     const newRepoBranch = this.repoBranchRepository.create({
       repo: repoId,
@@ -174,7 +171,29 @@ export class RepoService {
         });
 
         if (sync) {
-          const { item } = await this.syncUserRepo(userId, userGithubRepo.name);
+          const {
+            name: repoName,
+            description,
+            language,
+            default_branch: defaultBranch,
+            owner: { avatar_url: ownerAvatarUrl },
+            html_url: htmlUrl,
+            private: isPrivate,
+            fork: isFork,
+          } = userGithubRepo;
+
+          const { item } = await this.create({
+            userId,
+            repoName,
+            description,
+            language,
+            defaultBranch,
+            ownerAvatarUrl,
+            htmlUrl,
+            isPrivate,
+            isFork,
+            synchronizedAt: new Date(),
+          });
           if (item) {
             syncCount++;
             syncRepoNames.push(userGithubRepo.name);
@@ -202,10 +221,11 @@ export class RepoService {
         });
 
         if (sync) {
-          const { item } = await this.syncRepoBranch(
+          const { name: branchName } = githubRepoBranch;
+          const { item } = await this.createBranch({
             repoId,
-            githubRepoBranch.name,
-          );
+            branchName,
+          });
           if (item) {
             syncCount++;
             syncBranchNames.push(githubRepoBranch.name);

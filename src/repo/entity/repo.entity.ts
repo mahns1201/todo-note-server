@@ -15,21 +15,27 @@ export class RepoEntity extends BaseEntity {
   @IsNotEmpty()
   repoName: string;
 
-  @Column({ nullable: true })
-  language: string;
+  @Column({ nullable: true, type: 'text' })
+  description: string;
 
   @Column({ nullable: true })
-  imageUrl: string;
+  language: string;
 
   @Column({ nullable: true })
   defaultBranch: string;
 
   @Column({ nullable: true })
-  isPrivate: boolean;
+  ownerAvatarUrl: string;
 
   @Column({ nullable: true })
   htmlUrl: string;
 
   @Column({ nullable: true })
-  description: string;
+  isPrivate: boolean;
+
+  @Column({ nullable: true })
+  isFork: boolean;
+
+  @Column({ nullable: true })
+  synchronizedAt: Date;
 }

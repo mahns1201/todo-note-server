@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsDate } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseTimeDto } from 'src/common/common.dto';
 
@@ -47,4 +47,9 @@ export class RepoDto extends BaseTimeDto {
   @IsOptional()
   @IsString()
   description: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsDate()
+  synchronizedAt: string;
 }

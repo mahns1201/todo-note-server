@@ -1,22 +1,17 @@
 import {
-  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
-  Logger,
   Post,
   Query,
-  Request,
   Res,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
-  ApiHeader,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -227,7 +222,7 @@ export class RepoController {
   //     username,
   //   );
 
-  //   const [userRepos] = await this.repoService.findReposByUserId(user);
+  //   const [userRepos] = await this.repoService.findReposByUserId(user); // 삭제됨
 
   //   const {
   //     item: { syncCount },
