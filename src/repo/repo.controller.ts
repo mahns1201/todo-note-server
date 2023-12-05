@@ -143,6 +143,10 @@ export class RepoController {
           repoName,
         );
 
+      if (!githubRepoBranches || !githubRepoBranches.length) {
+        continue;
+      }
+
       const {
         item: { id: repoId },
       } = await this.repoService.findRepoByUserIdAndRepoName(userId, repoName);

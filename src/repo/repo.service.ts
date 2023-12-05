@@ -104,7 +104,7 @@ export class RepoService {
   async findRepoByUserIdAndRepoName(userId, repoName) {
     const queryBuilder = this.repoRepository
       .createQueryBuilder('repo')
-      .where('userId = :userId & repoName = :repoName', { userId, repoName });
+      .where('userId = :userId AND repoName = :repoName', { userId, repoName });
 
     const userRepo = await queryBuilder.getOne();
 
@@ -243,15 +243,12 @@ export class RepoService {
       auth: githubAccessToken,
     });
 
-    const { data: result } = await octokit.request(
-      'GET /users/{username}/repos',
-      {
-        username,
-        headers: {
-          'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
-        },
+    const { data: result } = await octokit.request('GET /user/repos', {
+      username,
+      headers: {
+        'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
       },
-    );
+    });
 
     return result;
   }
@@ -280,18 +277,22 @@ export class RepoService {
       auth: githubAccessToken,
     });
 
-    const { data: result } = await octokit.request(
-      'GET /repos/{owner}/{repo}/branches',
-      {
-        owner,
-        repo,
-        headers: {
-          'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
+    try {
+      const { data: result } = await octokit.request(
+        'GET /repos/{owner}/{repo}/branches',
+        {
+          owner,
+          repo,
+          headers: {
+            'X-GitHub-Api-Version': REQUEST_INFO.GITHUB.API_VERSION,
+          },
         },
-      },
-    );
+      );
 
-    return result;
+      return result;
+    } catch (error) {
+      Logger.error(error);
+    }
   }
 
   // TODO updateRepo
