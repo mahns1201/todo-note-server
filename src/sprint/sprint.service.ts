@@ -19,10 +19,8 @@ export class SprintService {
 
   async create(
     input: InputCreateSprintDto,
-    repo: RepoEntity, // , //
+    repo: RepoEntity,
   ): Promise<ServiceResultDto<SprintEntity>> {
-    // const { repo } = input;
-
     const newSprint = this.sprintRepository.create({
       ...input,
       repo,
@@ -41,7 +39,9 @@ export class SprintService {
 
     const queryBuilder = this.sprintRepository
       .createQueryBuilder('sprint')
-      .where('userId = :userId', { userId })
+      .leftJoinAndSelect('sprint.user', 'user')
+      .leftJoinAndSelect('sprint.repo', 'repo')
+      .where('sprint.userId = :userId', { userId })
       .offset((page - 1) * limit)
       .limit(limit);
 

@@ -30,7 +30,6 @@ import { jwtUserT } from 'src/constant/jwt.constant';
 import { User } from 'src/decorator/user.decorator';
 import { RepoService } from 'src/repo/repo.service';
 import { ErrorResponseDto, PagingRequestDto } from 'src/common/common.dto';
-import { SprintDto } from './dto/sprint.dto';
 import { OutputFindSprintsDto } from './dto/find-sprint.dto';
 
 @Controller('sprint')
@@ -90,7 +89,7 @@ export class SprintController {
 
   @Get('/list')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: '유저의 레포지토리 리스트를 조회한다.' })
+  @ApiOperation({ summary: '유저의 스프린트 리스트를 조회한다.' })
   @ApiOkResponse({
     type: OutputFindSprintsDto,
     status: HttpStatus.OK,

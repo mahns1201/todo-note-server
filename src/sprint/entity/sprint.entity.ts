@@ -1,5 +1,11 @@
 import { BaseEntity } from 'src/common/common.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { RepoEntity } from 'src/repo/entity/repo.entity';
@@ -10,9 +16,11 @@ export class SprintEntity extends BaseEntity {
   id: number;
 
   @ManyToOne(() => UserEntity, (user) => user.id)
+  @JoinColumn({ name: 'userId' })
   user: UserEntity;
 
   @ManyToOne(() => RepoEntity, (repo) => repo.id)
+  @JoinColumn({ name: 'repoId' })
   repo: RepoEntity;
 
   @Column()
