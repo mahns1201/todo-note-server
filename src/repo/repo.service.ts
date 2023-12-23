@@ -5,7 +5,11 @@ import { RepoEntity } from './entity/repo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RepoBranchEntity } from './entity/repo-branch.entity';
 import { Octokit } from 'octokit';
-import { InputFindAllReposDto, InputFindReposDto } from './dto/find-repo.dto';
+import {
+  InputFindAllReposDto,
+  InputFindRepoDto,
+  InputFindReposDto,
+} from './dto/find-repo.dto';
 import {
   ServicePagingResultDto,
   ServiceResultDto,
@@ -91,6 +95,18 @@ export class RepoService {
     };
   }
 
+  async findOne(
+    input: InputFindRepoDto,
+  ): Promise<ServiceResultDto<RepoEntity>> {
+    const { id } = input;
+    const repo = await this.repoRepository.findOne({
+      where: { id },
+    });
+
+    return { item: repo };
+  }
+
+  /** @deprecated */
   async findRepo(repoId) {
     const result = await this.repoRepository.findOne({
       where: {

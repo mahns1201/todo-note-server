@@ -1,11 +1,11 @@
 import { BaseEntity } from 'src/common/common.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { RepoEntity } from 'src/repo/entity/repo.entity';
 
-@Entity({ name: 'project' })
-export class ProjectEntity extends BaseEntity {
+@Entity({ name: 'sprint' })
+export class SprintEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,7 +19,12 @@ export class ProjectEntity extends BaseEntity {
   @IsNotEmpty()
   title: string;
 
-  @Column()
-  @IsOptional()
-  content: string;
+  @Column({ nullable: true, type: 'text' })
+  description: string;
+
+  @Column({ nullable: true })
+  startAt: Date;
+
+  @Column({ nullable: true })
+  endAt: Date;
 }
