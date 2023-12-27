@@ -1,17 +1,16 @@
 import {
   Controller,
   Get,
+  Post,
   HttpCode,
   HttpStatus,
   Param,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { GithubService } from './github.service';
@@ -76,9 +75,24 @@ export class GithubController {
     };
   }
 
-  @Get('/milestones')
+  // @Post('repos')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({ summary: '유저의 깃허브 레포지토리를 생성한다.' })
+  // async createRepo(@User() user: jwtUserT) {
+  //   const { id, username } = user;
+  //   const { item: githubAccessToken } =
+  //     await this.userService.getGithubAccessToken({
+  //       id,
+  //     });
+
+  //   const input = { githubAccessToken, username, name };
+  //   const { item: createdRepo } = await this.githubService.createRepo(input);
+  //   return { item: createdRepo };
+  // }
+
+  @Get('milestones/:name')
   @HttpCode(HttpStatus.OK)
-  @ApiQuery({
+  @ApiParam({
     name: 'name',
     type: String,
     description: 'repoName',
@@ -86,9 +100,9 @@ export class GithubController {
   @ApiOperation({
     summary: '유저의 깃허브 특정 리포지토리의 마일스톤 리스트를 조회한다.',
   })
-  async findAllMilestones(@User() user: jwtUserT, @Query() query) {
+  async findAllMilestones(@User() user: jwtUserT, @Param() param) {
     const { id, username } = user;
-    const { name } = query;
+    const { name } = param;
     const { item: githubAccessToken } =
       await this.userService.getGithubAccessToken({
         id,
@@ -107,8 +121,8 @@ export class GithubController {
     };
   }
 
-  @Get('/milestones/:number')
-  @ApiQuery({
+  @Get('milestones/:repoName/:number')
+  @ApiParam({
     name: 'repoName',
     type: String,
     description: 'repoName',
@@ -122,14 +136,10 @@ export class GithubController {
   @ApiOperation({
     summary: '유저의 깃허브 특정 리포의 특정 마일스톤을 조회한다.',
   })
-  async findOneMilestone(
-    @User() user: jwtUserT,
-    @Query() query,
-    @Param() param,
-  ) {
+  async findOneMilestone(@User() user: jwtUserT, @Param() param) {
     const { id, username } = user;
-    const { name } = query;
-    const { number } = param;
+    const { repoName, number } = param;
+    console.log({ param });
     const { item: githubAccessToken } =
       await this.userService.getGithubAccessToken({
         id,
@@ -138,7 +148,7 @@ export class GithubController {
     const input = {
       githubAccessToken,
       username,
-      name,
+      repoName,
       number,
     };
     const { item: githubMilestone } = await this.githubService.findOneMilestone(
@@ -146,13 +156,13 @@ export class GithubController {
     );
     return {
       httpStatus: HttpStatus.OK,
-      message: `유저의 ${name} Repo의 ${number}번 Milestone을 성공적으로 조회했습니다`,
+      message: `유저의 ${repoName} Repo의 ${number}번 Milestone을 성공적으로 조회했습니다`,
       item: githubMilestone,
     };
   }
 
-  @Get('/issues')
-  @ApiQuery({
+  @Get('issues/:name')
+  @ApiParam({
     name: 'name',
     type: String,
     description: 'repoName',
@@ -161,8 +171,8 @@ export class GithubController {
   @ApiOperation({
     summary: '유저의 깃허브 특정 리포지토리의 이슈 리스트를 조회한다.',
   })
-  async findAllIssues(@User() user: jwtUserT, @Query() query) {
-    const { name } = query;
+  async findAllIssues(@User() user: jwtUserT, @Param() param) {
+    const { name } = param;
     const { id, username } = user;
     const { item: githubAccessToken } =
       await this.userService.getGithubAccessToken({
@@ -178,9 +188,9 @@ export class GithubController {
     };
   }
 
-  @Get('/issues/:number')
-  @ApiQuery({
-    name: 'name',
+  @Get('issues/:repoName/:number')
+  @ApiParam({
+    name: 'repoName',
     type: String,
     description: 'repoName',
   })
@@ -193,10 +203,9 @@ export class GithubController {
   @ApiOperation({
     summary: '유저의 깃허브 특정 리포지토리의 특정 이슈를 조회한다.',
   })
-  async findOneIssue(@User() user: jwtUserT, @Query() query, @Param() param) {
+  async findOneIssue(@User() user: jwtUserT, @Param() param) {
     const { id, username } = user;
-    const { name } = query;
-    const { number } = param;
+    const { repoName, number } = param;
 
     const { item: githubAccessToken } =
       await this.userService.getGithubAccessToken({
@@ -206,13 +215,13 @@ export class GithubController {
     const input = {
       githubAccessToken,
       username,
-      name,
+      repoName,
       number,
     };
     const { item: githubIssue } = await this.githubService.findOneIssue(input);
     return {
       httpStatus: HttpStatus.OK,
-      message: `유저의 ${name} 리포지토리의 Issues 리스트를 성공적으로 조회했습니다`,
+      message: `유저의 ${repoName} 리포지토리의 Issues 리스트를 성공적으로 조회했습니다`,
       item: githubIssue,
     };
   }

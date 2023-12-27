@@ -6,8 +6,6 @@ import { UserService } from 'src/user/user.service';
 
 async function callGitHubApi(endpoint: string, params: object, token: string) {
   try {
-    console.log({ endpoint });
-    console.log({ params });
     const octokit = new Octokit({ auth: token });
 
     const { data: result } = await octokit.request(endpoint, {
@@ -60,22 +58,24 @@ export class GithubService {
     return { item: repo };
   }
 
-  // async createRepos(input) {
-  //   const { githubAccessToken } = input;
+  // async createRepo(input) {
+  //   const { githubAccessToken, org } = input;
   //   const octokit = new Octokit({
   //     auth: githubAccessToken,
   //   });
 
-  //   const { data: result } = await octokit.request('Post /user/repos', {
-  //     ...input,
-  //   });
+  //   const { data: createdRepo } = await octokit.request(
+  //     `Post /orgs/${org}/repos`,
+  //     {
+  //       ...input,
+  //     },
+  //   );
 
-  //   return result;
+  //   return { item: createdRepo };
   // }
 
   async findMilestones(input) {
     // findSprints를 하기보단 github용어에 맞추어서 변수명 작성
-    // 여기는 왜 username으로 되어있을까?
 
     const { githubAccessToken, username, name } = input;
 
@@ -89,16 +89,28 @@ export class GithubService {
   }
 
   async findOneMilestone(input) {
-    const { githubAccessToken, username, name, number } = input;
+    const { githubAccessToken, username, repoName, number } = input;
 
     const milestone = await callGitHubApi(
-      `GET /repos/${username}/${name}/milestones/${number}`,
+      `GET /repos/${username}/${repoName}/milestones/${number}`,
       { owner: username },
       githubAccessToken,
     );
 
     return { item: milestone };
   }
+
+  // async createMilestone(input) {
+  //   const { githubAccessToken, username, repoName } = input;
+
+  //   const createdMilestone = await callGitHubApi(
+  //     `Post /repos/${username}/${repoName}/milestones}`,
+  //     { owner: username },
+  //     githubAccessToken,
+  //   );
+
+  //   return { item: createdMilestone };
+  // }
 
   async findIssues(input) {
     const { githubAccessToken, username, name } = input;
@@ -113,14 +125,26 @@ export class GithubService {
   }
 
   async findOneIssue(input) {
-    const { githubAccessToken, username, name, number } = input;
+    const { githubAccessToken, username, repoName, number } = input;
 
     const issue = await callGitHubApi(
-      `GET /repos/${username}/${name}/issues/${number}`,
+      `GET /repos/${username}/${repoName}/issues/${number}`,
       { owner: username },
       githubAccessToken,
     );
 
     return { item: issue };
   }
+
+  // async createIssue(input) {
+  //   const { githubAccessToken, username, repoName } = input;
+
+  //   const createdIssue = await callGitHubApi(
+  //     `Post /repos/${username}/${repoName}/issues}`,
+  //     { owner: username },
+  //     githubAccessToken,
+  //   );
+
+  //   return { item: createdIssue };
+  // }
 }
