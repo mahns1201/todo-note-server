@@ -83,12 +83,18 @@ export class GithubController {
   @ApiOperation({ summary: '유저의 깃허브 레포지토리를 생성한다.' })
   async createRepo(@User() user: jwtUserT, @Body() body) {
     const { id, username } = user;
-    const { repoName, description } = body;
+    const { repoName, description, ...otherFields } = body;
     const { item: githubAccessToken } =
       await this.userService.getGithubAccessToken({
         id,
       });
-    const input = { githubAccessToken, username, repoName, description };
+    const input = {
+      githubAccessToken,
+      username,
+      repoName,
+      description,
+      ...otherFields,
+    };
     const { item: createdRepo } = await this.githubService.createRepo(input);
     return {
       httpStatus: HttpStatus.OK,
@@ -211,12 +217,19 @@ export class GithubController {
   async createMilestone(@User() user: jwtUserT, @Param() param, @Body() body) {
     const { id, username } = user;
     const { repoName } = param;
-    const { title, description } = body;
+    const { title, description, ...otherFields } = body;
     const { item: githubAccessToken } =
       await this.userService.getGithubAccessToken({
         id,
       });
-    const input = { githubAccessToken, username, repoName, title, description };
+    const input = {
+      githubAccessToken,
+      username,
+      repoName,
+      title,
+      description,
+      ...otherFields,
+    };
     const { item: createdMilestone } = await this.githubService.createMilestone(
       input,
     );
@@ -347,12 +360,19 @@ export class GithubController {
   async createIssue(@User() user: jwtUserT, @Param() param, @Body() body) {
     const { id, username } = user;
     const { repoName } = param;
-    const { title, description } = body;
+    const { title, description, ...otherFields } = body;
     const { item: githubAccessToken } =
       await this.userService.getGithubAccessToken({
         id,
       });
-    const input = { githubAccessToken, username, repoName, title, description };
+    const input = {
+      githubAccessToken,
+      username,
+      repoName,
+      title,
+      description,
+      ...otherFields,
+    };
     const { item: createdIssue } = await this.githubService.createIssue(input);
     return {
       httpStatus: HttpStatus.OK,
