@@ -7,6 +7,7 @@ import {
   Param,
   UseGuards,
   Body,
+  Patch,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -30,6 +31,7 @@ export class GithubController {
     private userService: UserService,
   ) {}
 
+  // ********** Repositories **********
   @Get('repos')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '유저의 깃허브 레포지토리 리스트를 조회한다.' })
@@ -94,6 +96,40 @@ export class GithubController {
       items: createdRepo,
     };
   }
+
+  @Patch('repos/:repoName')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'repoName',
+    type: String,
+    description: '수정할 repo의 Name',
+  })
+  @ApiOperation({ summary: '유저의 깃허브 레포지토리를 수정한다.' })
+  async updateRepo(@User() user: jwtUserT, @Param() param, @Body() body) {
+    const { id, username } = user;
+    const { repoName } = param;
+    const { updateRepoName, updateDescription, ...otherFields } = body;
+    const { item: githubAccessToken } =
+      await this.userService.getGithubAccessToken({
+        id,
+      });
+    const input = {
+      githubAccessToken,
+      username,
+      repoName,
+      updateRepoName,
+      updateDescription,
+      ...otherFields,
+    };
+    const { item: updateRepo } = await this.githubService.updateRepo(input);
+    return {
+      httpStatus: HttpStatus.OK,
+      message: `유저의 ${updateRepoName} 레포지토리를 성공적으로 수정했습니다`,
+      item: updateRepo,
+    };
+  }
+
+  // ********** Milestones **********
 
   @Get('milestones/:repoName')
   @HttpCode(HttpStatus.OK)
@@ -187,9 +223,53 @@ export class GithubController {
     return {
       httpStatus: HttpStatus.OK,
       message: `유저의 ${repoName} 레포지토리에 ${title} 마일스톤을 성공적으로 생성했습니다`,
-      items: createdMilestone,
+      item: createdMilestone,
     };
   }
+
+  @Patch('milestones/:repoName/:number')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'repoName',
+    type: String,
+    description: '수정할 마일스톤의 레포지토리 이름',
+  })
+  @ApiParam({
+    name: 'number',
+    type: String,
+    description: '수정할 마일스톤의 번호',
+  })
+  @ApiOperation({
+    summary: '유저의 깃허브 특정 레포지토리의 마일스톤을 수정한다.',
+  })
+  async updateMilestone(@User() user: jwtUserT, @Param() param, @Body() body) {
+    const { id, username } = user;
+    const { repoName, number } = param;
+    const { updateTitle, updateDescription, ...otherFields } = body;
+    const { item: githubAccessToken } =
+      await this.userService.getGithubAccessToken({
+        id,
+      });
+    const input = {
+      githubAccessToken,
+      username,
+      repoName,
+      updateTitle,
+      updateDescription,
+      number,
+      ...otherFields,
+    };
+    const { item: updatedMilestone } = await this.githubService.updateMilestone(
+      input,
+    );
+    return {
+      httpStatus: HttpStatus.OK,
+      message: `유저의 ${repoName} 레포지토리의 ${updateTitle} 마일스톤을 성공적으로 수정했습니다`,
+      item: updatedMilestone,
+    };
+  }
+
+  // ********** Issues **********
 
   @Get('issues/:repoName')
   @ApiParam({
@@ -278,6 +358,46 @@ export class GithubController {
       httpStatus: HttpStatus.OK,
       message: `유저의 ${repoName} 레포지토리에 ${repoName} 이슈를 성공적으로 생성했습니다`,
       items: createdIssue,
+    };
+  }
+
+  @Patch('issues/:repoName/:number')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'repoName',
+    type: String,
+    description: '수정할 이슈의 레포지토리 이름',
+  })
+  @ApiParam({
+    name: 'number',
+    type: String,
+    description: '수정할 이슈의 번호',
+  })
+  @ApiOperation({
+    summary: '유저의 깃허브 특정 레포지토리의 마일스톤을 수정한다.',
+  })
+  async updateIssues(@User() user: jwtUserT, @Param() param, @Body() body) {
+    const { id, username } = user;
+    const { repoName, number } = param;
+    const { updateTitle, updateDescription, ...otherFields } = body;
+    const { item: githubAccessToken } =
+      await this.userService.getGithubAccessToken({
+        id,
+      });
+    const input = {
+      githubAccessToken,
+      username,
+      repoName,
+      updateTitle,
+      updateDescription,
+      number,
+      ...otherFields,
+    };
+    const { item: updatedIssue } = await this.githubService.updateIssue(input);
+    return {
+      httpStatus: HttpStatus.OK,
+      message: `유저의 ${repoName} 레포지토리의 ${updateTitle} 이슈를 성공적으로 수정했습니다`,
+      item: updatedIssue,
     };
   }
 }
