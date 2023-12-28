@@ -154,10 +154,17 @@ export class GithubService {
    * @param {string} input.otherFields - 그 외에 들어올 수 있는 값들
    */
   async createMilestone(input) {
-    const { githubAccessToken, username, repoName, title, description } = input;
+    const {
+      githubAccessToken,
+      username,
+      repoName,
+      title,
+      description,
+      ...otherFields
+    } = input;
     const createdMilestone = await callGitHubApi(
       `Post /repos/${username}/${repoName}/milestones`,
-      { title, description },
+      { title, description, ...otherFields },
       githubAccessToken,
     );
 
