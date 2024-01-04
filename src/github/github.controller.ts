@@ -8,6 +8,7 @@ import {
   UseGuards,
   Body,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -127,11 +128,39 @@ export class GithubController {
       updateDescription,
       ...otherFields,
     };
-    const { item: updateRepo } = await this.githubService.updateRepo(input);
+    const { item: updatedRepo } = await this.githubService.updateRepo(input);
     return {
       httpStatus: HttpStatus.OK,
       message: `유저의 ${updateRepoName} 레포지토리를 성공적으로 수정했습니다`,
-      item: updateRepo,
+      item: updatedRepo,
+    };
+  }
+
+  @Delete('repos/:repoName')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'repoName',
+    type: String,
+    description: '삭제할 repo의 Name',
+  })
+  @ApiOperation({ summary: '유저의 깃허브 레포지토리를 삭제한다.' })
+  async deleteRepo(@User() user: jwtUserT, @Param() param) {
+    const { id, username } = user;
+    const { repoName } = param;
+    const { item: githubAccessToken } =
+      await this.userService.getGithubAccessToken({
+        id,
+      });
+    const input = {
+      githubAccessToken,
+      username,
+      repoName,
+    };
+    const { item: deletedRepo } = await this.githubService.deleteRepo(input);
+    return {
+      httpStatus: HttpStatus.OK,
+      message: `유저의 ${repoName} 레포지토리를 성공적으로 삭제했습니다`,
+      item: deletedRepo,
     };
   }
 
@@ -279,6 +308,45 @@ export class GithubController {
       httpStatus: HttpStatus.OK,
       message: `유저의 ${repoName} 레포지토리의 ${updateTitle} 마일스톤을 성공적으로 수정했습니다`,
       item: updatedMilestone,
+    };
+  }
+
+  @Delete('milestones/:repoName/:number')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'repoName',
+    type: String,
+    description: '삭제할 마일스톤의 레포지토리 이름',
+  })
+  @ApiParam({
+    name: 'number',
+    type: String,
+    description: '삭제할 마일스톤의 번호',
+  })
+  @ApiOperation({
+    summary: '유저의 깃허브 특정 레포지토리의 마일스톤을 삭제한다.',
+  })
+  async deleteMilestone(@User() user: jwtUserT, @Param() param) {
+    const { id, username } = user;
+    const { repoName, number } = param;
+    const { item: githubAccessToken } =
+      await this.userService.getGithubAccessToken({
+        id,
+      });
+    const input = {
+      githubAccessToken,
+      username,
+      repoName,
+      number,
+    };
+    const { item: deletedMilestone } = await this.githubService.deleteMilestone(
+      input,
+    );
+
+    return {
+      httpStatus: HttpStatus.OK,
+      message: `유저의 ${repoName} 레포지토리의 ${number} 마일스톤을 성공적으로 삭제했습니다`,
+      item: deletedMilestone,
     };
   }
 

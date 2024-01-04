@@ -103,6 +103,22 @@ export class GithubService {
     return { item: updatedRepo };
   }
 
+  /**
+   * @param {Object} input
+   * @param {string} input.githubAccessToken - GitHub 토큰
+   * @param {string} input.username - GitHub 사용자의 이름
+   * @param {string} input.repoName - 삭제할 리포의 이름
+   */
+  async deleteRepo(input) {
+    const { githubAccessToken, username, repoName } = input;
+    const deletedRepo = await callGitHubApi(
+      `DELETE /repos/${username}/${repoName}`,
+      {},
+      githubAccessToken,
+    );
+
+    return { item: deletedRepo };
+  }
   // ********** Milestones **********
 
   /**
@@ -198,6 +214,24 @@ export class GithubService {
     );
 
     return { item: updatedMilestone };
+  }
+
+  /**
+   * @param {Object} input
+   * @param {string} input.githubAccessToken - GitHub 토큰
+   * @param {string} input.username - GitHub 사용자의 이름
+   * @param {string} input.repoName - Milestone이 위치한 Repo의 이름
+   * @param {string} input.number - 삭제하려는 Milestone의 Number
+   */
+  async deleteMilestone(input) {
+    const { githubAccessToken, username, repoName, number } = input;
+    const deletedMilestone = await callGitHubApi(
+      `DELETE /repos/${username}/${repoName}/milestones/${number}`,
+      {},
+      githubAccessToken,
+    );
+
+    return { item: deletedMilestone };
   }
 
   // ********** Issues **********
