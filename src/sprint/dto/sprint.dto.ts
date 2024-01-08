@@ -36,11 +36,11 @@ export class SprintDto extends BaseTimeDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsDate()
-  startAt: Date;
+  // @IsDate()
+  startAt: Date | string;
 
   @ApiProperty()
   @IsOptional()
-  @IsDate()
-  endAt: Date;
+  // @IsDate()
+  endAt: Date | string;
 }

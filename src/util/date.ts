@@ -1,4 +1,4 @@
-export const convertIncomingDate = (incomingDate: string) => {
+export const convertIncomingDate = (incomingDate) => {
   const now = new Date(
     incomingDate.replace(/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/, '$1-$2-$3 $4:$5'),
   );
