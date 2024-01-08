@@ -1,4 +1,6 @@
 export const convertIncomingDate = (incomingDate) => {
+  if (!incomingDate) return;
+
   const now = new Date(
     incomingDate.replace(/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/, '$1-$2-$3 $4:$5'),
   );
@@ -7,6 +9,8 @@ export const convertIncomingDate = (incomingDate) => {
 };
 
 export const convertOutgoingDate = (outgoingDate: Date) => {
+  if (!outgoingDate) return;
+
   const year = String(outgoingDate.getFullYear());
   const month = String(outgoingDate.getMonth() + 1).padStart(2, '0');
   const date = String(outgoingDate.getDate()).padStart(2, '0');
