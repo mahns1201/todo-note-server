@@ -9,6 +9,7 @@ import {
 } from 'src/common/common.dto';
 import { RepoEntity } from 'src/repo/entity/repo.entity';
 import { InputFindSprintsDto } from './dto/find-sprint.dto';
+import { convertIncomingDate } from 'src/util/date';
 
 @Injectable()
 export class SprintService {
@@ -21,8 +22,15 @@ export class SprintService {
     input: InputCreateSprintDto,
     repo: RepoEntity,
   ): Promise<ServiceResultDto<SprintEntity>> {
+    const { startAt: startDate, endAt: endDate } = input;
+
+    const startAt = convertIncomingDate(startDate);
+    const endAt = convertIncomingDate(endDate);
+
     const newSprint = this.sprintRepository.create({
       ...input,
+      startAt,
+      endAt,
       repo,
     });
     const savedSprint = await this.sprintRepository.save(newSprint);
