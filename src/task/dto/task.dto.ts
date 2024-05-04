@@ -18,11 +18,6 @@ export class TaskDto {
   repo: number;
 
   @IsOptional()
-  @IsNumber()
-  @ApiProperty()
-  repoBranch: number;
-
-  @IsOptional()
   @IsString()
   @ApiProperty()
   title: string;

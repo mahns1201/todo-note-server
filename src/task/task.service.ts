@@ -5,6 +5,8 @@ import { TaskEntity } from './entity/task.entity';
 import { UploadService } from 'src/upload/upload.service';
 import { RepoService } from 'src/repo/repo.service';
 import { UserService } from 'src/user/user.service';
+import { InputFindTaskDto } from './dto/find-task.dto';
+import { ServiceResultDto } from 'src/common/common.dto';
 
 @Injectable()
 export class TaskService {
@@ -20,12 +22,12 @@ export class TaskService {
   ) {}
 
   async createOne(input) {
-    const { userId, repoId, repoBranchId, title, content } = input;
+    const { userId, repoId, title, content } = input;
 
     const { item: user } = await this.userService.findOne(userId);
     const repo = await this.repoService.findRepo(repoId);
-    const repoBranch = await this.repoService.findRepoBranch(repoBranchId);
-    const taskObj = { user, repo, repoBranch, title, content };
+    // const repoBranch = await this.repoService.findRepoBranch(repoBranchId);
+    const taskObj = { user, repo, title, content };
 
     const newTask = this.taskRepository.create(taskObj);
     const result = await this.taskRepository.save(newTask);
@@ -33,17 +35,15 @@ export class TaskService {
     return result;
   }
 
-  async findOne(id) {
+  async findOne(
+    inputFindTaskDto: InputFindTaskDto,
+  ): Promise<ServiceResultDto<TaskEntity>> {
+    const { id } = inputFindTaskDto;
     const task = await this.taskRepository.findOne({
       where: { id },
-      relations: ['user', 'repo', 'repoBranch'], // left join
+      relations: ['user', 'repo'], // left join
     });
 
-    const { item: upload } = await this.uploadService.findUploadByTaskId({
-      taskId: id,
-      userId: task.user.id,
-    });
-
-    return { task, upload };
+    return { item: task };
   }
 }

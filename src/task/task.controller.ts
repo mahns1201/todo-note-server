@@ -18,6 +18,8 @@ import {
 } from '@nestjs/swagger';
 import { TaskService } from './task.service';
 import { AuthGuard } from 'src/auth/jwt/auth.guard';
+import { User } from 'src/decorator/user.decorator';
+import { jwtUserT } from 'src/constant/jwt.constant';
 
 @Controller('task')
 @UseGuards(AuthGuard)
@@ -89,16 +91,17 @@ export class TaskController {
     summary: '태스크 조회',
     description: 'parameter에 id를 넘겨 태스크를 조회합니다.',
   })
-  async findTaskById(@Param() param) {
+  async findTaskById(@User() user: jwtUserT, @Param() param) {
     const { id: taskId } = param;
 
-    const { task, upload } = await this.taskService.findOne(taskId);
+    const { item: task } = await this.taskService.findOne(taskId);
+
     const httpStatus = !task ? HttpStatus.NOT_FOUND : HttpStatus.OK;
     const message = !task
       ? '태스크를 해당 id로 찾을 수 없습니다.'
       : '태스크를 성공적으로 찾았습니다.';
 
-    const result = { items: { task, upload }, httpStatus, message };
+    const result = { item: task, httpStatus, message };
     return result;
   }
 }

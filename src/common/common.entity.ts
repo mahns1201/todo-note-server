@@ -19,6 +19,6 @@ export class BaseEntity {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @Column()
+  @Column({ default: false })
   isDeleted: boolean;
 }
