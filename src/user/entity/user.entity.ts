@@ -1,12 +1,9 @@
 import { BaseEntity } from 'src/common/common.entity';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 
 @Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
   @Column()
   @IsNotEmpty()
   @IsEmail()
