@@ -1,6 +1,3 @@
-/**
- * @deprecated 임시 비활성화
- */
 import { Module } from '@nestjs/common';
 import { UploadController } from './upload.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
