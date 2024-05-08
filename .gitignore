@@ -1,5 +1,5 @@
 # compiled output
-/dist
+# /dist - for deploy branch only
 /node_modules
 
 # Logs
