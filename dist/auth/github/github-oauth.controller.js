@@ -16,7 +16,6 @@ exports.GithubOauthController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const github_oauth_service_1 = require("./github-oauth.service");
-const github_oauth_guard_1 = require("./github-oauth.guard");
 let GithubOauthController = class GithubOauthController {
     constructor(githubOauthService) {
         this.githubOauthService = githubOauthService;
@@ -25,16 +24,14 @@ let GithubOauthController = class GithubOauthController {
         const result = this.githubOauthService.githubLoginUrl();
         return result;
     }
-    async githubAuth() {
-    }
-    async githubAuthCallback(req) {
-        const { user: { user, accessToken }, } = req;
-        const item = { user, accessToken };
-        const httpStatus = !accessToken ? common_1.HttpStatus.UNAUTHORIZED : common_1.HttpStatus.OK;
-        const message = !accessToken
-            ? 'Github 로그인을 알 수 없는 이유로 실패하였습니다.'
-            : 'Github 로그인을 성공하였습니다.';
-        const result = { item, httpStatus, message };
+    async getAccessToken(query) {
+        const tokenData = await this.githubOauthService.getGithubAccessToken(query.code);
+        const { access_token: githubAccessToken, error } = tokenData;
+        if (!githubAccessToken || error) {
+            throw new common_1.UnauthorizedException();
+        }
+        const accessToken = await this.githubOauthService.githubStrategyLogic(githubAccessToken);
+        const result = { item: { accessToken } };
         return result;
     }
 };
@@ -50,30 +47,21 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], GithubOauthController.prototype, "githubLoginUrl", null);
 __decorate([
-    (0, common_1.Get)(),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Github OAuth',
-        description: 'Github OAuth 서버로 요청 - callback url이 서버로 되어 있을 때 사용',
-    }),
-    (0, common_1.UseGuards)(github_oauth_guard_1.GithubOauthGuard),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], GithubOauthController.prototype, "githubAuth", null);
-__decorate([
     (0, common_1.Get)('callback'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Github OAuth Callback',
-        description: 'Github OAuth를 서버로 요청 했을 때의 Callback',
+    (0, swagger_1.ApiQuery)({
+        name: 'code',
+        type: String,
     }),
-    (0, common_1.UseGuards)(github_oauth_guard_1.GithubOauthGuard),
-    __param(0, (0, common_1.Req)()),
+    (0, swagger_1.ApiOperation)({
+        summary: '깃허브 oauth 로그인 authorize',
+        description: '깃허브 oauth 로그인에 대해 지급된 code로 authorize를 수행하고 결과로 jwt 토큰을 발행한다.',
+    }),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], GithubOauthController.prototype, "githubAuthCallback", null);
+], GithubOauthController.prototype, "getAccessToken", null);
 GithubOauthController = __decorate([
     (0, common_1.Controller)('auth/github'),
     (0, swagger_1.ApiTags)('oauth - github'),
