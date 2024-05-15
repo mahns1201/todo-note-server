@@ -1,17 +1,22 @@
-version: '3'
-
 services:
-  db:
-    image: library/mysql:5.7
-    container_name: dev-to-do-note
-    volumes:
-      - ./db/mysql/data:/var/lib/mysql
+  mysql:
+    container_name: todo-server-mysql
+    image: mysql:8.0
     ports:
       - 3306:3306
-    restart: always
+    volumes:
+      - todo_myslq:/var/lib/mysql
+      - ./.db/mysql/data:/var/lib/mysql
+      - ./.db/mysql/config:/etc/mysql/conf.d
+    env_file:
+      - .env
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       TZ: Asia/Seoul
-    platform: linux/x86_64
+    restart: always
+
+volumes:
+  todo_myslq:
