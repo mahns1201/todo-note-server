@@ -40,7 +40,7 @@ export class LoggerMiddleware implements NestMiddleware {
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `./config/.${process.env.NODE_ENV}.env`,
+      envFilePath: `./.config/.${process.env.NODE_ENV}.env`,
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
@@ -48,8 +48,8 @@ export class LoggerMiddleware implements NestMiddleware {
         host: process.env.MYSQL_HOST,
         port: parseInt(process.env.MYSQL_PORT, 10),
         database: process.env.MYSQL_DATABASE,
-        username: process.env.MYSQL_ROOT_USER,
-        password: process.env.MYSQL_ROOT_PASSWORD,
+        username: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
         autoLoadEntities: true,
         synchronize: true,
       }),
