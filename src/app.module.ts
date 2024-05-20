@@ -9,14 +9,8 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
-import { GithubOauthModule } from './auth/github/github-oauth.module';
-import { RepoModule } from './repo/repo.module';
-import { AuthModule } from './auth/jwt/auth.module';
-import { TaskModule } from './task/task.module';
 import { NextFunction, Request, Response } from 'express';
-import { SprintModule } from './sprint/sprint.module';
-import { GithubModule } from './github/github.module';
-import { UploadModule } from './upload/upload.module';
+import { AuthModule } from './auth/auth.module';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -54,14 +48,8 @@ export class LoggerMiddleware implements NestMiddleware {
         synchronize: true,
       }),
     }),
-    AuthModule,
-    GithubOauthModule,
     UserModule,
-    RepoModule,
-    SprintModule,
-    TaskModule,
-    UploadModule,
-    GithubModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

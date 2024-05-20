@@ -7,17 +7,11 @@ import {
   MaxLength,
   IsUrl,
   IsBoolean,
-  IsNumber,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseTimeDto } from 'src/common/common.dto';
+import { BaseDto } from 'src/common/common.dto';
 
-export class UserDto extends BaseTimeDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  id: number;
-
+export class UserDto extends BaseDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
