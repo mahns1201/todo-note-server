@@ -34,7 +34,7 @@ export class LoggerMiddleware implements NestMiddleware {
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `./.config/.${process.env.NODE_ENV}.env`,
+      envFilePath: `./.env`,
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({

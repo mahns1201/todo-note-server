@@ -39,5 +39,5 @@ lerna-debug.log*
 .db/*
 
 # envs
-.config/*.env
+# .config/*.env
 .env

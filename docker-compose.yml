@@ -1,3 +1,7 @@
+volumes:
+  todo_myslq: {}
+  todo_myslq_conf: {}
+
 services:
   mysql:
     container_name: todo-server-mysql
@@ -6,6 +10,7 @@ services:
       - 3306:3306
     volumes:
       - todo_myslq:/var/lib/mysql
+      - todo_myslq_conf:/etc/mysql/conf.d
       - ./.db/mysql/data:/var/lib/mysql
       - ./.db/mysql/config:/etc/mysql/conf.d
     env_file:
@@ -17,6 +22,3 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       TZ: Asia/Seoul
     restart: always
-
-volumes:
-  todo_myslq:

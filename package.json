@@ -6,20 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build:dev": "NODE_ENV=dev nest build",
-    "start:local": "NODE_ENV=local nest start --watch",
-    "start:dev": "NODE_ENV=dev nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:dev-pm2": "NODE_ENV=dev pm2 start dist/main.js",
-    "prebuild": "rimraf dist",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "build": "nest build",
+    "dev": "nest start --watch",
+    "pm2": "pm2 start dist/main.js"
   },
   "dependencies": {
     "@nestjs/axios": "^3.0.2",
