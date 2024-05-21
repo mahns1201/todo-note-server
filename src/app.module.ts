@@ -15,6 +15,7 @@ import { RepoModule } from './repo/repo.module';
 import { BranchModule } from './branch/branch.module';
 import { SprintModule } from './sprint/sprint.module';
 import { TaskModule } from './task/task.module';
+import { GithubModule } from './github/github.module';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -58,6 +59,7 @@ export class LoggerMiddleware implements NestMiddleware {
     BranchModule,
     SprintModule,
     TaskModule,
+    GithubModule,
   ],
   controllers: [],
   providers: [],
