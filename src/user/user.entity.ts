@@ -3,8 +3,7 @@ import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 import { BaseEntity } from 'src/common/common.entity';
 import { RepoEntity } from 'src/repo/repo.entity';
 import { SprintEntity } from 'src/sprint/sprint.entity';
-
-// nullable default: false
+import { TaskEntity } from 'src/task/task.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {
@@ -13,6 +12,9 @@ export class UserEntity extends BaseEntity {
 
   @OneToMany(() => SprintEntity, (sprint) => sprint.user)
   sprints: SprintEntity[];
+
+  @OneToMany(() => TaskEntity, (task) => task.user)
+  tasks: TaskEntity[];
 
   @Column()
   @IsNotEmpty()
