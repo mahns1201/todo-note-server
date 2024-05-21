@@ -2,14 +2,14 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UserDao } from './user.dao';
 import { ResDto } from 'src/common/common.dto';
-import { UserEntity } from './user.entity';
 import { FindUserByIdDto } from './dto/find-user-dto';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly userDao: UserDao) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<ResDto<UserEntity>> {
+  async createUser(createUserDto: CreateUserDto): Promise<ResDto<UserDto>> {
     const user = await this.userDao.create(createUserDto);
 
     return {
@@ -21,7 +21,7 @@ export class UserService {
 
   async findUser(
     dto: FindUserByIdDto,
-  ): Promise<ResDto<Omit<UserEntity, 'password'>>> {
+  ): Promise<ResDto<Omit<UserDto, 'password'>>> {
     const user = await this.userDao.findById(dto.id);
 
     return {

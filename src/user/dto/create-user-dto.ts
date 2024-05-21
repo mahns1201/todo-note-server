@@ -1,10 +1,11 @@
 import { UserDto } from './user.dto';
-import { OmitType } from '@nestjs/swagger';
+import { PickType } from '@nestjs/swagger';
 
-export class CreateUserDto extends OmitType(UserDto, [
-  'id',
-  'createdAt',
-  'updatedAt',
-  'deletedAt',
-  'isDeleted',
+export class CreateUserDto extends PickType(UserDto, [
+  'email',
+  'githubId',
+  'password',
+  'avatarUrl',
+  'isGithub',
+  'githubAccessToken',
 ] as const) {}

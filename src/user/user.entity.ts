@@ -1,11 +1,15 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 import { BaseEntity } from 'src/common/common.entity';
+import { RepoEntity } from 'src/repo/repo.entity';
 
 // nullable default: false
 
 @Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {
+  @OneToMany(() => RepoEntity, (repo) => repo.user)
+  repos: RepoEntity[];
+
   @Column()
   @IsNotEmpty()
   @IsEmail()
