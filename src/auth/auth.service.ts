@@ -3,12 +3,15 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserDao } from 'src/user/user.dao';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly configService: ConfigService,
     private readonly userDao: UserDao,
     private readonly jwtService: JwtService,
   ) {}
@@ -41,6 +44,14 @@ export class AuthService {
     const payload = { id: user.id, email: user.email };
     return {
       accessToken: this.jwtService.sign(payload),
+    };
+  }
+
+  githubLoginUrl() {
+    const client_id = this.configService.get<string>('GITHUB_CLIENT_ID');
+
+    return {
+      item: `https://github.com/login/oauth/authorize?response_type=code&scope=user%2Crepo%2Cproject&client_id=${client_id}`,
     };
   }
 }
