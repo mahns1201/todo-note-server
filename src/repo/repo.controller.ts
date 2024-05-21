@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { RepoService } from './repo.service';
-import { CreateRepoDto } from './dto/create-repo-dto';
+import { CreateRepoDto } from './dto/create-repo.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('repo')

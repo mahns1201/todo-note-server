@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BranchEntity } from './branch.entity';
-import { CreateBranchDto } from './dto/create-branch-dto';
+import { CreateBranchDto } from './dto/create-branch.dto';
 
 @Injectable()
 export class BranchDao {

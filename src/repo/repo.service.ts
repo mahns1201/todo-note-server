@@ -5,9 +5,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { RepoDao } from './repo.dao';
-import { FindRepoByIdDto } from './dto/find-repo-dto';
+import { FindRepoByIdDto } from './dto/find-repo.dto';
 import { ResDto } from 'src/common/common.dto';
-import { CreateRepoDto } from './dto/create-repo-dto';
+import { CreateRepoDto } from './dto/create-repo.dto';
 import { RepoDto } from './dto/repo.dto';
 
 @Injectable()

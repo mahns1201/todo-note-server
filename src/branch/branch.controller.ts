@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { BranchService } from './branch.service';
-import { CreateBranchDto } from './dto/create-branch-dto';
+import { CreateBranchDto } from './dto/create-branch.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('branch')

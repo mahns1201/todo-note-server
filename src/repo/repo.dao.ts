@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RepoEntity } from './repo.entity';
-import { CreateRepoDto } from './dto/create-repo-dto';
+import { CreateRepoDto } from './dto/create-repo.dto';
 
 @Injectable()
 export class RepoDao {

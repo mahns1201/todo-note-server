@@ -1,8 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user-dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UserDao } from './user.dao';
 import { ResDto } from 'src/common/common.dto';
-import { FindUserByIdDto } from './dto/find-user-dto';
+import { FindUserByIdDto } from './dto/find-user.dto';
 import { UserDto } from './dto/user.dto';
 
 @Injectable()
