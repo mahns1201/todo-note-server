@@ -3,15 +3,11 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
 import { UserEntity } from 'src/user/user.entity';
 import { BranchEntity } from 'src/branch/branch.entity';
-import { SprintEntity } from 'src/sprint/sprint.entity';
 
 @Entity({ name: 'repo' })
 export class RepoEntity extends BaseEntity {
   @OneToMany(() => BranchEntity, (branch) => branch.repo)
   branches: BranchEntity[];
-
-  @OneToMany(() => SprintEntity, (sprint) => sprint.repo)
-  sprints: SprintEntity[];
 
   @ManyToOne(() => UserEntity, (user) => user.repos)
   user: UserEntity;
