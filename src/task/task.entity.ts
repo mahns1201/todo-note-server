@@ -3,8 +3,6 @@ import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { BaseEntity } from 'src/common/common.entity';
 import { UserEntity } from 'src/user/user.entity';
 import { RepoEntity } from 'src/repo/repo.entity';
-import { SprintEntity } from 'src/sprint/sprint.entity';
-// import { RepoEntity } from 'src/repo/repo.entity';
 // import { SprintEntity } from 'src/sprint/sprint.entity';
 
 @Entity({ name: 'task' })
@@ -23,12 +21,12 @@ export class TaskEntity extends BaseEntity {
   @IsNotEmpty()
   repoId: number;
 
-  @ManyToOne(() => SprintEntity, (sprint) => sprint.tasks, { nullable: true })
-  sprint: SprintEntity;
+  // @ManyToOne(() => SprintEntity, (sprint) => sprint.tasks, { nullable: true })
+  // sprint: SprintEntity;
 
-  @Column()
-  @IsOptional()
-  sprintId: number;
+  // @Column()
+  // @IsOptional()
+  // sprintId: number;
 
   @Column()
   @IsNotEmpty()
