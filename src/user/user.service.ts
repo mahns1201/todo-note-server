@@ -14,7 +14,7 @@ export class UserService {
 
     return {
       httpStatus: HttpStatus.CREATED,
-      message: `[id: ${user.id}] 유저가 성공적으로 생성되었습니다.`,
+      message: '유저가 생성되었습니다.',
       item: user,
     };
   }
@@ -26,7 +26,7 @@ export class UserService {
 
     return {
       httpStatus: HttpStatus.OK,
-      message: `[id: ${user.id}] 유저를 반환합니다.`,
+      message: '유저를 찾았습니다.',
       item: {
         id: user.id,
         createdAt: user.createdAt,

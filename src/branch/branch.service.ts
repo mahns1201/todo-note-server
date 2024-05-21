@@ -56,7 +56,7 @@ export class BranchService {
 
     return {
       httpStatus: HttpStatus.OK,
-      message: `브랜치를 찾았습니다.`,
+      message: '브랜치를 찾았습니다.',
       item: {
         ...branch,
         repo: {

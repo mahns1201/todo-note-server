@@ -19,7 +19,7 @@ export class RepoService {
 
     return {
       httpStatus: HttpStatus.CREATED,
-      message: `[id: ${repo.id}] 레포지토리가 생성되었습니다.`,
+      message: '레포지토리가 생성되었습니다.',
       item: repo,
     };
   }
@@ -38,7 +38,7 @@ export class RepoService {
 
     return {
       httpStatus: HttpStatus.OK,
-      message: `${repo.id} 레포지토리를 찾았습니다.`,
+      message: '레포지토리를 찾았습니다.',
       item: {
         ...repo,
         user: {
