@@ -1,15 +1,15 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { RepoDao } from './repo.dao';
 import { FindRepoByIdDto } from './dto/find-repo-dto';
 import { ResDto } from 'src/common/common.dto';
-import { RepoEntity } from './repo.entity';
 import { CreateRepoDto } from './dto/create-repo-dto';
+import { RepoDto } from './dto/repo.dto';
 
 @Injectable()
 export class RepoService {
   constructor(private readonly repoDao: RepoDao) {}
 
-  async createRepo(dto: CreateRepoDto): Promise<ResDto<RepoEntity>> {
+  async createRepo(dto: CreateRepoDto): Promise<ResDto<RepoDto>> {
     const repo = await this.repoDao.create(dto);
 
     return {
@@ -20,20 +20,24 @@ export class RepoService {
   }
 
   async findRepo(dto: FindRepoByIdDto) {
-    console.log(dto);
-    const { id, user } = dto;
+    const { id, userId } = dto;
     const repo = await this.repoDao.findById(id);
 
-    // TODO user validation: unauthorized error 확인
-    // console.log(user);
-    // if (repo.user !== user) {
-    //   throw new UnauthorizedException('Unauthorized');
-    // }
+    if (repo.user.id !== userId) {
+      throw new UnauthorizedException('접근 권한이 없습니다.');
+    }
 
     return {
       httpStatus: HttpStatus.OK,
       message: `[id: ${repo.id}] 레포지토리를 반환합니다.`,
-      item: repo,
+      item: {
+        ...repo,
+        user: {
+          id: repo.user.id,
+          email: repo.user.email,
+          githubId: repo.user.githubId,
+        },
+      },
     };
   }
 }

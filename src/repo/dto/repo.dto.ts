@@ -21,6 +21,10 @@ export class RepoDto extends BaseDto {
 
   @ApiProperty()
   @IsNotEmpty()
+  userId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
   @IsString()
   repoName: string;
 
@@ -62,5 +66,5 @@ export class RepoDto extends BaseDto {
   @ApiProperty()
   @IsOptional()
   @IsDate()
-  synchronizedAt: string;
+  synchronizedAt: Date;
 }

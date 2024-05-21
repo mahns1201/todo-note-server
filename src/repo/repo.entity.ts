@@ -28,6 +28,9 @@ export class RepoEntity extends BaseEntity {
   @Column({ default: false })
   isFork: boolean;
 
+  @Column({ nullable: true })
+  imageUrl: string;
+
   @Column({ nullable: true, type: 'text' })
   description: string;
 

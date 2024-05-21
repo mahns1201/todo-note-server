@@ -19,8 +19,10 @@ export class RepoController {
   constructor(private repoService: RepoService) {}
   @Post()
   async createRepo(@Request() req, @Body() body: CreateRepoDto) {
-    // console.log(req.user);
-    const result = await this.repoService.createRepo(body);
+    const result = await this.repoService.createRepo({
+      ...body,
+      userId: req.user.id,
+    });
     return result;
   }
 
@@ -29,7 +31,7 @@ export class RepoController {
   async findUserRepo(@Request() req, @Param() param) {
     const result = await this.repoService.findRepo({
       id: param.id,
-      user: req.user.id,
+      userId: req.user.id,
     });
     return result;
   }

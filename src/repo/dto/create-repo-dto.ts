@@ -1,9 +1,21 @@
-import { RepoDto } from './repo.dto';
-import { PickType } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateRepoDto extends PickType(RepoDto, [
-  'user',
-  'repoName',
-  'defaultBranch',
-  'htmlUrl',
-] as const) {}
+export class CreateRepoDto {
+  userId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  repoName: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  defaultBranch: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  htmlUrl: string;
+}
