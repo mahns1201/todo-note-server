@@ -11,8 +11,8 @@ export class RepoDao {
     private repoRepository: Repository<RepoEntity>,
   ) {}
 
-  async create(input: CreateRepoDto): Promise<RepoEntity> {
-    const repo = this.repoRepository.create(input);
+  async create(dto: CreateRepoDto): Promise<RepoEntity> {
+    const repo = this.repoRepository.create(dto);
     await this.repoRepository.save(repo);
 
     return repo;

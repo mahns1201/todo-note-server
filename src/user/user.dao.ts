@@ -11,8 +11,8 @@ export class UserDao {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async create(input: CreateUserDto): Promise<UserEntity> {
-    const user = this.userRepository.create(input);
+  async create(dto: CreateUserDto): Promise<UserEntity> {
+    const user = this.userRepository.create(dto);
     await this.userRepository.save(user);
 
     return user;
