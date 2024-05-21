@@ -12,6 +12,7 @@ import { UserModule } from './user/user.module';
 import { NextFunction, Request, Response } from 'express';
 import { AuthModule } from './auth/auth.module';
 import { RepoModule } from './repo/repo.module';
+import { BranchModule } from './branch/branch.module';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -52,6 +53,7 @@ export class LoggerMiddleware implements NestMiddleware {
     UserModule,
     AuthModule,
     RepoModule,
+    BranchModule,
   ],
   controllers: [],
   providers: [],
