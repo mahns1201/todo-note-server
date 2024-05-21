@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { RepoDao } from './repo.dao';
 import { FindRepoByIdDto } from './dto/find-repo-dto';
 import { ResDto } from 'src/common/common.dto';
@@ -23,13 +28,17 @@ export class RepoService {
     const { id, userId } = dto;
     const repo = await this.repoDao.findById(id);
 
+    if (!repo) {
+      throw new NotFoundException('레포지토리를 찾을 수 없습니다.');
+    }
+
     if (repo.user.id !== userId) {
       throw new UnauthorizedException('접근 권한이 없습니다.');
     }
 
     return {
       httpStatus: HttpStatus.OK,
-      message: `[id: ${repo.id}] 레포지토리를 반환합니다.`,
+      message: `${repo.id} 레포지토리를 찾았습니다.`,
       item: {
         ...repo,
         user: {
