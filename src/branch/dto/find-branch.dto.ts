@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateBranchDto {
+export class FindBranchByIdDto {
   userId: number;
 
   @ApiProperty()
@@ -11,6 +11,6 @@ export class CreateBranchDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsString()
-  branchName: string;
+  @IsNumber()
+  id: number;
 }
