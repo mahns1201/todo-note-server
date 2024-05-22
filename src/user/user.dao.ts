@@ -39,4 +39,9 @@ export class UserDao {
 
     return user;
   }
+
+  async update(id: number, dto: Partial<CreateUserDto>): Promise<UserEntity> {
+    await this.userRepository.update(id, dto);
+    return this.findById(id);
+  }
 }
