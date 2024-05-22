@@ -6,7 +6,6 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserDao } from 'src/user/user.dao';
-import axios from 'axios';
 
 @Injectable()
 export class AuthService {
