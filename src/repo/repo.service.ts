@@ -1,16 +1,17 @@
 import {
-  HttpStatus,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { RepoDao } from './repo.dao';
 import { FindRepoByIdDto } from './dto/find-repo.dto';
-import { ResDto } from 'src/common/common.dto';
 import { CreateRepoDto } from './dto/create-repo.dto';
-import { RepoDto } from './dto/repo.dto';
 import { UserService } from 'src/user/user.service';
 import { GithubService } from 'src/github/github.service';
+import { SyncRepoDto } from './dto/sync-repo.dto';
+
+// TODO ResDto
 
 @Injectable()
 export class RepoService {
@@ -20,42 +21,27 @@ export class RepoService {
     private readonly githubService: GithubService,
   ) {}
 
-  async createRepo(dto: CreateRepoDto): Promise<ResDto<RepoDto>> {
-    const repo = await this.repoDao.create(dto);
-    return {
-      httpStatus: HttpStatus.CREATED,
-      message: '레포지토리가 생성되었습니다.',
-      item: repo,
-    };
+  async createRepo(dto: CreateRepoDto) {
+    return await this.repoDao.create(dto);
   }
 
   async findRepo(dto: FindRepoByIdDto) {
     const { id, userId } = dto;
 
-    const repo = await this.repoDao.findById(id);
+    const repo = await this.repoDao.findById(id, userId);
     if (!repo) {
       throw new NotFoundException('레포지토리를 찾을 수 없습니다.');
     }
-
-    if (repo.user.id !== userId) {
+    if (repo.userId !== userId) {
       throw new UnauthorizedException('접근 권한이 없습니다.');
     }
 
-    return {
-      httpStatus: HttpStatus.OK,
-      message: '레포지토리를 찾았습니다.',
-      item: {
-        ...repo,
-        user: {
-          id: repo.user.id,
-          email: repo.user.email,
-          githubId: repo.user.githubId,
-        },
-      },
-    };
+    return repo;
   }
 
-  async syncUserRepos(userId) {
+  async syncUserRepos(dto: SyncRepoDto) {
+    const { userId } = dto;
+
     const githubAccessToken = await this.userService.findUserGithubAcesToken({
       id: userId,
     });
@@ -82,7 +68,7 @@ export class RepoService {
         if (createdRepo) {
           syncCount++;
           syncRepoNames.push(githubRepo.name);
-          console.log(`${githubRepo.name} is synchronized`);
+          Logger.log(`${githubRepo.name} is synchronized`);
         }
       }
     }

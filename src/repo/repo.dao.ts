@@ -18,13 +18,13 @@ export class RepoDao {
     return repo;
   }
 
-  async findById(id: number): Promise<RepoEntity> {
+  async findById(id: number, userId: number): Promise<RepoEntity> {
     return await this.repoRepository.findOne({
       where: {
         id,
+        userId,
         deletedAt: null,
       },
-      relations: ['user'],
     });
   }
 
