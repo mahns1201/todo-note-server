@@ -27,4 +27,10 @@ export class BranchDao {
       relations: ['repo'],
     });
   }
+
+  async findAllByRepoId(repoId: number): Promise<BranchEntity[]> {
+    return await this.branchRepository.find({
+      where: { repoId, deletedAt: null },
+    });
+  }
 }
