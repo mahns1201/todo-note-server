@@ -39,13 +39,7 @@ export class AuthService {
     };
   }
 
-  async loginByPassword(user: any) {
-    const payload = { id: user.id, email: user.email };
-    return this.jwtService.sign(payload);
-  }
-
-  async loginByOauth(email: string) {
-    const user = await this.userDao.findByEmail(email);
+  async signIn(user: any) {
     const payload = { id: user.id, email: user.email };
     return this.jwtService.sign(payload);
   }

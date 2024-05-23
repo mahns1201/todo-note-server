@@ -50,7 +50,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
       });
     }
 
-    const accessToken = await this.authService.loginByOauth(email);
+    const accessToken = await this.authService.signIn(user);
 
     done(null, { ...user, githubAccessToken, accessToken });
   }
