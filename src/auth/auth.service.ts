@@ -41,14 +41,17 @@ export class AuthService {
 
   async loginByPassword(user: any) {
     const payload = { id: user.id, email: user.email };
-    return {
-      accessToken: this.jwtService.sign(payload),
-    };
+    return this.jwtService.sign(payload);
+  }
+
+  async loginByOauth(email: string) {
+    const user = await this.userDao.findByEmail(email);
+    const payload = { id: user.id, email: user.email };
+    return this.jwtService.sign(payload);
   }
 
   githubLoginUrl() {
     const client_id = this.configService.get<string>('GITHUB_CLIENT_ID');
-
     return {
       item: `https://github.com/login/oauth/authorize?response_type=code&scope=user%2Crepo%2Cproject&client_id=${client_id}`,
     };

@@ -2,13 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-github';
+import { GithubService } from 'src/github/github.service';
 import { UserDao } from 'src/user/user.dao';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
   constructor(
     private readonly configService: ConfigService,
+    private readonly authService: AuthService,
     private readonly userDao: UserDao,
+    private readonly githubService: GithubService,
   ) {
     super({
       clientID: configService.get<string>('GITHUB_CLIENT_ID'),
@@ -18,7 +22,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     });
   }
   async validate(
-    accessToken: string,
+    githubAccessToken: string,
     _refreshToken: string,
     profile: any,
     done: any,
@@ -31,19 +35,23 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
         githubId,
         avatarUrl,
         isGithub: true,
-        githubAccessToken: accessToken,
+        githubAccessToken: githubAccessToken,
       });
     } else {
+      const profile = await this.githubService.getProfile(githubAccessToken);
+      const { login: githubId, avatar_url: avatarUrl } = profile;
       user = await this.userDao.create({
         email,
         password: null,
         githubId,
         avatarUrl,
         isGithub: true,
-        githubAccessToken: accessToken,
+        githubAccessToken,
       });
     }
 
-    done(null, { ...user, githubAccessToken: accessToken });
+    const accessToken = await this.authService.loginByOauth(email);
+
+    done(null, { ...user, githubAccessToken, accessToken });
   }
 }

@@ -5,13 +5,12 @@ import { Octokit } from 'octokit';
 export class GithubService {
   private octokit: Octokit;
 
-  constructor(githubAccessToken: string) {
-    this.octokit = this.createOctokitInstance(githubAccessToken);
+  constructor() {
+    this.octokit = this.createOctokitInstance();
   }
 
-  private createOctokitInstance(githubAccessToken: string): Octokit {
+  private createOctokitInstance() {
     return new Octokit({
-      auth: githubAccessToken,
       request: {
         headers: {
           'X-GitHub-Api-Version': '2022-11-28',
@@ -20,7 +19,18 @@ export class GithubService {
     });
   }
 
-  async getGithubProfile() {
-    return await this.octokit.request('GET /user');
+  // private async getOctokitInstance() {
+  //   if (!this.octokit) {
+  //     this.octokit = await this.createOctokitInstance();
+  //   }
+  //   return this.octokit;
+  // }
+
+  async getProfile(token: string) {
+    // const octokit = await this.getOctokitInstance();
+    const { data } = await this.octokit.request('GET /user', {
+      headers: { authorization: `token ${token}` },
+    });
+    return data;
   }
 }

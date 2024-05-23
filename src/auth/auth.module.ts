@@ -10,6 +10,7 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { GithubStrategy } from './strategy/github.strategy';
+import { GithubService } from 'src/github/github.service';
 
 @Module({
   imports: [
@@ -28,7 +29,13 @@ import { GithubStrategy } from './strategy/github.strategy';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, GithubStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    GithubStrategy,
+    GithubService,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}
