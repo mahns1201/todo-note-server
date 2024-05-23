@@ -58,4 +58,11 @@ export class RepoController {
   //     items,
   //   };
   // }
+
+  @Post('sync')
+  @HttpCode(HttpStatus.CREATED)
+  async syncUserRepos(@Request() req) {
+    const result = await this.repoService.syncUserRepos(req.user.id);
+    return result;
+  }
 }

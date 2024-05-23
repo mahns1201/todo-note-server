@@ -3,7 +3,7 @@ import { Octokit } from 'octokit';
 
 @Injectable()
 export class GithubService {
-  private octokit: Octokit;
+  private readonly octokit: Octokit;
 
   constructor() {
     this.octokit = this.createOctokitInstance();
@@ -29,6 +29,13 @@ export class GithubService {
   async getProfile(token: string) {
     // const octokit = await this.getOctokitInstance();
     const { data } = await this.octokit.request('GET /user', {
+      headers: { authorization: `token ${token}` },
+    });
+    return data;
+  }
+
+  async getRepos(token: string) {
+    const { data } = await this.octokit.request('GET /user/repos', {
       headers: { authorization: `token ${token}` },
     });
     return data;

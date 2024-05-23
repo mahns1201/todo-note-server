@@ -27,4 +27,10 @@ export class RepoDao {
       relations: ['user'],
     });
   }
+
+  async findAllByUserId(userId: number): Promise<RepoEntity[]> {
+    return await this.repoRepository.find({
+      where: { userId, deletedAt: null },
+    });
+  }
 }
