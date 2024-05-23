@@ -15,6 +15,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     const user = await this.authService.validateUserByPassword(email, password);
     const accessToken = await this.authService.signIn(user);
 
-    return { user, accessToken };
+    return { ...user, accessToken };
   }
 }

@@ -11,6 +11,7 @@ import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { GithubStrategy } from './strategy/github.strategy';
 import { GithubService } from 'src/github/github.service';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { GithubService } from 'src/github/github.service';
     JwtStrategy,
     GithubStrategy,
     GithubService,
+    UserService,
   ],
   controllers: [AuthController],
 })

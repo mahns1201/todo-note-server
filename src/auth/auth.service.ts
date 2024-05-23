@@ -5,27 +5,25 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UserDao } from 'src/user/user.dao';
+import { UserService } from 'src/user/user.service';
+
+// TODO ReqDto, ResDto 설정
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly configService: ConfigService,
-    private readonly userDao: UserDao,
+    private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
 
   async validateUserByPassword(email: string, password: string) {
-    const user = await this.userDao.findByEmail(email);
-
+    const user = await this.userService.findUserByEmail({ email });
     if (!user) {
-      throw new NotFoundException(`email: [${email}] 유저를 찾을 수 없습니다.`);
+      throw new NotFoundException(`${email} 유저를 찾을 수 없습니다.`);
     }
-
     if (user.password != password) {
-      throw new UnauthorizedException(
-        `email: [${email}] 유저의 비밀번호가 유효하지 않습니다.`,
-      );
+      throw new UnauthorizedException(`${email} 비밀번호가 유효하지 않습니다.`);
     }
 
     return {
