@@ -8,28 +8,11 @@ export class UserService {
   constructor(private readonly userDao: UserDao) {}
 
   async createUser(createUserDto: CreateUserDto) {
-    const user = await this.userDao.create(createUserDto);
-    return {
-      id: user.id,
-      createdAt: user.createdAt,
-      email: user.email,
-      githubId: user.githubId,
-      avatarUrl: user.avatarUrl,
-      isGithub: user.isGithub,
-    };
+    return await this.userDao.create(createUserDto);
   }
 
   async findUser(dto: FindUserByIdDto) {
-    const user = await this.userDao.findById(dto.id);
-    return {
-      id: user.id,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      email: user.email,
-      githubId: user.githubId,
-      avatarUrl: user.avatarUrl,
-      isGithub: user.isGithub,
-    };
+    return await this.userDao.findById(dto.id);
   }
 
   async findUserGithubAcesToken(dto: FindUserByIdDto) {
