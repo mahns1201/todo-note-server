@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserDao } from './user.dao';
-import { FindUserByIdDto } from './dto/find-user.dto';
+import { FindUserByEmailDto, FindUserByIdDto } from './dto/find-user.dto';
+
+// TODO ResDto
 
 @Injectable()
 export class UserService {
@@ -13,6 +15,10 @@ export class UserService {
 
   async findUser(dto: FindUserByIdDto) {
     return await this.userDao.findById(dto.id);
+  }
+
+  async findUserByEmail(dto: FindUserByEmailDto) {
+    return await this.userDao.findByEmail(dto.email);
   }
 
   async findUserGithubAcesToken(dto: FindUserByIdDto) {
