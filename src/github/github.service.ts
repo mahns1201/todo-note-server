@@ -40,4 +40,17 @@ export class GithubService {
     });
     return data;
   }
+
+  async getBranches(token: string, owner: string, repo: string) {
+    const { data } = await this.octokit.request(
+      'GET /repos/{owner}/{repo}/branches',
+      {
+        owner,
+        repo,
+        headers: { authorization: `token ${token}` },
+      },
+    );
+
+    return data;
+  }
 }
