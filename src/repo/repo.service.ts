@@ -10,6 +10,7 @@ import { CreateRepoDto } from './dto/create-repo.dto';
 import { UserService } from 'src/user/user.service';
 import { GithubService } from 'src/github/github.service';
 import { SyncRepoDto } from './dto/sync-repo.dto';
+import { FindReposDto } from './dto/find-repos.dto';
 
 // TODO ResDto
 
@@ -37,6 +38,10 @@ export class RepoService {
     }
 
     return repo;
+  }
+
+  async findRepos(dto: FindReposDto) {
+    return await this.repoDao.find(dto);
   }
 
   async syncUserRepos(dto: SyncRepoDto) {

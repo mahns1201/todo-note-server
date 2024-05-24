@@ -28,6 +28,18 @@ export class RepoDao {
     });
   }
 
+  async find(dto): Promise<[RepoEntity[], number]> {
+    const { page, pageSize, orderBy, sortBy, userId } = dto;
+    const [results, total] = await this.repoRepository.findAndCount({
+      where: { userId, deletedAt: null },
+      take: pageSize,
+      skip: pageSize * (page - 1),
+      order: { [orderBy]: sortBy },
+      relations: ['user', 'branches'],
+    });
+    return [results, total];
+  }
+
   async findAllByUserId(userId: number): Promise<RepoEntity[]> {
     return await this.repoRepository.find({
       where: { userId, deletedAt: null },

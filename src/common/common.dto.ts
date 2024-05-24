@@ -43,6 +43,24 @@ export class TokenDto {
   githubAccessToken: string;
 }
 
+export class PagingReqDto {
+  @ApiProperty()
+  @IsNumber()
+  page: number;
+
+  @ApiProperty()
+  @IsNumber()
+  pageSize: number;
+
+  @ApiProperty()
+  @IsString()
+  orderBy: string;
+
+  @ApiProperty()
+  @IsString()
+  sortBy: string;
+}
+
 export class ResDto<T> {
   @ApiProperty({ description: 'http 상태 코드' })
   statusCode: HttpStatus;

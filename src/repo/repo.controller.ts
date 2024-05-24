@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -44,6 +45,20 @@ export class RepoController {
       ownerAvatarUrl: repo.ownerAvatarUrl,
       synchronizedAt: repo.synchronizedAt,
     };
+  }
+
+  @Get('list')
+  @HttpCode(HttpStatus.OK)
+  async findUserRepos(@Request() req, @Query() query) {
+    const repos = await this.repoService.findRepos({
+      userId: req.user.id,
+      page: query.page,
+      pageSize: query.pageSize,
+      orderBy: query.orderBy,
+      sortBy: query.sortBy,
+    });
+
+    return repos;
   }
 
   @Get(':id')
