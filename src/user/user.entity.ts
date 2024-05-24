@@ -4,11 +4,15 @@ import { BaseEntity } from 'src/common/common.entity';
 import { RepoEntity } from 'src/repo/repo.entity';
 import { SprintEntity } from 'src/sprint/sprint.entity';
 import { TaskEntity } from 'src/task/task.entity';
+import { BranchEntity } from 'src/branch/branch.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {
   @OneToMany(() => RepoEntity, (repo) => repo.user)
   repos: RepoEntity[];
+
+  @OneToMany(() => BranchEntity, (branch) => branch.user)
+  branches: BranchEntity[];
 
   @OneToMany(() => SprintEntity, (sprint) => sprint.user)
   sprints: SprintEntity[];
