@@ -19,35 +19,35 @@ export class GithubService {
     });
   }
 
-  // private async getOctokitInstance() {
-  //   if (!this.octokit) {
-  //     this.octokit = await this.createOctokitInstance();
-  //   }
-  //   return this.octokit;
-  // }
-
-  async getProfile(token: string) {
-    // const octokit = await this.getOctokitInstance();
+  async getProfile(githubToken: string) {
     const { data } = await this.octokit.request('GET /user', {
-      headers: { authorization: `token ${token}` },
+      headers: { authorization: `token ${githubToken}` },
     });
     return data;
   }
 
-  async getRepos(token: string) {
+  async getEmail(githubToken: string) {
+    const { data } = await this.octokit.request('GET /user/emails', {
+      headers: { authorization: `token ${githubToken}` },
+    });
+
+    return data.filter((item) => item.primary).map((item) => item.email)[0];
+  }
+
+  async getRepos(githubToken: string) {
     const { data } = await this.octokit.request('GET /user/repos', {
-      headers: { authorization: `token ${token}` },
+      headers: { authorization: `token ${githubToken}` },
     });
     return data;
   }
 
-  async getBranches(token: string, owner: string, repo: string) {
+  async getBranches(githubToken: string, owner: string, repo: string) {
     const { data } = await this.octokit.request(
       'GET /repos/{owner}/{repo}/branches',
       {
         owner,
         repo,
-        headers: { authorization: `token ${token}` },
+        headers: { authorization: `token ${githubToken}` },
       },
     );
 

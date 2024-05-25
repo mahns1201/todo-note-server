@@ -40,7 +40,7 @@ export class TokenDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  githubAccessToken: string;
+  githubToken: string;
 }
 
 export class PagingReqDto {

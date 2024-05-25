@@ -43,5 +43,5 @@ export class UserEntity extends BaseEntity {
 
   @Column({ nullable: true })
   @IsOptional()
-  githubAccessToken: string;
+  githubToken: string;
 }

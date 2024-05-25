@@ -7,5 +7,5 @@ export class CreateUserDto extends PickType(UserDto, [
   'password',
   'avatarUrl',
   'isGithub',
-  'githubAccessToken',
+  'githubToken',
 ] as const) {}

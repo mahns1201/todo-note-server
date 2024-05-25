@@ -44,5 +44,5 @@ export class UserDto extends BaseDto {
   @IsOptional()
   @IsBoolean()
   @IsString()
-  githubAccessToken: string;
+  githubToken: string;
 }

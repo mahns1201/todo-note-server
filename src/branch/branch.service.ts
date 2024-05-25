@@ -39,14 +39,14 @@ export class BranchService {
   async syncRepoBranches(dto: SyncBranchDto) {
     const { userId, repoId } = dto;
 
-    const token = await this.userService.findUserGithubAcesToken({
+    const githubToken = await this.userService.findUserGithubToken({
       id: userId,
     });
-    const profile = await this.githubService.getProfile(token);
+    const profile = await this.githubService.getProfile(githubToken);
     const repo = await this.repoService.findRepo({ id: repoId, userId });
     const branches = await this.branchDao.findAllByRepoId(repoId);
     const githubBranches = await this.githubService.getBranches(
-      token,
+      githubToken,
       profile.login,
       repo.repoName,
     );

@@ -1,8 +1,16 @@
-import { Controller, Get, Post, Req, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { AuthService } from './auth.service';
-import { GithubOauthGuard } from './guard/github-oauth.guard';
+import { GetGithubTokenByCodeDto } from './dto/get-github-token.dto';
 
 // TODO swagger
 // TODO ResDto
@@ -35,17 +43,37 @@ export class AuthController {
     return this.authService.githubLoginUrl();
   }
 
-  @Get('github')
-  @UseGuards(GithubOauthGuard)
-  async githubAuth() {
-    // With `@UseGuards(GithubOauthGuard)` we are using an AuthGuard that @nestjs/passport
-    // automatically provisioned for us when we extended the passport-github strategy.
-    // The Guard initiates the passport-github flow.
+  @Get('github/callback')
+  async getGithubTokenByCode(@Query() query: GetGithubTokenByCodeDto) {
+    const user = await this.authService.getGithubTokenByCode(query.code);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: '깃허브 로그인을 성공했습니다.',
+      item: {
+        id: user.id,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        email: user.email,
+        githubId: user.githubId,
+        avatarUrl: user.avatarUrl,
+        isGithub: user.isGithub,
+        accessToken: user.accessToken,
+      },
+    };
   }
 
-  @Get('github/callback')
-  @UseGuards(GithubOauthGuard)
-  async githubAuthCallback(@Req() req) {
-    return req.user;
-  }
+  // @Get('github')
+  // @UseGuards(GithubOauthGuard)
+  // async githubAuth() {
+  //   // With `@UseGuards(GithubOauthGuard)` we are using an AuthGuard that @nestjs/passport
+  //   // automatically provisioned for us when we extended the passport-github strategy.
+  //   // The Guard initiates the passport-github flow.
+  // }
+
+  // @Get('github/callback')
+  // @UseGuards(GithubOauthGuard)
+  // async githubAuthCallback(@Req() req) {
+  //   return req.user;
+  // }
 }

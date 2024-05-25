@@ -22,7 +22,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     });
   }
   async validate(
-    githubAccessToken: string,
+    githubToken: string,
     _refreshToken: string,
     profile: any,
     done: any,
@@ -35,10 +35,10 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
         githubId,
         avatarUrl,
         isGithub: true,
-        githubAccessToken: githubAccessToken,
+        githubToken,
       });
     } else {
-      const profile = await this.githubService.getProfile(githubAccessToken);
+      const profile = await this.githubService.getProfile(githubToken);
       const { login: githubId, avatar_url: avatarUrl } = profile;
       user = await this.userDao.create({
         email,
@@ -46,12 +46,12 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
         githubId,
         avatarUrl,
         isGithub: true,
-        githubAccessToken,
+        githubToken,
       });
     }
 
     const accessToken = await this.authService.signIn(user);
 
-    done(null, { ...user, githubAccessToken, accessToken });
+    done(null, { ...user, githubToken, accessToken });
   }
 }

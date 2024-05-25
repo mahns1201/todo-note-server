@@ -21,8 +21,15 @@ export class UserService {
     return await this.userDao.findByEmail(dto.email);
   }
 
-  async findUserGithubAcesToken(dto: FindUserByIdDto) {
+  async findUserGithubToken(dto: FindUserByIdDto) {
     const user = await this.userDao.findById(dto.id);
-    return user.githubAccessToken;
+    return user.githubToken;
+  }
+
+  async updateUser(
+    findDto: FindUserByIdDto,
+    updateDto: Partial<CreateUserDto>,
+  ) {
+    return await this.userDao.update(findDto.id, updateDto);
   }
 }

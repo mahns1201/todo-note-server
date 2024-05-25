@@ -47,11 +47,11 @@ export class RepoService {
   async syncUserRepos(dto: SyncRepoDto) {
     const { userId } = dto;
 
-    const githubAccessToken = await this.userService.findUserGithubAcesToken({
+    const githubToken = await this.userService.findUserGithubToken({
       id: userId,
     });
     const repos = await this.repoDao.findAllByUserId(userId);
-    const githubRepos = await this.githubService.getRepos(githubAccessToken);
+    const githubRepos = await this.githubService.getRepos(githubToken);
 
     let syncCount = 0;
     const syncRepoNames = [];
