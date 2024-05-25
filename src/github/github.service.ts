@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Octokit } from 'octokit';
 
 @Injectable()
@@ -10,20 +10,27 @@ export class GithubService {
   }
 
   private createOctokitInstance() {
-    return new Octokit({
-      request: {
+    return new Octokit({});
+  }
+
+  async callGitHubApi(url: string, githubToken: string, params?: object) {
+    try {
+      const { data } = await this.octokit.request(url, {
+        ...params,
         headers: {
+          authorization: `token ${githubToken}`,
           'X-GitHub-Api-Version': '2022-11-28',
         },
-      },
-    });
+      });
+      return data;
+    } catch (error) {
+      Logger.error(error.message, error.stack, 'GithubService.callGitHubApi');
+      throw error;
+    }
   }
 
   async getProfile(githubToken: string) {
-    const { data } = await this.octokit.request('GET /user', {
-      headers: { authorization: `token ${githubToken}` },
-    });
-    return data;
+    return await this.callGitHubApi('GET /user', githubToken);
   }
 
   async getEmail(githubToken: string) {
@@ -35,10 +42,7 @@ export class GithubService {
   }
 
   async getRepos(githubToken: string) {
-    const { data } = await this.octokit.request('GET /user/repos', {
-      headers: { authorization: `token ${githubToken}` },
-    });
-    return data;
+    return await this.callGitHubApi('GET /user/repos', githubToken);
   }
 
   async getBranches(githubToken: string, owner: string, repo: string) {
@@ -50,7 +54,6 @@ export class GithubService {
         headers: { authorization: `token ${githubToken}` },
       },
     );
-
     return data;
   }
 }
