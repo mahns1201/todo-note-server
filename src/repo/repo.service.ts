@@ -47,7 +47,7 @@ export class RepoService {
   async syncUserRepos(dto: SyncRepoDto) {
     const { userId } = dto;
 
-    const githubToken = await this.userService.findUserGithubToken({
+    const { githubId, githubToken } = await this.userService.findUser({
       id: userId,
     });
     const repos = await this.repoDao.findAllByUserId(userId);
@@ -57,7 +57,10 @@ export class RepoService {
     const syncRepoNames = [];
 
     for (const githubRepo of githubRepos) {
-      if (!repos.some((repo) => repo.repoName === githubRepo.name)) {
+      const repoExists = repos.some(
+        (repo) => repo.repoName === githubRepo.name,
+      );
+      if (!repoExists && githubRepo.owner.login === githubId) {
         const createdRepo = await this.createRepo({
           userId,
           repoName: githubRepo.name,
