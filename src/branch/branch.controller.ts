@@ -11,33 +11,95 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { BranchService } from './branch.service';
-import { CreateBranchDto } from './dto/create-branch.dto';
-
-// TODO swagger
-// TODO ResDto
+import { CreateBranchDto, ResCreateBranchDto } from './dto/create-branch.dto';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+import { ResFindBranchDto } from './dto/find-branch.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('branch')
+@ApiBearerAuth('accessToken')
+@ApiTags('branch')
 export class BranchController {
   constructor(private branchService: BranchService) {}
 
   @Post()
-  async createRepo(@Request() req, @Body() body: CreateBranchDto) {
-    const result = await this.branchService.createBranch({
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: '브랜치 생성',
+    description: '새로운 브랜치를 생성합니다.',
+  })
+  @ApiCreatedResponse({
+    type: ResCreateBranchDto,
+    status: HttpStatus.CREATED,
+    description: '브랜치를 성공적으로 생성하였습니다.',
+  })
+  async createBranch(
+    @Request() req,
+    @Body() body: CreateBranchDto,
+  ): Promise<ResCreateBranchDto> {
+    const branch = await this.branchService.createBranch({
       ...body,
       userId: req.user.id,
     });
-    return result;
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '브랜치를 생성했습니다.',
+      item: {
+        id: branch.id,
+        userId: branch.userId,
+        createdAt: branch.createdAt,
+        updatedAt: branch.updatedAt,
+        branchName: branch.branchName,
+      },
+    };
   }
 
   @Get(':repoId/:id')
   @HttpCode(HttpStatus.OK)
-  async findUserRepo(@Request() req, @Param() param) {
-    const result = await this.branchService.findBranch({
+  @ApiParam({
+    name: 'id',
+    type: 'number',
+    required: true,
+  })
+  @ApiParam({
+    name: 'repoId',
+    type: 'number',
+    required: true,
+  })
+  @ApiOperation({
+    summary: '브랜치 조회',
+    description: '브랜치를 조회합니다.',
+  })
+  @ApiOkResponse({
+    type: ResFindBranchDto,
+    status: HttpStatus.OK,
+  })
+  async findUserRepo(
+    @Request() req,
+    @Param() param,
+  ): Promise<ResFindBranchDto> {
+    const branch = await this.branchService.findBranch({
       ...param,
       userId: req.user.id,
     });
-    return result;
+    return {
+      statusCode: HttpStatus.OK,
+      message: '브랜치를 조회했습니다..',
+      item: {
+        id: branch.id,
+        userId: branch.userId,
+        createdAt: branch.createdAt,
+        updatedAt: branch.updatedAt,
+        branchName: branch.branchName,
+      },
+    };
   }
 
   @Post(':repoId/sync')
