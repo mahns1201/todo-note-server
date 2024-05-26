@@ -1,5 +1,4 @@
 import {
-  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -13,13 +12,7 @@ export class TaskService {
   constructor(private readonly taskDao: TaskDao) {}
 
   async createTask(dto: CreateTaskDto) {
-    const task = await this.taskDao.create(dto);
-
-    return {
-      httpStatus: HttpStatus.CREATED,
-      message: 'Task created successfully.',
-      item: task,
-    };
+    return await this.taskDao.create(dto);
   }
 
   async findTask(dto: FindTaskByIdDto) {
@@ -34,17 +27,6 @@ export class TaskService {
       throw new UnauthorizedException('Access denied.');
     }
 
-    return {
-      httpStatus: HttpStatus.OK,
-      message: 'Task found.',
-      item: {
-        ...task,
-        user: {
-          id: task.user.id,
-          email: task.user.email,
-          githubId: task.user.githubId,
-        },
-      },
-    };
+    return task;
   }
 }

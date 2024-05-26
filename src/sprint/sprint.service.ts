@@ -1,5 +1,4 @@
 import {
-  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -13,13 +12,7 @@ export class SprintService {
   constructor(private readonly sprintDao: SprintDao) {}
 
   async createSprint(dto: CreateSprintDto) {
-    const sprint = await this.sprintDao.create(dto);
-
-    return {
-      httpStatus: HttpStatus.CREATED,
-      message: '스프린트가 생성되었습니다.',
-      item: sprint,
-    };
+    return await this.sprintDao.create(dto);
   }
 
   async findSprint(dto: FindSprintByIdDto) {
@@ -34,17 +27,6 @@ export class SprintService {
       throw new UnauthorizedException('접근 권한이 없습니다.');
     }
 
-    return {
-      httpStatus: HttpStatus.OK,
-      message: '스프린트를 찾았습니다.',
-      item: {
-        ...sprint,
-        user: {
-          id: sprint.user.id,
-          email: sprint.user.email,
-          githubId: sprint.user.githubId,
-        },
-      },
-    };
+    return sprint;
   }
 }
