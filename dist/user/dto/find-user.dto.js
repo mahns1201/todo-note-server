@@ -9,23 +9,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OutputFindUserDto = exports.InputFindUserDto = void 0;
-const common_dto_1 = require("../../common/common.dto");
+exports.ResFindUserDto = exports.FindUserByEmailDto = exports.FindUserByIdDto = void 0;
 const user_dto_1 = require("./user.dto");
 const swagger_1 = require("@nestjs/swagger");
-class OutputUserDto extends (0, swagger_1.OmitType)(user_dto_1.UserDto, [
-    'password',
-    'githubAccessToken',
-]) {
+const res_dto_1 = require("../../common/dto/res.dto");
+class FindUserByIdDto extends (0, swagger_1.PickType)(user_dto_1.UserDto, ['id']) {
 }
-class InputFindUserDto extends (0, swagger_1.PickType)(user_dto_1.UserDto, ['id']) {
+exports.FindUserByIdDto = FindUserByIdDto;
+class FindUserByEmailDto extends (0, swagger_1.PickType)(user_dto_1.UserDto, ['email']) {
 }
-exports.InputFindUserDto = InputFindUserDto;
-class OutputFindUserDto extends common_dto_1.BaseResponseDto {
+exports.FindUserByEmailDto = FindUserByEmailDto;
+class ResFindUserDto extends res_dto_1.ResDto {
 }
+exports.ResFindUserDto = ResFindUserDto;
 __decorate([
-    (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", OutputUserDto)
-], OutputFindUserDto.prototype, "item", void 0);
-exports.OutputFindUserDto = OutputFindUserDto;
+    (0, swagger_1.ApiProperty)({ description: '조회된 유저' }),
+    __metadata("design:type", user_dto_1.ResUserDto)
+], ResFindUserDto.prototype, "item", void 0);
 //# sourceMappingURL=find-user.dto.js.map

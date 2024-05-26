@@ -1,8 +1,9 @@
 import { UserService } from './user.service';
-import { OutputFindUserDto } from './dto/find-user.dto';
-import { jwtUserT } from 'src/constant/jwt.constant';
+import { CreateUserDto, ResCreateUserDto } from './dto/create-user.dto';
+import { ResFindUserDto } from './dto/find-user.dto';
 export declare class UserController {
     private userService;
     constructor(userService: UserService);
-    findOne(jUser: jwtUserT): Promise<OutputFindUserDto>;
+    createUser(body: CreateUserDto): Promise<ResCreateUserDto>;
+    findUser(req: any): Promise<ResFindUserDto>;
 }

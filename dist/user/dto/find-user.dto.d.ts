@@ -1,12 +1,12 @@
-import { BaseResponseDto } from 'src/common/common.dto';
-import { UserDto } from './user.dto';
-declare const OutputUserDto_base: import("@nestjs/common").Type<Omit<UserDto, "password" | "githubAccessToken">>;
-declare class OutputUserDto extends OutputUserDto_base {
+import { ResUserDto, UserDto } from './user.dto';
+import { ResDto } from 'src/common/dto/res.dto';
+declare const FindUserByIdDto_base: import("@nestjs/common").Type<Pick<UserDto, "id">>;
+export declare class FindUserByIdDto extends FindUserByIdDto_base {
 }
-declare const InputFindUserDto_base: import("@nestjs/common").Type<Pick<UserDto, "id">>;
-export declare class InputFindUserDto extends InputFindUserDto_base {
+declare const FindUserByEmailDto_base: import("@nestjs/common").Type<Pick<UserDto, "email">>;
+export declare class FindUserByEmailDto extends FindUserByEmailDto_base {
 }
-export declare class OutputFindUserDto extends BaseResponseDto {
-    item: OutputUserDto;
+export declare class ResFindUserDto extends ResDto {
+    item: ResUserDto;
 }
 export {};

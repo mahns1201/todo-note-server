@@ -9,40 +9,48 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TaskDto = void 0;
+exports.ResTaskDto = exports.TaskDto = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
-class TaskDto {
+const common_dto_1 = require("../../common/common.dto");
+class TaskDto extends common_dto_1.BaseDto {
 }
+exports.TaskDto = TaskDto;
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
     (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", Number)
-], TaskDto.prototype, "id", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
-    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", Number)
-], TaskDto.prototype, "user", void 0);
+], TaskDto.prototype, "userId", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNumber)(),
-    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", Number)
-], TaskDto.prototype, "repo", void 0);
+], TaskDto.prototype, "repoId", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], TaskDto.prototype, "title", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
     (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], TaskDto.prototype, "content", void 0);
-exports.TaskDto = TaskDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], TaskDto.prototype, "isGithubIssue", void 0);
+class ResTaskDto extends (0, swagger_1.PickType)(TaskDto, [
+    'id',
+    'createdAt',
+    'updatedAt',
+    'userId',
+    'repoId',
+    'title',
+    'content',
+    'isGithubIssue',
+]) {
+}
+exports.ResTaskDto = ResTaskDto;
 //# sourceMappingURL=task.dto.js.map

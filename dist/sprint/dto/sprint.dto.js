@@ -9,51 +9,48 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SprintDto = void 0;
+exports.ResSprintDto = exports.SprintDto = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 const common_dto_1 = require("../../common/common.dto");
-class SprintDto extends common_dto_1.BaseTimeDto {
+class SprintDto extends common_dto_1.BaseDto {
 }
+exports.SprintDto = SprintDto;
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
-], SprintDto.prototype, "id", void 0);
+], SprintDto.prototype, "userId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], SprintDto.prototype, "user", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], SprintDto.prototype, "repo", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], SprintDto.prototype, "title", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], SprintDto.prototype, "description", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Object)
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", Date)
 ], SprintDto.prototype, "startAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Object)
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", Date)
 ], SprintDto.prototype, "endAt", void 0);
-exports.SprintDto = SprintDto;
+class ResSprintDto extends (0, swagger_1.PickType)(SprintDto, [
+    'id',
+    'createdAt',
+    'updatedAt',
+    'userId',
+    'title',
+    'description',
+    'startAt',
+    'endAt',
+]) {
+}
+exports.ResSprintDto = ResSprintDto;
 //# sourceMappingURL=sprint.dto.js.map

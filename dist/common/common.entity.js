@@ -13,6 +13,7 @@ exports.BaseEntity = void 0;
 const typeorm_1 = require("typeorm");
 class BaseEntity {
 }
+exports.BaseEntity = BaseEntity;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
@@ -33,5 +34,4 @@ __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], BaseEntity.prototype, "isDeleted", void 0);
-exports.BaseEntity = BaseEntity;
 //# sourceMappingURL=common.entity.js.map

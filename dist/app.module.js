@@ -11,13 +11,12 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
 const user_module_1 = require("./user/user.module");
-const github_oauth_module_1 = require("./auth/github/github-oauth.module");
+const auth_module_1 = require("./auth/auth.module");
 const repo_module_1 = require("./repo/repo.module");
-const auth_module_1 = require("./auth/jwt/auth.module");
-const task_module_1 = require("./task/task.module");
+const branch_module_1 = require("./branch/branch.module");
 const sprint_module_1 = require("./sprint/sprint.module");
+const task_module_1 = require("./task/task.module");
 const github_module_1 = require("./github/github.module");
-const upload_module_1 = require("./upload/upload.module");
 let LoggerMiddleware = class LoggerMiddleware {
     constructor() {
         this.logger = new common_1.Logger('HTTP');
@@ -32,21 +31,22 @@ let LoggerMiddleware = class LoggerMiddleware {
         next();
     }
 };
-LoggerMiddleware = __decorate([
+exports.LoggerMiddleware = LoggerMiddleware;
+exports.LoggerMiddleware = LoggerMiddleware = __decorate([
     (0, common_1.Injectable)()
 ], LoggerMiddleware);
-exports.LoggerMiddleware = LoggerMiddleware;
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(LoggerMiddleware).forRoutes('*');
     }
 };
-AppModule = __decorate([
+exports.AppModule = AppModule;
+exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                envFilePath: `./config/.${process.env.NODE_ENV}.env`,
+                envFilePath: `./.env`,
             }),
             typeorm_1.TypeOrmModule.forRootAsync({
                 useFactory: () => ({
@@ -54,24 +54,22 @@ AppModule = __decorate([
                     host: process.env.MYSQL_HOST,
                     port: parseInt(process.env.MYSQL_PORT, 10),
                     database: process.env.MYSQL_DATABASE,
-                    username: process.env.MYSQL_ROOT_USER,
-                    password: process.env.MYSQL_ROOT_PASSWORD,
+                    username: process.env.MYSQL_USER,
+                    password: process.env.MYSQL_PASSWORD,
                     autoLoadEntities: true,
                     synchronize: true,
                 }),
             }),
-            auth_module_1.AuthModule,
-            github_oauth_module_1.GithubOauthModule,
             user_module_1.UserModule,
+            auth_module_1.AuthModule,
             repo_module_1.RepoModule,
+            branch_module_1.BranchModule,
             sprint_module_1.SprintModule,
             task_module_1.TaskModule,
-            upload_module_1.UploadModule,
             github_module_1.GithubModule,
         ],
         controllers: [],
         providers: [],
     })
 ], AppModule);
-exports.AppModule = AppModule;
 //# sourceMappingURL=app.module.js.map

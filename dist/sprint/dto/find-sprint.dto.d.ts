@@ -1,12 +1,9 @@
-import { PagingResponseDto } from 'src/common/common.dto';
-import { UserDto } from 'src/user/dto/user.dto';
-import { SprintEntity } from '../entity/sprint.entity';
-declare const InputFindSprintsDto_base: import("@nestjs/common").Type<Pick<UserDto, "id">>;
-export declare class InputFindSprintsDto extends InputFindSprintsDto_base {
-    page: number;
-    limit: number;
+import { ResDto } from 'src/common/dto/res.dto';
+import { ResSprintDto } from './sprint.dto';
+export declare class FindSprintByIdDto {
+    userId: number;
+    id: number;
 }
-export declare class OutputFindSprintsDto extends PagingResponseDto {
-    items: SprintEntity[];
+export declare class ResFindSprintDto extends ResDto {
+    item: ResSprintDto;
 }
-export {};

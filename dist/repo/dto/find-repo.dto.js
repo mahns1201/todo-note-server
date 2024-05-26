@@ -9,28 +9,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OutputFindReposDto = exports.InputFindReposDto = exports.InputFindAllReposDto = exports.InputFindRepoDto = exports.OutputReposDto = void 0;
-const common_dto_1 = require("../../common/common.dto");
+exports.ResFindRepoDto = exports.FindRepoByIdDto = void 0;
+const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
-const user_dto_1 = require("../../user/dto/user.dto");
+const res_dto_1 = require("../../common/dto/res.dto");
 const repo_dto_1 = require("./repo.dto");
-class OutputReposDto extends (0, swagger_1.OmitType)(repo_dto_1.RepoDto, ['user']) {
+class FindRepoByIdDto {
 }
-exports.OutputReposDto = OutputReposDto;
-class InputFindRepoDto extends (0, swagger_1.PickType)(repo_dto_1.RepoDto, ['id']) {
-}
-exports.InputFindRepoDto = InputFindRepoDto;
-class InputFindAllReposDto extends (0, swagger_1.PickType)(user_dto_1.UserDto, ['id']) {
-}
-exports.InputFindAllReposDto = InputFindAllReposDto;
-class InputFindReposDto extends (0, swagger_1.PickType)(user_dto_1.UserDto, ['id']) {
-}
-exports.InputFindReposDto = InputFindReposDto;
-class OutputFindReposDto extends common_dto_1.PagingResponseDto {
-}
+exports.FindRepoByIdDto = FindRepoByIdDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ isArray: true }),
-    __metadata("design:type", OutputReposDto)
-], OutputFindReposDto.prototype, "items", void 0);
-exports.OutputFindReposDto = OutputFindReposDto;
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], FindRepoByIdDto.prototype, "id", void 0);
+class ResFindRepoDto extends res_dto_1.ResDto {
+}
+exports.ResFindRepoDto = ResFindRepoDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '조회된 레포지토리' }),
+    __metadata("design:type", repo_dto_1.ResRepoDto)
+], ResFindRepoDto.prototype, "item", void 0);
 //# sourceMappingURL=find-repo.dto.js.map

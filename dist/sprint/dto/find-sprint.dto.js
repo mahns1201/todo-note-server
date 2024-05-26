@@ -9,18 +9,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OutputFindSprintsDto = exports.InputFindSprintsDto = void 0;
-const common_dto_1 = require("../../common/common.dto");
+exports.ResFindSprintDto = exports.FindSprintByIdDto = void 0;
+const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
-const user_dto_1 = require("../../user/dto/user.dto");
-class InputFindSprintsDto extends (0, swagger_1.PickType)(user_dto_1.UserDto, ['id']) {
+const res_dto_1 = require("../../common/dto/res.dto");
+const sprint_dto_1 = require("./sprint.dto");
+class FindSprintByIdDto {
 }
-exports.InputFindSprintsDto = InputFindSprintsDto;
-class OutputFindSprintsDto extends common_dto_1.PagingResponseDto {
-}
+exports.FindSprintByIdDto = FindSprintByIdDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ isArray: true }),
-    __metadata("design:type", Array)
-], OutputFindSprintsDto.prototype, "items", void 0);
-exports.OutputFindSprintsDto = OutputFindSprintsDto;
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], FindSprintByIdDto.prototype, "id", void 0);
+class ResFindSprintDto extends res_dto_1.ResDto {
+}
+exports.ResFindSprintDto = ResFindSprintDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '조회된 스프린트' }),
+    __metadata("design:type", sprint_dto_1.ResSprintDto)
+], ResFindSprintDto.prototype, "item", void 0);
 //# sourceMappingURL=find-sprint.dto.js.map

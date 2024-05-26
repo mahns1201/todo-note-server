@@ -1,36 +1,32 @@
 import { HttpStatus } from '@nestjs/common';
-export declare class BaseTimeDto {
+export declare class BaseDto {
+    id: number;
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date;
+    isDeleted: boolean;
 }
-export declare class BaseResponseDto {
-    httpStatus: HttpStatus;
-    message: string;
+export declare class TokenDto {
+    accessToken: string;
+    githubToken: string;
 }
-export declare class ErrorResponseDto extends BaseResponseDto {
-    error: string;
-}
-export declare class PagingRequestDto {
+export declare class PagingReqDto {
     page: number;
-    limit: number;
+    pageSize: number;
+    orderBy: string;
+    sortBy: string;
 }
-export declare class PagingResponseDto extends BaseResponseDto {
-    currentPage: number;
-    limit: number;
-    totalCount: number;
-}
-export interface ServiceResultDto<T> {
-    items?: T;
-    item?: T;
-}
-export interface ServicePagingResultDto<T> {
-    items?: T;
-    totalCount: number;
-}
-export declare class SwaggerResponseDto<T> {
-    httpStatus: HttpStatus;
+export declare class CommonResDto {
+    statusCode: HttpStatus;
     message: string;
-    items?: T[];
-    item?: T;
+}
+export declare class ResDto<T> extends CommonResDto {
+    statusCode: HttpStatus;
+    message: string;
+    item: T;
+}
+export declare class ListResDto<T> extends CommonResDto {
+    statusCode: HttpStatus;
+    message: string;
+    items: T[];
 }

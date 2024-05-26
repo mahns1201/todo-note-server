@@ -14,104 +14,98 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskController = void 0;
 const common_1 = require("@nestjs/common");
-const swagger_1 = require("@nestjs/swagger");
+const jwt_auth_guard_1 = require("../auth/guard/jwt-auth.guard");
 const task_service_1 = require("./task.service");
-const auth_guard_1 = require("../auth/jwt/auth.guard");
-const user_decorator_1 = require("../decorator/user.decorator");
+const create_task_dto_1 = require("./dto/create-task.dto");
+const swagger_1 = require("@nestjs/swagger");
+const find_task_dto_1 = require("./dto/find-task.dto");
 let TaskController = class TaskController {
     constructor(taskService) {
         this.taskService = taskService;
     }
-    async createTask(request, body) {
-        const { id: userId } = request.user;
-        const input = Object.assign({ userId }, body);
-        const newTask = await this.taskService.createOne(input);
-        const httpStatus = !newTask
-            ? common_1.HttpStatus.INTERNAL_SERVER_ERROR
-            : common_1.HttpStatus.CREATED;
-        const message = !newTask
-            ? '태스크 생성에 실패했습니다.'
-            : '태스크가 성공적으로 생성되었습니다.';
-        const result = { httpStatus, message, item: newTask };
-        return result;
+    async createTask(req, body) {
+        const task = await this.taskService.createTask(Object.assign(Object.assign({}, body), { userId: req.user.id }));
+        return {
+            statusCode: common_1.HttpStatus.CREATED,
+            message: '태스크를 생성했습니다.',
+            item: {
+                id: task.id,
+                createdAt: task.createdAt,
+                updatedAt: task.updatedAt,
+                userId: task.userId,
+                repoId: task.repoId,
+                title: task.title,
+                content: task.content,
+                isGithubIssue: task.isGithubIssue,
+            },
+        };
     }
-    async findTaskById(user, param) {
-        const { id: taskId } = param;
-        const { item: task } = await this.taskService.findOne(taskId);
-        const httpStatus = !task ? common_1.HttpStatus.NOT_FOUND : common_1.HttpStatus.OK;
-        const message = !task
-            ? '태스크를 해당 id로 찾을 수 없습니다.'
-            : '태스크를 성공적으로 찾았습니다.';
-        const result = { item: task, httpStatus, message };
-        return result;
+    async findTask(req, param) {
+        const result = await this.taskService.findTask({
+            id: param.id,
+            userId: req.user.id,
+        });
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: '태스크를 조회했습니다.',
+            item: {
+                id: result.id,
+                createdAt: result.createdAt,
+                updatedAt: result.updatedAt,
+                userId: result.userId,
+                repoId: result.repoId,
+                title: result.title,
+                content: result.content,
+                isGithubIssue: result.isGithubIssue,
+            },
+        };
     }
 };
+exports.TaskController = TaskController;
 __decorate([
     (0, common_1.Post)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
-    (0, swagger_1.ApiHeader)({
-        name: 'JWT',
-        description: 'Bearer JWT 토큰을 해더에 담아서 요청',
-    }),
-    (0, swagger_1.ApiBody)({
-        schema: {
-            type: 'object',
-            properties: {
-                repoId: {
-                    type: 'number',
-                    description: 'repoId',
-                },
-                repoBranchId: {
-                    type: 'number',
-                    description: 'repoBranchId',
-                },
-                title: {
-                    type: 'string',
-                    description: '제목',
-                },
-                content: {
-                    type: 'string',
-                    description: '내용',
-                },
-            },
-        },
-    }),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 생성',
         description: '새로운 태스크를 생성합니다.',
     }),
+    (0, swagger_1.ApiCreatedResponse)({
+        type: create_task_dto_1.ResCreateTaskDto,
+        status: common_1.HttpStatus.CREATED,
+        description: '태스크를 성공적으로 생성하였습니다.',
+    }),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, create_task_dto_1.CreateTaskDto]),
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "createTask", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiHeader)({
-        name: 'JWT',
-        description: 'Bearer JWT 토큰을 해더에 담아서 요청',
-    }),
-    (0, swagger_1.ApiParam)({
-        name: 'id',
-        description: 'taskId',
-    }),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 조회',
-        description: 'parameter에 id를 넘겨 태스크를 조회합니다.',
+        description: '태스크를 조회합니다.',
     }),
-    __param(0, (0, user_decorator_1.User)()),
+    (0, swagger_1.ApiParam)({
+        type: Number,
+        name: 'id',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        type: find_task_dto_1.ResFindTaskDto,
+        status: common_1.HttpStatus.OK,
+    }),
+    __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Param)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], TaskController.prototype, "findTaskById", null);
-TaskController = __decorate([
+], TaskController.prototype, "findTask", null);
+exports.TaskController = TaskController = __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('task'),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, swagger_1.ApiBearerAuth)('accessToken'),
     (0, swagger_1.ApiTags)('task'),
     __metadata("design:paramtypes", [task_service_1.TaskService])
 ], TaskController);
-exports.TaskController = TaskController;
 //# sourceMappingURL=task.controller.js.map

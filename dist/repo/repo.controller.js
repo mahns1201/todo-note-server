@@ -14,126 +14,175 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RepoController = void 0;
 const common_1 = require("@nestjs/common");
-const swagger_1 = require("@nestjs/swagger");
+const jwt_auth_guard_1 = require("../auth/guard/jwt-auth.guard");
 const repo_service_1 = require("./repo.service");
-const user_service_1 = require("../user/user.service");
-const auth_guard_1 = require("../auth/jwt/auth.guard");
-const user_decorator_1 = require("../decorator/user.decorator");
-const find_repo_dto_1 = require("./dto/find-repo.dto");
+const create_repo_dto_1 = require("./dto/create-repo.dto");
 const common_dto_1 = require("../common/common.dto");
+const swagger_1 = require("@nestjs/swagger");
+const find_repo_dto_1 = require("./dto/find-repo.dto");
+const find_repos_dto_1 = require("./dto/find-repos.dto");
+const sync_repo_dto_1 = require("./dto/sync-repo.dto");
 let RepoController = class RepoController {
-    constructor(repoService, userService) {
+    constructor(repoService) {
         this.repoService = repoService;
-        this.userService = userService;
     }
-    async findUserRepos(user, query) {
-        const { page, limit } = query;
-        const { items, totalCount } = await this.repoService.find({
-            id: user.id,
-            page,
-            limit,
-        });
+    async createRepo(req, body) {
+        const repo = await this.repoService.createRepo(Object.assign(Object.assign({}, body), { userId: req.user.id }));
         return {
-            httpStatus: common_1.HttpStatus.OK,
-            message: `${page}p 레포지토리 리스트를 성공적으로 조회했습니다.`,
-            currentPage: page,
-            limit,
-            totalCount,
-            items,
+            message: '레포지토리를 생성했습니다.',
+            statusCode: common_1.HttpStatus.CREATED,
+            item: {
+                id: repo.id,
+                createdAt: repo.createdAt,
+                updatedAt: repo.updatedAt,
+                userId: repo.userId,
+                repoName: repo.repoName,
+                defaultBranch: repo.defaultBranch,
+                htmlUrl: repo.htmlUrl,
+                isPrivate: repo.isPrivate,
+                isFork: repo.isFork,
+                imageUrl: repo.imageUrl,
+                description: repo.description,
+                language: repo.language,
+                ownerAvatarUrl: repo.ownerAvatarUrl,
+                synchronizedAt: repo.synchronizedAt,
+            },
         };
     }
-    async syncRepoByGithub(user, res) {
-        let message = '모두 동기화 완료 상태입니다.';
-        let httpStatus = common_1.HttpStatus.OK;
-        const { id: userId, username } = user;
-        const { item: githubAccessToken } = await this.userService.getGithubAccessToken({ id: userId });
-        const githubRepositories = await this.repoService.getRepoListFromGithub(githubAccessToken, username);
-        const { items: userRepos } = await this.repoService.findAll({
-            id: userId,
+    async findUserRepos(req, query) {
+        const repos = await this.repoService.findRepos({
+            userId: req.user.id,
+            page: query.page,
+            pageSize: query.pageSize,
+            orderBy: query.orderBy,
+            sortBy: query.sortBy,
         });
-        const { item: { syncRepoNames, syncCount: syncRepoCount }, } = await this.repoService.syncUserRepos(userId, githubRepositories, userRepos);
-        if (syncRepoCount) {
-            message = `${syncRepoCount}개 레포지토리 동기화: [${syncRepoNames}]`;
-            httpStatus = common_1.HttpStatus.CREATED;
-        }
-        for (const repoName of syncRepoNames) {
-            const githubRepoBranches = await this.repoService.getRepoBranchesFromGithub(githubAccessToken, username, repoName);
-            if (!githubRepoBranches || !githubRepoBranches.length) {
-                continue;
-            }
-            const { item: { id: repoId }, } = await this.repoService.findRepoByUserIdAndRepoName(userId, repoName);
-            const repoBranches = await this.repoService.findRepoBranchesByRepoId(repoId);
-            const { item: { syncBranchNames }, } = await this.repoService.syncRepoBranches(repoId, githubRepoBranches, repoBranches);
-            if (syncBranchNames.length) {
-                message += `\n레포지토리 ${repoName}의 ${syncBranchNames.length}개 브랜치 동기화: [${syncBranchNames}]`;
-            }
-        }
-        res.status(httpStatus).json({ message, httpStatus });
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: '레포지토리 리스트를 조회했습니다.',
+            items: repos[0],
+        };
+    }
+    async findUserRepo(req, param) {
+        const repo = await this.repoService.findRepo({
+            id: param.id,
+            userId: req.user.id,
+        });
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: '레포지토리를 조회했습니다.',
+            item: {
+                id: repo.id,
+                createdAt: repo.createdAt,
+                updatedAt: repo.updatedAt,
+                userId: repo.userId,
+                repoName: repo.repoName,
+                defaultBranch: repo.defaultBranch,
+                htmlUrl: repo.htmlUrl,
+                isPrivate: repo.isPrivate,
+                isFork: repo.isFork,
+                imageUrl: repo.imageUrl,
+                description: repo.description,
+                language: repo.language,
+                ownerAvatarUrl: repo.ownerAvatarUrl,
+                synchronizedAt: repo.synchronizedAt,
+            },
+        };
+    }
+    async syncUserRepos(req) {
+        const { syncRepoNames, syncCount } = await this.repoService.syncUserRepos({
+            userId: req.user.id,
+        });
+        return {
+            statusCode: common_1.HttpStatus.CREATED,
+            message: `${syncCount}개 레포지토리가 동기화됐습니다.`,
+            items: syncRepoNames,
+        };
     }
 };
+exports.RepoController = RepoController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
+    (0, swagger_1.ApiOperation)({
+        summary: '레포지토리 생성',
+        description: '새로운 레포지토리를 생성합니다.',
+    }),
+    (0, swagger_1.ApiCreatedResponse)({
+        type: create_repo_dto_1.ResCreateRepoDto,
+        status: common_1.HttpStatus.CREATED,
+        description: '레포지토리를 성공적으로 생성하였습니다.',
+    }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, create_repo_dto_1.CreateRepoDto]),
+    __metadata("design:returntype", Promise)
+], RepoController.prototype, "createRepo", null);
 __decorate([
     (0, common_1.Get)('list'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: '유저의 레포지토리 리스트를 조회한다.' }),
+    (0, swagger_1.ApiOperation)({
+        summary: '레포지토리 리스트 조회',
+        description: '레포지토리 리스트를 조회합니다.',
+    }),
+    (0, swagger_1.ApiQuery)({
+        type: common_dto_1.PagingReqDto,
+        name: '페이징 요청',
+    }),
     (0, swagger_1.ApiOkResponse)({
-        type: find_repo_dto_1.OutputFindReposDto,
+        type: find_repos_dto_1.ResFindReposDto,
         status: common_1.HttpStatus.OK,
     }),
-    (0, swagger_1.ApiBadRequestResponse)({
-        type: common_dto_1.ErrorResponseDto,
-        status: common_1.HttpStatus.BAD_REQUEST,
-    }),
-    (0, swagger_1.ApiUnauthorizedResponse)({
-        type: common_dto_1.ErrorResponseDto,
-        status: common_1.HttpStatus.UNAUTHORIZED,
-    }),
-    (0, swagger_1.ApiNotFoundResponse)({
-        type: common_dto_1.ErrorResponseDto,
-        status: common_1.HttpStatus.NOT_FOUND,
-    }),
-    (0, swagger_1.ApiInternalServerErrorResponse)({
-        type: common_dto_1.ErrorResponseDto,
-        status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
-    }),
-    __param(0, (0, user_decorator_1.User)()),
+    __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, common_dto_1.PagingRequestDto]),
-    __metadata("design:returntype", Promise)
-], RepoController.prototype, "findUserRepos", null);
-__decorate([
-    (0, common_1.Post)('github/sync'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: '유저의 레포지토리/브랜치를 깃허브와 동기화 한다.' }),
-    (0, swagger_1.ApiOkResponse)({
-        type: common_dto_1.BaseResponseDto,
-        status: common_1.HttpStatus.OK,
-    }),
-    (0, swagger_1.ApiCreatedResponse)({
-        type: common_dto_1.BaseResponseDto,
-        status: common_1.HttpStatus.OK,
-    }),
-    (0, swagger_1.ApiUnauthorizedResponse)({
-        type: common_dto_1.ErrorResponseDto,
-        status: common_1.HttpStatus.UNAUTHORIZED,
-    }),
-    (0, swagger_1.ApiInternalServerErrorResponse)({
-        type: common_dto_1.ErrorResponseDto,
-        status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
-    }),
-    __param(0, (0, user_decorator_1.User)()),
-    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], RepoController.prototype, "syncRepoByGithub", null);
-RepoController = __decorate([
+], RepoController.prototype, "findUserRepos", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiParam)({
+        type: Number,
+        name: 'id',
+    }),
+    (0, swagger_1.ApiOperation)({
+        summary: '레포지토리 조회',
+        description: '레포지토리를 조회합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        type: find_repo_dto_1.ResFindRepoDto,
+        status: common_1.HttpStatus.OK,
+    }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], RepoController.prototype, "findUserRepo", null);
+__decorate([
+    (0, common_1.Post)('sync'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
+    (0, swagger_1.ApiOperation)({
+        summary: '레포지토리 동기화',
+        description: '깃허브 레포지토리를 동기화합니다.',
+    }),
+    (0, swagger_1.ApiCreatedResponse)({
+        type: sync_repo_dto_1.ResSyncRepoDto,
+        status: common_1.HttpStatus.CREATED,
+        description: '레포지토리를 성공적으로 동기화 하였습니다.',
+    }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], RepoController.prototype, "syncUserRepos", null);
+exports.RepoController = RepoController = __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('repo'),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    (0, swagger_1.ApiTags)('repository'),
     (0, swagger_1.ApiBearerAuth)('accessToken'),
-    __metadata("design:paramtypes", [repo_service_1.RepoService,
-        user_service_1.UserService])
+    (0, swagger_1.ApiTags)('repo'),
+    __metadata("design:paramtypes", [repo_service_1.RepoService])
 ], RepoController);
-exports.RepoController = RepoController;
 //# sourceMappingURL=repo.controller.js.map

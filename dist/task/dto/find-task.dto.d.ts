@@ -1,5 +1,9 @@
-import { TaskDto } from './task.dto';
-declare const InputFindTaskDto_base: import("@nestjs/common").Type<Pick<TaskDto, "id">>;
-export declare class InputFindTaskDto extends InputFindTaskDto_base {
+import { ResDto } from 'src/common/dto/res.dto';
+import { ResTaskDto } from './task.dto';
+export declare class FindTaskByIdDto {
+    userId: number;
+    id: number;
 }
-export {};
+export declare class ResFindTaskDto extends ResDto {
+    item: ResTaskDto;
+}

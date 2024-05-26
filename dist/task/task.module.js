@@ -10,31 +10,18 @@ exports.TaskModule = void 0;
 const common_1 = require("@nestjs/common");
 const task_controller_1 = require("./task.controller");
 const task_service_1 = require("./task.service");
-const task_entity_1 = require("./entity/task.entity");
 const typeorm_1 = require("@nestjs/typeorm");
-const upload_service_1 = require("../upload/upload.service");
-const upload_entity_1 = require("../upload/entity/upload.entity");
-const repo_service_1 = require("../repo/repo.service");
-const repo_entity_1 = require("../repo/entity/repo.entity");
-const repo_branch_entity_1 = require("../repo/entity/repo-branch.entity");
-const user_service_1 = require("../user/user.service");
-const user_entity_1 = require("../user/entity/user.entity");
+const task_entity_1 = require("./task.entity");
+const task_dao_1 = require("./task.dao");
 let TaskModule = class TaskModule {
 };
-TaskModule = __decorate([
+exports.TaskModule = TaskModule;
+exports.TaskModule = TaskModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forFeature([
-                task_entity_1.TaskEntity,
-                user_entity_1.UserEntity,
-                repo_entity_1.RepoEntity,
-                repo_branch_entity_1.RepoBranchEntity,
-                upload_entity_1.UploadEntity,
-            ]),
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([task_entity_1.TaskEntity])],
         controllers: [task_controller_1.TaskController],
-        providers: [task_service_1.TaskService, user_service_1.UserService, repo_service_1.RepoService, upload_service_1.UploadService],
+        providers: [task_service_1.TaskService, task_dao_1.TaskDao],
+        exports: [task_dao_1.TaskDao],
     })
 ], TaskModule);
-exports.TaskModule = TaskModule;
 //# sourceMappingURL=task.module.js.map

@@ -1,20 +1,13 @@
-import { HttpStatus } from '@nestjs/common';
 import { RepoService } from './repo.service';
-import { UserService } from 'src/user/user.service';
-import { jwtUserT } from 'src/constant/jwt.constant';
-import { PagingRequestDto } from 'src/common/common.dto';
-import { Response } from 'express';
+import { CreateRepoDto, ResCreateRepoDto } from './dto/create-repo.dto';
+import { ResFindRepoDto } from './dto/find-repo.dto';
+import { ResFindReposDto } from './dto/find-repos.dto';
+import { ResSyncRepoDto } from './dto/sync-repo.dto';
 export declare class RepoController {
     private repoService;
-    private userService;
-    constructor(repoService: RepoService, userService: UserService);
-    findUserRepos(user: jwtUserT, query: PagingRequestDto): Promise<{
-        httpStatus: HttpStatus;
-        message: string;
-        currentPage: number;
-        limit: number;
-        totalCount: number;
-        items: import("./entity/repo.entity").RepoEntity[];
-    }>;
-    syncRepoByGithub(user: jwtUserT, res: Response): Promise<void>;
+    constructor(repoService: RepoService);
+    createRepo(req: any, body: CreateRepoDto): Promise<ResCreateRepoDto>;
+    findUserRepos(req: any, query: any): Promise<ResFindReposDto>;
+    findUserRepo(req: any, param: any): Promise<ResFindRepoDto>;
+    syncUserRepos(req: any): Promise<ResSyncRepoDto>;
 }

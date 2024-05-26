@@ -9,25 +9,43 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OutputCreateSprintDto = exports.InputCreateSprintDto = void 0;
+exports.ResCreateSprintDto = exports.CreateSprintDto = void 0;
+const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
+const res_dto_1 = require("../../common/dto/res.dto");
 const sprint_dto_1 = require("./sprint.dto");
-const common_dto_1 = require("../../common/common.dto");
-const sprint_entity_1 = require("../entity/sprint.entity");
-class InputCreateSprintDto extends (0, swagger_1.OmitType)(sprint_dto_1.SprintDto, [
-    'id',
-    'user',
-    'createdAt',
-    'updatedAt',
-    'deletedAt',
-]) {
+class CreateSprintDto {
 }
-exports.InputCreateSprintDto = InputCreateSprintDto;
-class OutputCreateSprintDto extends common_dto_1.BaseResponseDto {
-}
+exports.CreateSprintDto = CreateSprintDto;
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", sprint_entity_1.SprintEntity)
-], OutputCreateSprintDto.prototype, "item", void 0);
-exports.OutputCreateSprintDto = OutputCreateSprintDto;
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateSprintDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateSprintDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", Date)
+], CreateSprintDto.prototype, "startAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", Date)
+], CreateSprintDto.prototype, "endAt", void 0);
+class ResCreateSprintDto extends res_dto_1.ResDto {
+}
+exports.ResCreateSprintDto = ResCreateSprintDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '조회된 스프린트' }),
+    __metadata("design:type", sprint_dto_1.ResSprintDto)
+], ResCreateSprintDto.prototype, "item", void 0);
 //# sourceMappingURL=create-sprint.dto.js.map

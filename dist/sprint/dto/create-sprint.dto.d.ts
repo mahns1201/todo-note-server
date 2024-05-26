@@ -1,10 +1,12 @@
-import { SprintDto } from './sprint.dto';
-import { BaseResponseDto } from 'src/common/common.dto';
-import { SprintEntity } from '../entity/sprint.entity';
-declare const InputCreateSprintDto_base: import("@nestjs/common").Type<Omit<SprintDto, "id" | "createdAt" | "updatedAt" | "deletedAt" | "user">>;
-export declare class InputCreateSprintDto extends InputCreateSprintDto_base {
+import { ResDto } from 'src/common/dto/res.dto';
+import { ResSprintDto } from './sprint.dto';
+export declare class CreateSprintDto {
+    userId: number;
+    title: string;
+    description: string;
+    startAt: Date;
+    endAt: Date;
 }
-export declare class OutputCreateSprintDto extends BaseResponseDto {
-    item: SprintEntity;
+export declare class ResCreateSprintDto extends ResDto {
+    item: ResSprintDto;
 }
-export {};

@@ -9,18 +9,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserDto = void 0;
+exports.ResUserTokenDto = exports.ResUserDto = exports.UserDto = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 const common_dto_1 = require("../../common/common.dto");
-class UserDto extends common_dto_1.BaseTimeDto {
+class UserDto extends common_dto_1.BaseDto {
 }
-__decorate([
-    (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], UserDto.prototype, "id", void 0);
+exports.UserDto = UserDto;
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -60,6 +55,26 @@ __decorate([
     (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], UserDto.prototype, "githubAccessToken", void 0);
-exports.UserDto = UserDto;
+], UserDto.prototype, "githubToken", void 0);
+class ResUserDto extends (0, swagger_1.PickType)(UserDto, [
+    'id',
+    'createdAt',
+    'updatedAt',
+    'email',
+    'githubId',
+    'avatarUrl',
+    'isGithub',
+]) {
+}
+exports.ResUserDto = ResUserDto;
+class ResUserTokenDto extends ResUserDto {
+}
+exports.ResUserTokenDto = ResUserTokenDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ResUserTokenDto.prototype, "accessToken", void 0);
 //# sourceMappingURL=user.dto.js.map

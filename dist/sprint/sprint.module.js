@@ -8,30 +8,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SprintModule = void 0;
 const common_1 = require("@nestjs/common");
-const typeorm_1 = require("@nestjs/typeorm");
-const repo_entity_1 = require("../repo/entity/repo.entity");
-const sprint_entity_1 = require("./entity/sprint.entity");
-const user_entity_1 = require("../user/entity/user.entity");
 const sprint_controller_1 = require("./sprint.controller");
 const sprint_service_1 = require("./sprint.service");
-const user_service_1 = require("../user/user.service");
-const repo_service_1 = require("../repo/repo.service");
-const repo_branch_entity_1 = require("../repo/entity/repo-branch.entity");
+const typeorm_1 = require("@nestjs/typeorm");
+const sprint_entity_1 = require("./sprint.entity");
+const sprint_dao_1 = require("./sprint.dao");
 let SprintModule = class SprintModule {
 };
-SprintModule = __decorate([
+exports.SprintModule = SprintModule;
+exports.SprintModule = SprintModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forFeature([
-                sprint_entity_1.SprintEntity,
-                user_entity_1.UserEntity,
-                repo_entity_1.RepoEntity,
-                repo_branch_entity_1.RepoBranchEntity,
-            ]),
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([sprint_entity_1.SprintEntity])],
         controllers: [sprint_controller_1.SprintController],
-        providers: [sprint_service_1.SprintService, user_service_1.UserService, repo_service_1.RepoService],
+        providers: [sprint_service_1.SprintService, sprint_dao_1.SprintDao],
+        exports: [sprint_dao_1.SprintDao],
     })
 ], SprintModule);
-exports.SprintModule = SprintModule;
 //# sourceMappingURL=sprint.module.js.map
