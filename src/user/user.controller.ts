@@ -56,6 +56,10 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get()
+  @ApiOperation({
+    summary: '유저 조회',
+    description: '유저를 조회합니다.',
+  })
   @ApiOkResponse({
     type: ResFindUserDto,
     status: HttpStatus.OK,

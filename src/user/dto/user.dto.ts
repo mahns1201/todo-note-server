@@ -56,3 +56,11 @@ export class ResUserDto extends PickType(UserDto, [
   'avatarUrl',
   'isGithub',
 ] as const) {}
+
+export class ResUserTokenDto extends ResUserDto {
+  @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
+  @IsString()
+  accessToken: string;
+}
