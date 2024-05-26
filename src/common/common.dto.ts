@@ -61,16 +61,32 @@ export class PagingReqDto {
   sortBy: string;
 }
 
-export class ResDto<T> {
+export class CommonResDto {
+  @ApiProperty({ description: 'http 상태 코드' })
+  statusCode: HttpStatus;
+
+  @ApiProperty({ description: 'api 응답 메시지' })
+  message: string;
+}
+
+export class ResDto<T> extends CommonResDto {
   @ApiProperty({ description: 'http 상태 코드' })
   statusCode: HttpStatus;
 
   @ApiProperty({ description: 'api 응답 메시지' })
   message: string;
 
-  @ApiProperty({ description: 'api 응답 결과가 복수개 일 때의 결과' })
-  items?: T[];
+  @ApiProperty({ description: 'api 응답 결과' })
+  item: T;
+}
 
-  @ApiProperty({ description: 'api 응답 결과가 단수개 일 때의 결과' })
-  item?: T;
+export class ListResDto<T> extends CommonResDto {
+  @ApiProperty({ description: 'http 상태 코드' })
+  statusCode: HttpStatus;
+
+  @ApiProperty({ description: 'api 응답 메시지' })
+  message: string;
+
+  @ApiProperty({ description: 'api 응답 결과' })
+  items: T[];
 }

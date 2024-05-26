@@ -1,5 +1,6 @@
-import { UserDto } from './user.dto';
-import { PickType } from '@nestjs/swagger';
+import { ResDto } from 'src/common/dto/res.dto';
+import { ResUserDto, UserDto } from './user.dto';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 
 export class CreateUserDto extends PickType(UserDto, [
   'email',
@@ -9,3 +10,8 @@ export class CreateUserDto extends PickType(UserDto, [
   'isGithub',
   'githubToken',
 ] as const) {}
+
+export class ResCreateUserDto extends ResDto {
+  @ApiProperty({ description: '생성된 유저' })
+  item: ResUserDto;
+}

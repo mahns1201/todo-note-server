@@ -8,7 +8,7 @@ import {
   IsUrl,
   IsBoolean,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/common.dto';
 
 export class UserDto extends BaseDto {
@@ -46,3 +46,13 @@ export class UserDto extends BaseDto {
   @IsString()
   githubToken: string;
 }
+
+export class ResUserDto extends PickType(UserDto, [
+  'id',
+  'createdAt',
+  'updatedAt',
+  'email',
+  'githubId',
+  'avatarUrl',
+  'isGithub',
+] as const) {}

@@ -9,17 +9,34 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, ResCreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { ResDto } from 'src/common/common.dto';
-import { ResUserDto } from './dto/find-user.dto';
+import { ResFindUserDto } from './dto/find-user.dto';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @Controller('user')
+@ApiBearerAuth('accessToken')
+@ApiTags('user')
 export class UserController {
   constructor(private userService: UserService) {}
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createUser(@Body() body: CreateUserDto): Promise<ResDto<ResUserDto>> {
+  @ApiOperation({
+    summary: '유저 생성',
+    description: '새로운 유저를 생성합니다.',
+  })
+  @ApiCreatedResponse({
+    type: ResCreateUserDto,
+    status: HttpStatus.CREATED,
+    description: '유저를 성공적으로 생성하였습니다.',
+  })
+  async createUser(@Body() body: CreateUserDto): Promise<ResCreateUserDto> {
     const user = await this.userService.createUser(body);
     return {
       statusCode: HttpStatus.CREATED,
@@ -39,7 +56,11 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get()
-  async findUser(@Request() req): Promise<ResDto<ResUserDto>> {
+  @ApiOkResponse({
+    type: ResFindUserDto,
+    status: HttpStatus.OK,
+  })
+  async findUser(@Request() req): Promise<ResFindUserDto> {
     const user = await this.userService.findUser({ id: req.user.id });
     return {
       statusCode: HttpStatus.OK,
