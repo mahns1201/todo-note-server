@@ -7,17 +7,11 @@ import {
   MaxLength,
   IsUrl,
   IsBoolean,
-  IsNumber,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { BaseTimeDto } from 'src/common/common.dto';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { BaseDto } from 'src/common/common.dto';
 
-export class UserDto extends BaseTimeDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  id: number;
-
+export class UserDto extends BaseDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
@@ -50,5 +44,23 @@ export class UserDto extends BaseTimeDto {
   @IsOptional()
   @IsBoolean()
   @IsString()
-  githubAccessToken: string;
+  githubToken: string;
+}
+
+export class ResUserDto extends PickType(UserDto, [
+  'id',
+  'createdAt',
+  'updatedAt',
+  'email',
+  'githubId',
+  'avatarUrl',
+  'isGithub',
+] as const) {}
+
+export class ResUserTokenDto extends ResUserDto {
+  @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
+  @IsString()
+  accessToken: string;
 }

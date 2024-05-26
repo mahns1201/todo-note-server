@@ -1,120 +1,83 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
+  Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
+import { CreateUserDto, ResCreateUserDto } from './dto/create-user.dto';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { ResFindUserDto } from './dto/find-user.dto';
 import {
-  ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiInternalServerErrorResponse,
-  ApiNotFoundResponse,
+  ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { OutputFindUserDto } from './dto/find-user.dto';
-import { AuthGuard } from 'src/auth/jwt/auth.guard';
-import { ErrorResponseDto } from 'src/common/common.dto';
-import { User } from 'src/decorator/user.decorator';
-import { jwtUserT } from 'src/constant/jwt.constant';
 
 @Controller('user')
 @ApiBearerAuth('accessToken')
-@ApiTags('USER')
+@ApiTags('user')
 export class UserController {
   constructor(private userService: UserService) {}
-  @Get()
-  @UseGuards(AuthGuard)
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: '유저 생성',
+    description: '새로운 유저를 생성합니다.',
+  })
+  @ApiCreatedResponse({
+    type: ResCreateUserDto,
+    status: HttpStatus.CREATED,
+    description: '유저를 성공적으로 생성하였습니다.',
+  })
+  async createUser(@Body() body: CreateUserDto): Promise<ResCreateUserDto> {
+    const user = await this.userService.createUser(body);
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '유저를 생성했습니다.',
+      item: {
+        id: user.id,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        email: user.email,
+        githubId: user.githubId,
+        avatarUrl: user.avatarUrl,
+        isGithub: user.isGithub,
+      },
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'JWT 토큰으로 유저를 조회한다.' })
+  @Get()
+  @ApiOperation({
+    summary: '유저 조회',
+    description: '유저를 조회합니다.',
+  })
   @ApiOkResponse({
-    type: OutputFindUserDto,
+    type: ResFindUserDto,
     status: HttpStatus.OK,
   })
-  @ApiBadRequestResponse({
-    type: ErrorResponseDto,
-    status: HttpStatus.BAD_REQUEST,
-  })
-  @ApiUnauthorizedResponse({
-    type: ErrorResponseDto,
-    status: HttpStatus.UNAUTHORIZED,
-  })
-  @ApiNotFoundResponse({
-    type: ErrorResponseDto,
-    status: HttpStatus.NOT_FOUND,
-  })
-  @ApiNotFoundResponse({
-    type: ErrorResponseDto,
-    status: HttpStatus.NOT_FOUND,
-  })
-  @ApiInternalServerErrorResponse({
-    type: ErrorResponseDto,
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-  })
-  async findOne(@User() jUser: jwtUserT): Promise<OutputFindUserDto> {
-    const { id } = jUser;
-
-    const { item: user } = await this.userService.findOne({ id });
-    // eslint-disable-next-line
-    const { password, githubAccessToken, ...outputUser } = user;
-
+  async findUser(@Request() req): Promise<ResFindUserDto> {
+    const user = await this.userService.findUser({ id: req.user.id });
     return {
-      httpStatus: HttpStatus.OK,
-      message: '유저를 성공적으로 찾았습니다',
-      item: outputUser,
+      statusCode: HttpStatus.OK,
+      message: '유저를 조회했습니다.',
+      item: {
+        id: user.id,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        email: user.email,
+        githubId: user.githubId,
+        avatarUrl: user.avatarUrl,
+        isGithub: user.isGithub,
+      },
     };
   }
 }
-
-// @Post()
-// @HttpCode(HttpStatus.CREATED)
-// @ApiOperation({
-//   summary: '유저 생성',
-//   description: '새로운 유저를 생성합니다.',
-// })
-// @ApiResponse({
-//   type: OutputFindUserDto,
-//   status: HttpStatus.CREATED,
-//   description: '유저를 성공적으로 생성하였습니다.',
-// })
-// @ApiResponse({
-//   type: OutputFindUserDto,
-//   status: HttpStatus.INTERNAL_SERVER_ERROR,
-//   description: '유저를  알 수 없는 이유로 생성할 수 없습니다.',
-// })
-// async create(
-//   @Body() input: InputCreateUserDto,
-// ): Promise<OutputCreateUserDto> {
-//   const { item } = await this.userService.create(input);
-//   const httpStatus = !item
-//     ? HttpStatus.INTERNAL_SERVER_ERROR
-//     : HttpStatus.CREATED;
-//   const message = !item
-//     ? '유저 생성에 실패했습니다.'
-//     : '유저가 성공적으로 생성되었습니다.';
-
-//   const result = { item, httpStatus, message };
-//   return result;
-// }
-
-// @Get()
-// async findAll(): Promise<UserEntity[]> {
-//   return this.userService.findAll();
-// }
-
-// @Put(':id')
-// async update(
-//   @Param('id') id: string,
-//   @Body() user: UserEntity,
-// ): Promise<number> {
-//   return this.userService.update(+id, user);
-// }
-
-// @Delete(':id')
-// async remove(@Param('id') id: string): Promise<number> {
-//   return this.userService.remove(+id);
-// }

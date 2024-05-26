@@ -9,99 +9,95 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { TaskService } from './task.service';
+import { CreateTaskDto, ResCreateTaskDto } from './dto/create-task.dto';
 import {
-  ApiBody,
-  ApiHeader,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { TaskService } from './task.service';
-import { AuthGuard } from 'src/auth/jwt/auth.guard';
-import { User } from 'src/decorator/user.decorator';
-import { jwtUserT } from 'src/constant/jwt.constant';
+import { ResFindTaskDto } from './dto/find-task.dto';
 
+@UseGuards(JwtAuthGuard)
 @Controller('task')
-@UseGuards(AuthGuard)
+@ApiBearerAuth('accessToken')
 @ApiTags('task')
 export class TaskController {
   constructor(private taskService: TaskService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiHeader({
-    name: 'JWT',
-    description: 'Bearer JWT 토큰을 해더에 담아서 요청',
-  })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        repoId: {
-          type: 'number',
-          description: 'repoId',
-        },
-        repoBranchId: {
-          type: 'number',
-          description: 'repoBranchId',
-        },
-        title: {
-          type: 'string',
-          description: '제목',
-        },
-        content: {
-          type: 'string',
-          description: '내용',
-        },
-      },
-    },
-  })
   @ApiOperation({
     summary: '태스크 생성',
     description: '새로운 태스크를 생성합니다.',
   })
-  async createTask(@Request() request, @Body() body) {
-    const { id: userId } = request.user;
-    const input = { userId, ...body };
-
-    const newTask = await this.taskService.createOne(input);
-    const httpStatus = !newTask
-      ? HttpStatus.INTERNAL_SERVER_ERROR
-      : HttpStatus.CREATED;
-    const message = !newTask
-      ? '태스크 생성에 실패했습니다.'
-      : '태스크가 성공적으로 생성되었습니다.';
-
-    const result = { httpStatus, message, item: newTask };
-
-    return result;
+  @ApiCreatedResponse({
+    type: ResCreateTaskDto,
+    status: HttpStatus.CREATED,
+    description: '태스크를 성공적으로 생성하였습니다.',
+  })
+  async createTask(
+    @Request() req,
+    @Body() body: CreateTaskDto,
+  ): Promise<ResCreateTaskDto> {
+    const task = await this.taskService.createTask({
+      ...body,
+      userId: req.user.id,
+    });
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '태스크를 생성했습니다.',
+      item: {
+        id: task.id,
+        createdAt: task.createdAt,
+        updatedAt: task.updatedAt,
+        userId: task.userId,
+        repoId: task.repoId,
+        // sprintId: task.sprintId,
+        title: task.title,
+        content: task.content,
+        isGithubIssue: task.isGithubIssue,
+      },
+    };
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiHeader({
-    name: 'JWT',
-    description: 'Bearer JWT 토큰을 해더에 담아서 요청',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'taskId',
-  })
   @ApiOperation({
     summary: '태스크 조회',
-    description: 'parameter에 id를 넘겨 태스크를 조회합니다.',
+    description: '태스크를 조회합니다.',
   })
-  async findTaskById(@User() user: jwtUserT, @Param() param) {
-    const { id: taskId } = param;
-
-    const { item: task } = await this.taskService.findOne(taskId);
-
-    const httpStatus = !task ? HttpStatus.NOT_FOUND : HttpStatus.OK;
-    const message = !task
-      ? '태스크를 해당 id로 찾을 수 없습니다.'
-      : '태스크를 성공적으로 찾았습니다.';
-
-    const result = { item: task, httpStatus, message };
-    return result;
+  @ApiParam({
+    type: Number,
+    name: 'id',
+  })
+  @ApiOkResponse({
+    type: ResFindTaskDto,
+    status: HttpStatus.OK,
+  })
+  async findTask(@Request() req, @Param() param): Promise<ResFindTaskDto> {
+    const result = await this.taskService.findTask({
+      id: param.id,
+      userId: req.user.id,
+    });
+    return {
+      statusCode: HttpStatus.OK,
+      message: '태스크를 조회했습니다.',
+      item: {
+        id: result.id,
+        createdAt: result.createdAt,
+        updatedAt: result.updatedAt,
+        userId: result.userId,
+        repoId: result.repoId,
+        // sprintId: result.sprintId,
+        title: result.title,
+        content: result.content,
+        isGithubIssue: result.isGithubIssue,
+      },
+    };
   }
 }

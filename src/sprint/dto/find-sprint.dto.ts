@@ -1,14 +1,18 @@
-import { PagingResponseDto } from 'src/common/common.dto';
-import { ApiProperty, PickType } from '@nestjs/swagger';
-import { UserDto } from 'src/user/dto/user.dto';
-import { SprintEntity } from '../entity/sprint.entity';
+import { IsNotEmpty, IsNumber } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { ResDto } from 'src/common/dto/res.dto';
+import { ResSprintDto } from './sprint.dto';
 
-export class InputFindSprintsDto extends PickType(UserDto, ['id'] as const) {
-  page: number;
-  limit: number;
+export class FindSprintByIdDto {
+  userId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
 }
 
-export class OutputFindSprintsDto extends PagingResponseDto {
-  @ApiProperty({ isArray: true })
-  items: SprintEntity[];
+export class ResFindSprintDto extends ResDto {
+  @ApiProperty({ description: '조회된 스프린트' })
+  item: ResSprintDto;
 }

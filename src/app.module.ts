@@ -9,14 +9,13 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
-import { GithubOauthModule } from './auth/github/github-oauth.module';
-import { RepoModule } from './repo/repo.module';
-import { AuthModule } from './auth/jwt/auth.module';
-import { TaskModule } from './task/task.module';
 import { NextFunction, Request, Response } from 'express';
+import { AuthModule } from './auth/auth.module';
+import { RepoModule } from './repo/repo.module';
+import { BranchModule } from './branch/branch.module';
 import { SprintModule } from './sprint/sprint.module';
+import { TaskModule } from './task/task.module';
 import { GithubModule } from './github/github.module';
-import { UploadModule } from './upload/upload.module';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -40,7 +39,7 @@ export class LoggerMiddleware implements NestMiddleware {
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `./config/.${process.env.NODE_ENV}.env`,
+      envFilePath: `./.env`,
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
@@ -48,19 +47,18 @@ export class LoggerMiddleware implements NestMiddleware {
         host: process.env.MYSQL_HOST,
         port: parseInt(process.env.MYSQL_PORT, 10),
         database: process.env.MYSQL_DATABASE,
-        username: process.env.MYSQL_ROOT_USER,
-        password: process.env.MYSQL_ROOT_PASSWORD,
+        username: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
         autoLoadEntities: true,
         synchronize: true,
       }),
     }),
-    AuthModule,
-    GithubOauthModule,
     UserModule,
+    AuthModule,
     RepoModule,
+    BranchModule,
     SprintModule,
     TaskModule,
-    UploadModule,
     GithubModule,
   ],
   controllers: [],

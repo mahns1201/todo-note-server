@@ -1,18 +1,18 @@
-import { PagingResponseDto } from 'src/common/common.dto';
-import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
-import { UserDto } from 'src/user/dto/user.dto';
-import { RepoDto } from './repo.dto';
+import { IsNotEmpty, IsNumber } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { ResDto } from 'src/common/dto/res.dto';
+import { ResRepoDto } from './repo.dto';
 
-export class OutputReposDto extends OmitType(RepoDto, ['user'] as const) {}
+export class FindRepoByIdDto {
+  userId: number;
 
-export class InputFindRepoDto extends PickType(RepoDto, ['id'] as const) {}
-
-export class InputFindAllReposDto extends PickType(UserDto, ['id'] as const) {}
-export class InputFindReposDto extends PickType(UserDto, ['id'] as const) {
-  page: number;
-  limit: number;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
 }
-export class OutputFindReposDto extends PagingResponseDto {
-  @ApiProperty({ isArray: true })
-  items: OutputReposDto;
+
+export class ResFindRepoDto extends ResDto {
+  @ApiProperty({ description: '조회된 레포지토리' })
+  item: ResRepoDto;
 }

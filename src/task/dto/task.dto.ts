@@ -1,29 +1,36 @@
-import { IsString, IsNumber, IsOptional } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNumber, IsBoolean } from 'class-validator';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { BaseDto } from 'src/common/common.dto';
 
-export class TaskDto {
-  @IsOptional()
-  @IsNumber()
+export class TaskDto extends BaseDto {
   @ApiProperty()
-  id: number;
-
-  @IsOptional()
   @IsNumber()
-  @ApiProperty()
-  user: number;
+  userId: number;
 
-  @IsOptional()
+  @ApiProperty()
   @IsNumber()
-  @ApiProperty()
-  repo: number;
+  repoId: number;
 
-  @IsOptional()
+  @ApiProperty()
   @IsString()
-  @ApiProperty()
   title: string;
 
-  @IsOptional()
-  @IsString()
   @ApiProperty()
+  @IsString()
   content: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  isGithubIssue: boolean;
 }
+
+export class ResTaskDto extends PickType(TaskDto, [
+  'id',
+  'createdAt',
+  'updatedAt',
+  'userId',
+  'repoId',
+  'title',
+  'content',
+  'isGithubIssue',
+] as const) {}

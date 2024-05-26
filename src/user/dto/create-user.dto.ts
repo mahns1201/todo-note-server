@@ -1,11 +1,17 @@
-import { SwaggerResponseDto } from 'src/common/common.dto';
-import { UserDto } from './user.dto';
-import { OmitType } from '@nestjs/swagger';
+import { ResDto } from 'src/common/dto/res.dto';
+import { ResUserDto, UserDto } from './user.dto';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 
-export class InputCreateUserDto extends OmitType(UserDto, [
-  'id',
-  'createdAt',
-  'updatedAt',
-  'deletedAt',
+export class CreateUserDto extends PickType(UserDto, [
+  'email',
+  'githubId',
+  'password',
+  'avatarUrl',
+  'isGithub',
+  'githubToken',
 ] as const) {}
-export class OutputCreateUserDto extends SwaggerResponseDto<UserDto> {}
+
+export class ResCreateUserDto extends ResDto {
+  @ApiProperty({ description: '생성된 유저' })
+  item: ResUserDto;
+}

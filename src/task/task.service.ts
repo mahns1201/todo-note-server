@@ -1,49 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { TaskEntity } from './entity/task.entity';
-import { UploadService } from 'src/upload/upload.service';
-import { RepoService } from 'src/repo/repo.service';
-import { UserService } from 'src/user/user.service';
-import { InputFindTaskDto } from './dto/find-task.dto';
-import { ServiceResultDto } from 'src/common/common.dto';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { TaskDao } from './task.dao';
+import { FindTaskByIdDto } from './dto/find-task.dto';
+import { CreateTaskDto } from './dto/create-task.dto';
 
 @Injectable()
 export class TaskService {
-  constructor(
-    @InjectRepository(TaskEntity)
-    private taskRepository: Repository<TaskEntity>,
+  constructor(private readonly taskDao: TaskDao) {}
 
-    private userService: UserService,
-
-    private repoService: RepoService,
-
-    private uploadService: UploadService,
-  ) {}
-
-  async createOne(input) {
-    const { userId, repoId, title, content } = input;
-
-    const { item: user } = await this.userService.findOne(userId);
-    const repo = await this.repoService.findRepo(repoId);
-    // const repoBranch = await this.repoService.findRepoBranch(repoBranchId);
-    const taskObj = { user, repo, title, content };
-
-    const newTask = this.taskRepository.create(taskObj);
-    const result = await this.taskRepository.save(newTask);
-
-    return result;
+  async createTask(dto: CreateTaskDto) {
+    return await this.taskDao.create(dto);
   }
 
-  async findOne(
-    inputFindTaskDto: InputFindTaskDto,
-  ): Promise<ServiceResultDto<TaskEntity>> {
-    const { id } = inputFindTaskDto;
-    const task = await this.taskRepository.findOne({
-      where: { id },
-      relations: ['user', 'repo'], // left join
-    });
+  async findTask(dto: FindTaskByIdDto) {
+    const { id, userId } = dto;
+    const task = await this.taskDao.findById(id);
 
-    return { item: task };
+    if (!task) {
+      throw new NotFoundException('Task not found.');
+    }
+
+    if (task.user.id !== userId) {
+      throw new UnauthorizedException('Access denied.');
+    }
+
+    return task;
   }
 }

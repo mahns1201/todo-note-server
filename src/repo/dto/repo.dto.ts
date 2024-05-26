@@ -5,10 +5,11 @@ import {
   IsDate,
   IsNotEmpty,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { BaseTimeDto } from 'src/common/common.dto';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { BaseDto } from 'src/common/common.dto';
+import { UserEntity } from 'src/user/user.entity';
 
-export class RepoDto extends BaseTimeDto {
+export class RepoDto extends BaseDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
@@ -16,8 +17,11 @@ export class RepoDto extends BaseTimeDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
-  user: number;
+  user: UserEntity;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  userId: number;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -61,6 +65,28 @@ export class RepoDto extends BaseTimeDto {
 
   @ApiProperty()
   @IsOptional()
+  @IsString()
+  ownerAvatarUrl: string;
+
+  @ApiProperty()
+  @IsOptional()
   @IsDate()
-  synchronizedAt: string;
+  synchronizedAt: Date;
 }
+
+export class ResRepoDto extends PickType(RepoDto, [
+  'id',
+  'createdAt',
+  'updatedAt',
+  'userId',
+  'repoName',
+  'defaultBranch',
+  'htmlUrl',
+  'isPrivate',
+  'isFork',
+  'imageUrl',
+  'description',
+  'language',
+  'ownerAvatarUrl',
+  'synchronizedAt',
+] as const) {}

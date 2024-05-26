@@ -1,67 +1,32 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { SprintEntity } from './entity/sprint.entity';
-import { Repository } from 'typeorm';
-import { InputCreateSprintDto } from './dto/create-sprint.dto';
 import {
-  ServicePagingResultDto,
-  ServiceResultDto,
-} from 'src/common/common.dto';
-import { RepoEntity } from 'src/repo/entity/repo.entity';
-import { InputFindSprintsDto } from './dto/find-sprint.dto';
-import { convertIncomingDate } from 'src/util/date';
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { SprintDao } from './sprint.dao';
+import { FindSprintByIdDto } from './dto/find-sprint.dto';
+import { CreateSprintDto } from './dto/create-sprint.dto';
 
 @Injectable()
 export class SprintService {
-  constructor(
-    @InjectRepository(SprintEntity)
-    private sprintRepository: Repository<SprintEntity>,
-  ) {}
+  constructor(private readonly sprintDao: SprintDao) {}
 
-  async create(
-    input: InputCreateSprintDto,
-    repo: RepoEntity,
-  ): Promise<ServiceResultDto<SprintEntity>> {
-    const { startAt: startDate, endAt: endDate } = input;
-
-    const startAt = convertIncomingDate(startDate);
-    const endAt = convertIncomingDate(endDate);
-
-    const newSprint = this.sprintRepository.create({
-      ...input,
-      startAt,
-      endAt,
-      repo,
-    });
-    const savedSprint = await this.sprintRepository.save(newSprint);
-
-    Logger.log(`생성 완료`);
-
-    return { item: savedSprint };
+  async createSprint(dto: CreateSprintDto) {
+    return await this.sprintDao.create(dto);
   }
 
-  async find(
-    input: InputFindSprintsDto,
-  ): Promise<ServicePagingResultDto<SprintEntity[]>> {
-    const { id: userId, page, limit } = input;
+  async findSprint(dto: FindSprintByIdDto) {
+    const { id, userId } = dto;
+    const sprint = await this.sprintDao.findById(id);
 
-    const queryBuilder = this.sprintRepository
-      .createQueryBuilder('sprint')
-      .leftJoinAndSelect('sprint.user', 'user')
-      .leftJoinAndSelect('sprint.repo', 'repo')
-      .where('sprint.userId = :userId', { userId })
-      .offset((page - 1) * limit)
-      .limit(limit);
-
-    const [sprints, totalCount] = await queryBuilder.getManyAndCount();
-
-    if (!sprints.length) {
-      throw new NotFoundException(`${page}p에 발견된 스프린트가 없습니다.`);
+    if (!sprint) {
+      throw new NotFoundException('스프린트를 찾을 수 없습니다.');
     }
 
-    return {
-      items: sprints,
-      totalCount,
-    };
+    if (sprint.user.id !== userId) {
+      throw new UnauthorizedException('접근 권한이 없습니다.');
+    }
+
+    return sprint;
   }
 }

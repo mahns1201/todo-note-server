@@ -1,16 +1,33 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { SprintDto } from './sprint.dto';
-import { BaseResponseDto } from 'src/common/common.dto';
-import { SprintEntity } from '../entity/sprint.entity';
+import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { ResDto } from 'src/common/dto/res.dto';
+import { ResSprintDto } from './sprint.dto';
 
-export class InputCreateSprintDto extends OmitType(SprintDto, [
-  'id',
-  'user',
-  'createdAt',
-  'updatedAt',
-  'deletedAt',
-] as const) {}
-export class OutputCreateSprintDto extends BaseResponseDto {
+export class CreateSprintDto {
+  userId: number;
+
   @ApiProperty()
-  item: SprintEntity;
+  @IsNotEmpty()
+  @IsString()
+  title: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  description: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsDate()
+  startAt: Date;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsDate()
+  endAt: Date;
+}
+
+export class ResCreateSprintDto extends ResDto {
+  @ApiProperty({ description: '조회된 스프린트' })
+  item: ResSprintDto;
 }

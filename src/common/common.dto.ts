@@ -1,78 +1,92 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
-export class BaseTimeDto {
+export class BaseDto {
   @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
+
+  @ApiProperty()
+  @IsDate()
   createdAt: Date;
 
   @ApiProperty()
+  @IsDate()
   updatedAt: Date;
 
   @ApiProperty()
+  @IsDate()
   deletedAt: Date;
+
+  @ApiProperty()
+  @IsBoolean()
+  isDeleted: boolean;
 }
 
-export class BaseResponseDto {
-  @ApiProperty({ description: 'http 상태 코드' })
-  httpStatus: HttpStatus;
+export class TokenDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  accessToken: string;
 
-  @ApiProperty({ description: 'api 응답 메시지' })
-  message: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  githubToken: string;
 }
 
-export class ErrorResponseDto extends BaseResponseDto {
-  @ApiProperty({ description: 'error 메시지' })
-  error: string;
-}
-
-export class PagingRequestDto {
-  @ApiProperty({ description: 'requestPage' })
+export class PagingReqDto {
+  @ApiProperty()
   @IsNumber()
   page: number;
 
-  @ApiProperty({ description: 'limit' })
+  @ApiProperty()
   @IsNumber()
-  limit: number;
+  pageSize: number;
+
+  @ApiProperty()
+  @IsString()
+  orderBy: string;
+
+  @ApiProperty()
+  @IsString()
+  sortBy: string;
 }
 
-export class PagingResponseDto extends BaseResponseDto {
-  @ApiProperty({ description: 'currentPage' })
-  @IsNumber()
-  currentPage: number;
-
-  @ApiProperty({ description: 'limit' })
-  @IsNumber()
-  limit: number;
-
-  @ApiProperty({ description: 'totalCount' })
-  @IsNumber()
-  totalCount: number;
-}
-
-export interface ServiceResultDto<T> {
-  items?: T;
-  item?: T;
-}
-
-export interface ServicePagingResultDto<T> {
-  items?: T;
-  totalCount: number;
-}
-
-/**
- * @deprecated
- */
-export class SwaggerResponseDto<T> {
+export class CommonResDto {
   @ApiProperty({ description: 'http 상태 코드' })
-  httpStatus: HttpStatus;
+  statusCode: HttpStatus;
+
+  @ApiProperty({ description: 'api 응답 메시지' })
+  message: string;
+}
+
+export class ResDto<T> extends CommonResDto {
+  @ApiProperty({ description: 'http 상태 코드' })
+  statusCode: HttpStatus;
 
   @ApiProperty({ description: 'api 응답 메시지' })
   message: string;
 
-  @ApiProperty({ description: 'api 응답 결과가 복수개 일 때의 결과' })
-  items?: T[];
+  @ApiProperty({ description: 'api 응답 결과' })
+  item: T;
+}
 
-  @ApiProperty({ description: 'api 응답 결과가 단수개 일 때의 결과' })
-  item?: T;
+export class ListResDto<T> extends CommonResDto {
+  @ApiProperty({ description: 'http 상태 코드' })
+  statusCode: HttpStatus;
+
+  @ApiProperty({ description: 'api 응답 메시지' })
+  message: string;
+
+  @ApiProperty({ description: 'api 응답 결과' })
+  items: T[];
 }

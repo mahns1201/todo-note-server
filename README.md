@@ -2,7 +2,7 @@
 깃허브 이슈, 스프린트를 활용하여 개발자 일정을 효율적으로 관리하기 위한 플랫폼 `DEV-TODO-NOTE`의 서버
 
 # 개발 환경
-- Node.js v20.12.1
+- Node.js v20.13.0
 - Nest.js / TS
 - mysql
 
