@@ -6,6 +6,8 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { ResDto } from 'src/common/dto/res.dto';
+import { ResRepoDto } from './repo.dto';
 
 export class CreateRepoDto {
   @IsNumber()
@@ -55,4 +57,9 @@ export class CreateRepoDto {
   @IsNotEmpty()
   @IsDate()
   synchronizedAt: Date;
+}
+
+export class ResCreateRepoDto extends ResDto {
+  @ApiProperty({ description: '생성된 레포지토리' })
+  item: ResRepoDto;
 }

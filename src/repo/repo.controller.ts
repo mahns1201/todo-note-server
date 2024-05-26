@@ -12,44 +12,86 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { RepoService } from './repo.service';
-import { CreateRepoDto } from './dto/create-repo.dto';
-import { ResDto } from 'src/common/common.dto';
-
-// TODO swagger
-// TODO ResDto 설정
+import { CreateRepoDto, ResCreateRepoDto } from './dto/create-repo.dto';
+import { ListResDto, PagingReqDto } from 'src/common/common.dto';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
+import { ResFindRepoDto } from './dto/find-repo.dto';
+import { ResFindReposDto } from './dto/find-repos.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('repo')
+@ApiBearerAuth('accessToken')
+@ApiTags('repo')
 export class RepoController {
   constructor(private repoService: RepoService) {}
   @Post()
-  async createRepo(@Request() req, @Body() body: CreateRepoDto) {
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: '레포지토리 생성',
+    description: '새로운 레포지토리를 생성합니다.',
+  })
+  @ApiCreatedResponse({
+    type: ResCreateRepoDto,
+    status: HttpStatus.CREATED,
+    description: '레포지토리를 성공적으로 생성하였습니다.',
+  })
+  async createRepo(
+    @Request() req,
+    @Body() body: CreateRepoDto,
+  ): Promise<ResCreateRepoDto> {
     const repo = await this.repoService.createRepo({
       ...body,
       userId: req.user.id,
     });
 
     return {
-      id: repo.id,
-      createdAt: repo.createdAt,
-      updatedAt: repo.updatedAt,
-      userId: repo.userId,
-      repoName: repo.repoName,
-      defaultBranch: repo.defaultBranch,
-      htmlUrl: repo.htmlUrl,
-      isPrivate: repo.isPrivate,
-      isFork: repo.isFork,
-      imageUrl: repo.imageUrl,
-      description: repo.description,
-      language: repo.language,
-      ownerAvatarUrl: repo.ownerAvatarUrl,
-      synchronizedAt: repo.synchronizedAt,
+      message: '레포지토리를 생성했습니다.',
+      statusCode: HttpStatus.CREATED,
+      item: {
+        id: repo.id,
+        createdAt: repo.createdAt,
+        updatedAt: repo.updatedAt,
+        userId: repo.userId,
+        repoName: repo.repoName,
+        defaultBranch: repo.defaultBranch,
+        htmlUrl: repo.htmlUrl,
+        isPrivate: repo.isPrivate,
+        isFork: repo.isFork,
+        imageUrl: repo.imageUrl,
+        description: repo.description,
+        language: repo.language,
+        ownerAvatarUrl: repo.ownerAvatarUrl,
+        synchronizedAt: repo.synchronizedAt,
+      },
     };
   }
 
   @Get('list')
   @HttpCode(HttpStatus.OK)
-  async findUserRepos(@Request() req, @Query() query) {
+  @ApiOperation({
+    summary: '레포지토리 리스트 조회',
+    description: '레포지토리 리스트를 조회합니다.',
+  })
+  @ApiQuery({
+    type: PagingReqDto,
+    name: '페이징 요청',
+  })
+  @ApiOkResponse({
+    type: ResFindReposDto,
+    status: HttpStatus.OK,
+  })
+  async findUserRepos(
+    @Request() req,
+    @Query() query,
+  ): Promise<ResFindReposDto> {
     const repos = await this.repoService.findRepos({
       userId: req.user.id,
       page: query.page,
@@ -58,32 +100,52 @@ export class RepoController {
       sortBy: query.sortBy,
     });
 
-    return repos;
+    return {
+      statusCode: HttpStatus.OK,
+      message: '레포지토리 리스트를 조회했습니다.',
+      items: repos[0],
+    };
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async findUserRepo(@Request() req, @Param() param) {
+  @ApiParam({
+    type: Number,
+    name: 'id',
+  })
+  @ApiOperation({
+    summary: '레포지토리 조회',
+    description: '레포지토리를 조회합니다.',
+  })
+  @ApiOkResponse({
+    type: ResFindRepoDto,
+    status: HttpStatus.OK,
+  })
+  async findUserRepo(@Request() req, @Param() param): Promise<ResFindRepoDto> {
     const repo = await this.repoService.findRepo({
       id: param.id,
       userId: req.user.id,
     });
 
     return {
-      id: repo.id,
-      createdAt: repo.createdAt,
-      updatedAt: repo.updatedAt,
-      userId: repo.userId,
-      repoName: repo.repoName,
-      defaultBranch: repo.defaultBranch,
-      htmlUrl: repo.htmlUrl,
-      isPrivate: repo.isPrivate,
-      isFork: repo.isFork,
-      imageUrl: repo.imageUrl,
-      description: repo.description,
-      language: repo.language,
-      ownerAvatarUrl: repo.ownerAvatarUrl,
-      synchronizedAt: repo.synchronizedAt,
+      statusCode: HttpStatus.OK,
+      message: '레포지토리를 조회했습니다.',
+      item: {
+        id: repo.id,
+        createdAt: repo.createdAt,
+        updatedAt: repo.updatedAt,
+        userId: repo.userId,
+        repoName: repo.repoName,
+        defaultBranch: repo.defaultBranch,
+        htmlUrl: repo.htmlUrl,
+        isPrivate: repo.isPrivate,
+        isFork: repo.isFork,
+        imageUrl: repo.imageUrl,
+        description: repo.description,
+        language: repo.language,
+        ownerAvatarUrl: repo.ownerAvatarUrl,
+        synchronizedAt: repo.synchronizedAt,
+      },
     };
   }
 
@@ -112,7 +174,7 @@ export class RepoController {
 
   @Post('sync')
   @HttpCode(HttpStatus.CREATED)
-  async syncUserRepos(@Request() req): Promise<ResDto<string>> {
+  async syncUserRepos(@Request() req): Promise<ListResDto<string>> {
     const { syncRepoNames, syncCount } = await this.repoService.syncUserRepos({
       userId: req.user.id,
     });
