@@ -21,6 +21,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ResFindBranchDto } from './dto/find-branch.dto';
+import { ResSyncBranchDto } from './dto/sync-branch.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('branch')
@@ -103,8 +104,20 @@ export class BranchController {
   }
 
   @Post(':repoId/sync')
-  @HttpCode(HttpStatus.OK)
-  async syncRepoBranches(@Request() req, @Param() param) {
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: '브랜치 동기화',
+    description: '깃허브 브랜치를 동기화합니다.',
+  })
+  @ApiCreatedResponse({
+    type: ResSyncBranchDto,
+    status: HttpStatus.CREATED,
+    description: '브랜치를 성공적으로 동기화 하였습니다.',
+  })
+  async syncRepoBranches(
+    @Request() req,
+    @Param() param,
+  ): Promise<ResSyncBranchDto> {
     const { syncBranchNames, syncCount } =
       await this.branchService.syncRepoBranches({
         userId: req.user.id,

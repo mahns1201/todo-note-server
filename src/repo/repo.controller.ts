@@ -13,7 +13,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { RepoService } from './repo.service';
 import { CreateRepoDto, ResCreateRepoDto } from './dto/create-repo.dto';
-import { ListResDto, PagingReqDto } from 'src/common/common.dto';
+import { PagingReqDto } from 'src/common/common.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -25,6 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { ResFindRepoDto } from './dto/find-repo.dto';
 import { ResFindReposDto } from './dto/find-repos.dto';
+import { ResSyncRepoDto } from './dto/sync-repo.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('repo')
@@ -174,7 +175,16 @@ export class RepoController {
 
   @Post('sync')
   @HttpCode(HttpStatus.CREATED)
-  async syncUserRepos(@Request() req): Promise<ListResDto<string>> {
+  @ApiOperation({
+    summary: '레포지토리 동기화',
+    description: '깃허브 레포지토리를 동기화합니다.',
+  })
+  @ApiCreatedResponse({
+    type: ResSyncRepoDto,
+    status: HttpStatus.CREATED,
+    description: '레포지토리를 성공적으로 동기화 하였습니다.',
+  })
+  async syncUserRepos(@Request() req): Promise<ResSyncRepoDto> {
     const { syncRepoNames, syncCount } = await this.repoService.syncUserRepos({
       userId: req.user.id,
     });
