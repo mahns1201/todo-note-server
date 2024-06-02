@@ -2,6 +2,7 @@ import { BaseEntity } from 'src/common/common.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
 import { UserEntity } from 'src/user/user.entity';
+import { RepoEntity } from 'src/repo/repo.entity';
 // import { TaskEntity } from 'src/task/task.entity';
 
 @Entity({ name: 'sprint' })
@@ -15,6 +16,13 @@ export class SprintEntity extends BaseEntity {
   @Column()
   @IsNotEmpty()
   userId: number;
+
+  @ManyToOne(() => RepoEntity, (repo) => repo.sprints)
+  repo: RepoEntity;
+
+  @Column()
+  @IsNotEmpty()
+  repoId: number;
 
   @Column()
   @IsNotEmpty()

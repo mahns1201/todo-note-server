@@ -1,10 +1,21 @@
-import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ResDto } from 'src/common/dto/res.dto';
 import { ResSprintDto } from './sprint.dto';
 
 export class CreateSprintDto {
   userId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  repoId: number;
 
   @ApiProperty()
   @IsNotEmpty()

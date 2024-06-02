@@ -6,12 +6,20 @@ import {
 import { SprintDao } from './sprint.dao';
 import { FindSprintByIdDto } from './dto/find-sprint.dto';
 import { CreateSprintDto } from './dto/create-sprint.dto';
+import { RepoService } from 'src/repo/repo.service';
+import { FindSprintsDto } from './dto/find-sprints.dto';
 
 @Injectable()
 export class SprintService {
-  constructor(private readonly sprintDao: SprintDao) {}
+  constructor(
+    private readonly sprintDao: SprintDao,
+    private readonly repoService: RepoService,
+  ) {}
 
   async createSprint(dto: CreateSprintDto) {
+    const { repoId, userId } = dto;
+    await this.repoService.findRepo({ id: repoId, userId }); // 레포지토리 존재 여부 확인 및 권한 확인
+
     return await this.sprintDao.create(dto);
   }
 
@@ -28,5 +36,9 @@ export class SprintService {
     }
 
     return sprint;
+  }
+
+  async findSprints(dto: FindSprintsDto) {
+    return await this.sprintDao.find(dto);
   }
 }

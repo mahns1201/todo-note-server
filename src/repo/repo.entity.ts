@@ -4,6 +4,7 @@ import { IsNotEmpty } from 'class-validator';
 import { UserEntity } from 'src/user/user.entity';
 import { BranchEntity } from 'src/branch/branch.entity';
 import { TaskEntity } from 'src/task/task.entity';
+import { SprintEntity } from 'src/sprint/sprint.entity';
 
 @Entity({ name: 'repo' })
 export class RepoEntity extends BaseEntity {
@@ -12,6 +13,9 @@ export class RepoEntity extends BaseEntity {
 
   @OneToMany(() => TaskEntity, (task) => task.repo)
   tasks: TaskEntity[];
+
+  @OneToMany(() => SprintEntity, (sprint) => sprint.repo)
+  sprints: SprintEntity[];
 
   @ManyToOne(() => UserEntity, (user) => user.repos)
   user: UserEntity;
