@@ -27,4 +27,16 @@ export class TaskDao {
       relations: ['user', 'repo'],
     });
   }
+
+  async find(dto): Promise<[TaskEntity[], number]> {
+    const { page, pageSize, orderBy, sortBy, userId } = dto;
+    const [results, total] = await this.taskRepository.findAndCount({
+      where: { userId, deletedAt: null },
+      take: pageSize,
+      skip: pageSize * (page - 1),
+      order: { [orderBy]: sortBy },
+      relations: ['user', 'repo'],
+    });
+    return [results, total];
+  }
 }

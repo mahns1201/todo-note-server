@@ -6,6 +6,7 @@ import {
 import { TaskDao } from './task.dao';
 import { FindTaskByIdDto } from './dto/find-task.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { FindTasksDto } from './dto/find-tasks.dto';
 import { RepoService } from 'src/repo/repo.service';
 
 @Injectable()
@@ -35,5 +36,9 @@ export class TaskService {
     }
 
     return task;
+  }
+
+  async findTasks(dto: FindTasksDto) {
+    return await this.taskDao.find(dto);
   }
 }

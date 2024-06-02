@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -18,9 +19,12 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { ResFindTaskDto } from './dto/find-task.dto';
+import { PagingReqDto } from 'src/common/common.dto';
+import { ResFindTasksDto } from './dto/find-tasks.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('task')
@@ -62,6 +66,36 @@ export class TaskController {
         content: task.content,
         isGithubIssue: task.isGithubIssue,
       },
+    };
+  }
+
+  @Get('list')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '태스크 목록 조회',
+    description: '태스크 목록을 조회합니다.',
+  })
+  @ApiQuery({
+    type: PagingReqDto,
+    name: '페이징 요청',
+  })
+  @ApiOkResponse({
+    type: ResFindTasksDto,
+    status: HttpStatus.OK,
+  })
+  async getTaskList(@Request() req, @Query() query): Promise<ResFindTasksDto> {
+    const tasks = await this.taskService.findTasks({
+      userId: req.user.id,
+      page: query.page,
+      pageSize: query.pageSize,
+      orderBy: query.orderBy,
+      sortBy: query.sortBy,
+    });
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: '레포지토리 리스트를 조회했습니다.',
+      items: tasks[0],
     };
   }
 
