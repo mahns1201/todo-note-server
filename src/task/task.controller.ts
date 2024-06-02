@@ -94,7 +94,7 @@ export class TaskController {
 
     return {
       statusCode: HttpStatus.OK,
-      message: '레포지토리 리스트를 조회했습니다.',
+      message: '태스크 리스트를 조회했습니다.',
       items: tasks[0],
     };
   }
