@@ -32,8 +32,19 @@ let SprintDao = class SprintDao {
                 id,
                 deletedAt: null,
             },
-            relations: ['user'],
+            relations: ['user', 'repo'],
         });
+    }
+    async find(dto) {
+        const { page, pageSize, orderBy, sortBy, userId } = dto;
+        const [results, total] = await this.sprintRepository.findAndCount({
+            where: { userId, deletedAt: null },
+            take: pageSize,
+            skip: pageSize * (page - 1),
+            order: { [orderBy]: sortBy },
+            relations: ['user', 'repo'],
+        });
+        return [results, total];
     }
 };
 exports.SprintDao = SprintDao;

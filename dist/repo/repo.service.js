@@ -25,12 +25,12 @@ let RepoService = class RepoService {
     }
     async findRepo(dto) {
         const { id, userId } = dto;
-        const repo = await this.repoDao.findById(id, userId);
+        const repo = await this.repoDao.findById(id);
         if (!repo) {
             throw new common_1.NotFoundException('레포지토리를 찾을 수 없습니다.');
         }
         if (repo.userId !== userId) {
-            throw new common_1.UnauthorizedException('접근 권한이 없습니다.');
+            throw new common_1.UnauthorizedException('레포지토리에 접근 권한이 없습니다.');
         }
         return repo;
     }

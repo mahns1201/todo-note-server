@@ -12,11 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskService = void 0;
 const common_1 = require("@nestjs/common");
 const task_dao_1 = require("./task.dao");
+const repo_service_1 = require("../repo/repo.service");
 let TaskService = class TaskService {
-    constructor(taskDao) {
+    constructor(taskDao, repoService) {
         this.taskDao = taskDao;
+        this.repoService = repoService;
     }
     async createTask(dto) {
+        const { repoId, userId } = dto;
+        await this.repoService.findRepo({ id: repoId, userId });
         return await this.taskDao.create(dto);
     }
     async findTask(dto) {
@@ -30,10 +34,14 @@ let TaskService = class TaskService {
         }
         return task;
     }
+    async findTasks(dto) {
+        return await this.taskDao.find(dto);
+    }
 };
 exports.TaskService = TaskService;
 exports.TaskService = TaskService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [task_dao_1.TaskDao])
+    __metadata("design:paramtypes", [task_dao_1.TaskDao,
+        repo_service_1.RepoService])
 ], TaskService);
 //# sourceMappingURL=task.service.js.map

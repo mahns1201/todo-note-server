@@ -26,11 +26,10 @@ let RepoDao = class RepoDao {
         await this.repoRepository.save(repo);
         return repo;
     }
-    async findById(id, userId) {
+    async findById(id) {
         return await this.repoRepository.findOne({
             where: {
                 id,
-                userId,
                 deletedAt: null,
             },
         });

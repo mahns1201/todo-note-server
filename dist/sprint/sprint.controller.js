@@ -19,6 +19,8 @@ const sprint_service_1 = require("./sprint.service");
 const create_sprint_dto_1 = require("./dto/create-sprint.dto");
 const swagger_1 = require("@nestjs/swagger");
 const find_sprint_dto_1 = require("./dto/find-sprint.dto");
+const common_dto_1 = require("../common/common.dto");
+const find_sprints_dto_1 = require("./dto/find-sprints.dto");
 let SprintController = class SprintController {
     constructor(sprintService) {
         this.sprintService = sprintService;
@@ -40,13 +42,27 @@ let SprintController = class SprintController {
             },
         };
     }
+    async getSprintList(req, query) {
+        const sprints = await this.sprintService.findSprints({
+            userId: req.user.id,
+            page: query.page,
+            pageSize: query.pageSize,
+            orderBy: query.orderBy,
+            sortBy: query.sortBy,
+        });
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: '스프린트 리스트를 조회했습니다.',
+            items: sprints[0],
+        };
+    }
     async findSprint(req, param) {
         const sprint = await this.sprintService.findSprint({
             id: param.id,
             userId: req.user.id,
         });
         return {
-            statusCode: common_1.HttpStatus.CREATED,
+            statusCode: common_1.HttpStatus.OK,
             message: '스프린트를 조회했습니다.',
             item: {
                 id: sprint.id,
@@ -80,6 +96,27 @@ __decorate([
     __metadata("design:paramtypes", [Object, create_sprint_dto_1.CreateSprintDto]),
     __metadata("design:returntype", Promise)
 ], SprintController.prototype, "createSprint", null);
+__decorate([
+    (0, common_1.Get)('list'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: '태스크 목록 조회',
+        description: '태스크 목록을 조회합니다.',
+    }),
+    (0, swagger_1.ApiQuery)({
+        type: common_dto_1.PagingReqDto,
+        name: '페이징 요청',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        type: find_sprints_dto_1.ResFindSprintsDto,
+        status: common_1.HttpStatus.OK,
+    }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], SprintController.prototype, "getSprintList", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

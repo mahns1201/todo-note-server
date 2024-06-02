@@ -6,4 +6,5 @@ export declare class TaskDao {
     constructor(taskRepository: Repository<TaskEntity>);
     create(dto: CreateTaskDto): Promise<TaskEntity>;
     findById(id: number): Promise<TaskEntity>;
+    find(dto: any): Promise<[TaskEntity[], number]>;
 }

@@ -6,4 +6,5 @@ export declare class SprintDao {
     constructor(sprintRepository: Repository<SprintEntity>);
     create(dto: CreateSprintDto): Promise<SprintEntity>;
     findById(id: number): Promise<SprintEntity>;
+    find(dto: any): Promise<[SprintEntity[], number]>;
 }

@@ -16,6 +16,7 @@ const class_validator_1 = require("class-validator");
 const user_entity_1 = require("../user/user.entity");
 const branch_entity_1 = require("../branch/branch.entity");
 const task_entity_1 = require("../task/task.entity");
+const sprint_entity_1 = require("../sprint/sprint.entity");
 let RepoEntity = class RepoEntity extends common_entity_1.BaseEntity {
 };
 exports.RepoEntity = RepoEntity;
@@ -27,6 +28,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => task_entity_1.TaskEntity, (task) => task.repo),
     __metadata("design:type", Array)
 ], RepoEntity.prototype, "tasks", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => sprint_entity_1.SprintEntity, (sprint) => sprint.repo),
+    __metadata("design:type", Array)
+], RepoEntity.prototype, "sprints", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.UserEntity, (user) => user.repos),
     __metadata("design:type", user_entity_1.UserEntity)

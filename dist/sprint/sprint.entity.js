@@ -14,6 +14,7 @@ const common_entity_1 = require("../common/common.entity");
 const typeorm_1 = require("typeorm");
 const class_validator_1 = require("class-validator");
 const user_entity_1 = require("../user/user.entity");
+const repo_entity_1 = require("../repo/repo.entity");
 let SprintEntity = class SprintEntity extends common_entity_1.BaseEntity {
 };
 exports.SprintEntity = SprintEntity;
@@ -26,6 +27,15 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], SprintEntity.prototype, "userId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => repo_entity_1.RepoEntity, (repo) => repo.sprints),
+    __metadata("design:type", repo_entity_1.RepoEntity)
+], SprintEntity.prototype, "repo", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], SprintEntity.prototype, "repoId", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     (0, class_validator_1.IsNotEmpty)(),

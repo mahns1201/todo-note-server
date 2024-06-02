@@ -12,11 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SprintService = void 0;
 const common_1 = require("@nestjs/common");
 const sprint_dao_1 = require("./sprint.dao");
+const repo_service_1 = require("../repo/repo.service");
 let SprintService = class SprintService {
-    constructor(sprintDao) {
+    constructor(sprintDao, repoService) {
         this.sprintDao = sprintDao;
+        this.repoService = repoService;
     }
     async createSprint(dto) {
+        const { repoId, userId } = dto;
+        await this.repoService.findRepo({ id: repoId, userId });
         return await this.sprintDao.create(dto);
     }
     async findSprint(dto) {
@@ -30,10 +34,14 @@ let SprintService = class SprintService {
         }
         return sprint;
     }
+    async findSprints(dto) {
+        return await this.sprintDao.find(dto);
+    }
 };
 exports.SprintService = SprintService;
 exports.SprintService = SprintService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [sprint_dao_1.SprintDao])
+    __metadata("design:paramtypes", [sprint_dao_1.SprintDao,
+        repo_service_1.RepoService])
 ], SprintService);
 //# sourceMappingURL=sprint.service.js.map
