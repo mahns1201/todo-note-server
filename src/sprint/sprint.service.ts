@@ -7,6 +7,7 @@ import { SprintDao } from './sprint.dao';
 import { FindSprintByIdDto } from './dto/find-sprint.dto';
 import { CreateSprintDto } from './dto/create-sprint.dto';
 import { RepoService } from 'src/repo/repo.service';
+import { FindSprintsDto } from './dto/find-sprints.dto';
 
 @Injectable()
 export class SprintService {
@@ -35,5 +36,9 @@ export class SprintService {
     }
 
     return sprint;
+  }
+
+  async findSprints(dto: FindSprintsDto) {
+    return await this.sprintDao.find(dto);
   }
 }

@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -18,9 +19,12 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { ResFindSprintDto } from './dto/find-sprint.dto';
+import { PagingReqDto } from 'src/common/common.dto';
+import { ResFindSprintsDto } from './dto/find-sprints.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sprint')
@@ -65,6 +69,39 @@ export class SprintController {
     };
   }
 
+  @Get('list')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '태스크 목록 조회',
+    description: '태스크 목록을 조회합니다.',
+  })
+  @ApiQuery({
+    type: PagingReqDto,
+    name: '페이징 요청',
+  })
+  @ApiOkResponse({
+    type: ResFindSprintsDto,
+    status: HttpStatus.OK,
+  })
+  async getSprintList(
+    @Request() req,
+    @Query() query,
+  ): Promise<ResFindSprintsDto> {
+    const sprints = await this.sprintService.findSprints({
+      userId: req.user.id,
+      page: query.page,
+      pageSize: query.pageSize,
+      orderBy: query.orderBy,
+      sortBy: query.sortBy,
+    });
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: '스프린트 리스트를 조회했습니다.',
+      items: sprints[0],
+    };
+  }
+
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -86,7 +123,7 @@ export class SprintController {
     });
 
     return {
-      statusCode: HttpStatus.CREATED,
+      statusCode: HttpStatus.OK,
       message: '스프린트를 조회했습니다.',
       item: {
         id: sprint.id,
