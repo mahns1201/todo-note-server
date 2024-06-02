@@ -6,12 +6,19 @@ import {
 import { TaskDao } from './task.dao';
 import { FindTaskByIdDto } from './dto/find-task.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { RepoService } from 'src/repo/repo.service';
 
 @Injectable()
 export class TaskService {
-  constructor(private readonly taskDao: TaskDao) {}
+  constructor(
+    private readonly taskDao: TaskDao,
+    private readonly repoService: RepoService,
+  ) {}
 
   async createTask(dto: CreateTaskDto) {
+    const { repoId, userId } = dto;
+    await this.repoService.findRepo({ id: repoId, userId }); // 레포지토리 존재 여부 확인 및 권한 확인
+
     return await this.taskDao.create(dto);
   }
 
