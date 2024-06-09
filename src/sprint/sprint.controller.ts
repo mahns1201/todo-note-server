@@ -33,7 +33,25 @@ import { ResFindSprintsDto } from './dto/find-sprints.dto';
 export class SprintController {
   constructor(private sprintService: SprintService) {}
 
-  @Post()
+  serialize(sprint) {
+    return {
+      id: sprint.id,
+      createdAt: sprint.createdAt,
+      updatedAt: sprint.updatedAt,
+      userId: sprint.userId,
+      repoId: sprint.repoId,
+      title: sprint.title,
+      description: sprint.description,
+      startAt: sprint.startAt,
+      endAt: sprint.endAt,
+      repoName: sprint.repo.name,
+      repoHtmlUrl: sprint.repo.htmlUrl,
+      repoOwnerAvatarUrl: sprint.repo.ownerAvatarUrl,
+      repoSynchronizedAt: sprint.repo.synchronizedAt,
+    };
+  }
+
+  @Post('repo/:repoId')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: '스프린트 생성',
@@ -46,34 +64,27 @@ export class SprintController {
   })
   async createSprint(
     @Request() req,
+    @Param() param,
     @Body() body: CreateSprintDto,
   ): Promise<ResCreateSprintDto> {
     const sprint = await this.sprintService.createSprint({
       ...body,
+      repoId: param.repoId,
       userId: req.user.id,
     });
 
     return {
       statusCode: HttpStatus.CREATED,
       message: '스프린트를 생성했습니다.',
-      item: {
-        id: sprint.id,
-        createdAt: sprint.createdAt,
-        updatedAt: sprint.updatedAt,
-        userId: sprint.userId,
-        title: sprint.title,
-        description: sprint.description,
-        startAt: sprint.startAt,
-        endAt: sprint.endAt,
-      },
+      item: this.serialize(sprint),
     };
   }
 
   @Get('list')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: '태스크 목록 조회',
-    description: '태스크 목록을 조회합니다.',
+    summary: '스프린트 목록 조회',
+    description: '스프린트 목록을 조회합니다.',
   })
   @ApiQuery({
     type: PagingReqDto,
@@ -87,7 +98,7 @@ export class SprintController {
     @Request() req,
     @Query() query,
   ): Promise<ResFindSprintsDto> {
-    const sprints = await this.sprintService.findSprints({
+    const [sprints, totalCount] = await this.sprintService.findSprints({
       userId: req.user.id,
       page: query.page,
       pageSize: query.pageSize,
@@ -97,8 +108,8 @@ export class SprintController {
 
     return {
       statusCode: HttpStatus.OK,
-      message: '스프린트 리스트를 조회했습니다.',
-      items: sprints[0],
+      message: `총 ${totalCount}개중 ${sprints.length}개의 스프린트 리스트를 조회했습니다.`,
+      items: sprints.map((sprint) => this.serialize(sprint)),
     };
   }
 
@@ -125,16 +136,7 @@ export class SprintController {
     return {
       statusCode: HttpStatus.OK,
       message: '스프린트를 조회했습니다.',
-      item: {
-        id: sprint.id,
-        createdAt: sprint.createdAt,
-        updatedAt: sprint.updatedAt,
-        userId: sprint.userId,
-        title: sprint.title,
-        description: sprint.description,
-        startAt: sprint.startAt,
-        endAt: sprint.endAt,
-      },
+      item: this.serialize(sprint),
     };
   }
 }

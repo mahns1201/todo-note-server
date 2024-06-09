@@ -19,8 +19,9 @@ export class SprintService {
   async createSprint(dto: CreateSprintDto) {
     const { repoId, userId } = dto;
     await this.repoService.findRepo({ id: repoId, userId }); // 레포지토리 존재 여부 확인 및 권한 확인
+    const createdSprint = await this.sprintDao.create(dto);
 
-    return await this.sprintDao.create(dto);
+    return this.findSprint({ id: createdSprint.id, userId });
   }
 
   async findSprint(dto: FindSprintByIdDto) {
