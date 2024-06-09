@@ -24,13 +24,17 @@ export class TaskDto extends BaseDto {
   isGithubIssue: boolean;
 }
 
-export class ResTaskDto extends PickType(TaskDto, [
-  'id',
-  'createdAt',
-  'updatedAt',
-  'userId',
-  'repoId',
-  'title',
-  'content',
-  'isGithubIssue',
-] as const) {}
+export class ResTaskDto {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: number;
+  repoId: number;
+  title: string;
+  content: string;
+  isGithubIssue: boolean;
+  repoName: string;
+  repoHtmlUrl: string;
+  repoOwnerAvatarUrl: string;
+  repoSynchronizedAt: Date;
+}

@@ -33,6 +33,23 @@ import { ResFindTasksDto } from './dto/find-tasks.dto';
 export class TaskController {
   constructor(private taskService: TaskService) {}
 
+  serialize(task) {
+    return {
+      id: task.id,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+      userId: task.userId,
+      repoId: task.repoId,
+      title: task.title,
+      content: task.content,
+      isGithubIssue: task.isGithubIssue,
+      repoName: task.repo.repoName,
+      repoHtmlUrl: task.repo.htmlUrl,
+      repoOwnerAvatarUrl: task.repo.ownerAvatarUrl,
+      repoSynchronizedAt: task.repo.synchronizedAt,
+    };
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
@@ -55,17 +72,7 @@ export class TaskController {
     return {
       statusCode: HttpStatus.CREATED,
       message: '태스크를 생성했습니다.',
-      item: {
-        id: task.id,
-        createdAt: task.createdAt,
-        updatedAt: task.updatedAt,
-        userId: task.userId,
-        repoId: task.repoId,
-        // sprintId: task.sprintId,
-        title: task.title,
-        content: task.content,
-        isGithubIssue: task.isGithubIssue,
-      },
+      item: this.serialize(task),
     };
   }
 
@@ -84,7 +91,7 @@ export class TaskController {
     status: HttpStatus.OK,
   })
   async getTaskList(@Request() req, @Query() query): Promise<ResFindTasksDto> {
-    const tasks = await this.taskService.findTasks({
+    const [tasks, totalCount] = await this.taskService.findTasks({
       userId: req.user.id,
       page: query.page,
       pageSize: query.pageSize,
@@ -94,8 +101,8 @@ export class TaskController {
 
     return {
       statusCode: HttpStatus.OK,
-      message: '태스크 리스트를 조회했습니다.',
-      items: tasks[0],
+      message: `총 ${totalCount}개중 ${tasks.length}개의 태스크 리스트를 조회했습니다.`,
+      items: tasks.map((task) => this.serialize(task)),
     };
   }
 
@@ -114,24 +121,14 @@ export class TaskController {
     status: HttpStatus.OK,
   })
   async findTask(@Request() req, @Param() param): Promise<ResFindTaskDto> {
-    const result = await this.taskService.findTask({
+    const task = await this.taskService.findTask({
       id: param.id,
       userId: req.user.id,
     });
     return {
       statusCode: HttpStatus.OK,
       message: '태스크를 조회했습니다.',
-      item: {
-        id: result.id,
-        createdAt: result.createdAt,
-        updatedAt: result.updatedAt,
-        userId: result.userId,
-        repoId: result.repoId,
-        // sprintId: result.sprintId,
-        title: result.title,
-        content: result.content,
-        isGithubIssue: result.isGithubIssue,
-      },
+      item: this.serialize(task),
     };
   }
 }

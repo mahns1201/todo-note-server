@@ -20,7 +20,9 @@ export class TaskService {
     const { repoId, userId } = dto;
     await this.repoService.findRepo({ id: repoId, userId }); // 레포지토리 존재 여부 확인 및 권한 확인
 
-    return await this.taskDao.create(dto);
+    const createdTask = await this.taskDao.create(dto);
+
+    return this.findTask({ id: createdTask.id, userId });
   }
 
   async findTask(dto: FindTaskByIdDto) {
