@@ -25,6 +25,7 @@ import {
 import { ResFindSprintDto } from './dto/find-sprint.dto';
 import { PagingReqDto } from 'src/common/common.dto';
 import { ResFindSprintsDto } from './dto/find-sprints.dto';
+import { ResSprintDto } from './dto/sprint.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sprint')
@@ -58,7 +59,7 @@ export class SprintController {
     description: '새로운 스프린트를 생성합니다.',
   })
   @ApiCreatedResponse({
-    type: ResCreateSprintDto,
+    type: ResSprintDto,
     status: HttpStatus.CREATED,
     description: '스프린트를 성공적으로 생성하였습니다.',
   })
@@ -91,7 +92,7 @@ export class SprintController {
     name: '페이징 요청',
   })
   @ApiOkResponse({
-    type: ResFindSprintsDto,
+    type: [ResSprintDto],
     status: HttpStatus.OK,
   })
   async getSprintList(
@@ -124,7 +125,7 @@ export class SprintController {
     name: 'id',
   })
   @ApiOkResponse({
-    type: ResFindSprintDto,
+    type: ResSprintDto,
     status: HttpStatus.OK,
   })
   async findSprint(@Request() req, @Param() param): Promise<ResFindSprintDto> {
