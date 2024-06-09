@@ -26,6 +26,7 @@ import {
 import { ResFindRepoDto } from './dto/find-repo.dto';
 import { ResFindReposDto } from './dto/find-repos.dto';
 import { ResSyncRepoDto } from './dto/sync-repo.dto';
+import { ResRepoDto } from './dto/repo.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('repo')
@@ -60,7 +61,7 @@ export class RepoController {
     description: '새로운 레포지토리를 생성합니다.',
   })
   @ApiCreatedResponse({
-    type: ResCreateRepoDto,
+    type: ResRepoDto,
     status: HttpStatus.CREATED,
     description: '레포지토리를 성공적으로 생성하였습니다.',
   })
@@ -91,7 +92,7 @@ export class RepoController {
     name: '페이징 요청',
   })
   @ApiOkResponse({
-    type: ResFindReposDto,
+    type: [ResRepoDto],
     status: HttpStatus.OK,
   })
   async findUserRepos(
@@ -124,7 +125,7 @@ export class RepoController {
     description: '레포지토리를 조회합니다.',
   })
   @ApiOkResponse({
-    type: ResFindRepoDto,
+    type: ResRepoDto,
     status: HttpStatus.OK,
   })
   async findUserRepo(@Request() req, @Param() param): Promise<ResFindRepoDto> {
