@@ -25,6 +25,7 @@ import {
 import { ResFindTaskDto } from './dto/find-task.dto';
 import { PagingReqDto } from 'src/common/common.dto';
 import { ResFindTasksDto } from './dto/find-tasks.dto';
+import { ResTaskDto } from './dto/task.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('task')
@@ -57,7 +58,7 @@ export class TaskController {
     description: '새로운 태스크를 생성합니다.',
   })
   @ApiCreatedResponse({
-    type: ResCreateTaskDto,
+    type: ResTaskDto,
     status: HttpStatus.CREATED,
     description: '태스크를 성공적으로 생성하였습니다.',
   })
@@ -87,7 +88,7 @@ export class TaskController {
     name: '페이징 요청',
   })
   @ApiOkResponse({
-    type: ResFindTasksDto,
+    type: [ResTaskDto],
     status: HttpStatus.OK,
   })
   async getTaskList(@Request() req, @Query() query): Promise<ResFindTasksDto> {
@@ -117,7 +118,7 @@ export class TaskController {
     name: 'id',
   })
   @ApiOkResponse({
-    type: ResFindTaskDto,
+    type: ResTaskDto,
     status: HttpStatus.OK,
   })
   async findTask(@Request() req, @Param() param): Promise<ResFindTaskDto> {
