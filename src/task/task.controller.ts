@@ -51,7 +51,7 @@ export class TaskController {
     };
   }
 
-  @Post()
+  @Post('repo/:repoId')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: '태스크 생성',
@@ -64,10 +64,12 @@ export class TaskController {
   })
   async createTask(
     @Request() req,
+    @Param() param,
     @Body() body: CreateTaskDto,
   ): Promise<ResCreateTaskDto> {
     const task = await this.taskService.createTask({
       ...body,
+      repoId: param.repoId,
       userId: req.user.id,
     });
     return {
