@@ -2,7 +2,7 @@ import {
   IsBoolean,
   IsDate,
   IsNotEmpty,
-  IsNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -10,7 +10,6 @@ import { ResDto } from 'src/common/dto/res.dto';
 import { ResRepoDto } from './repo.dto';
 
 export class CreateRepoDto {
-  @IsNumber()
   userId: number;
 
   @ApiProperty()
@@ -19,12 +18,12 @@ export class CreateRepoDto {
   repoName: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   description: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   language: string;
 
@@ -34,27 +33,27 @@ export class CreateRepoDto {
   defaultBranch: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   ownerAvatarUrl: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   htmlUrl: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
   isPrivate: boolean;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
   isFork: boolean;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsDate()
   synchronizedAt: Date;
 }

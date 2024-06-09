@@ -33,6 +33,26 @@ import { ResSyncRepoDto } from './dto/sync-repo.dto';
 @ApiTags('repo')
 export class RepoController {
   constructor(private repoService: RepoService) {}
+
+  serialize(repo) {
+    return {
+      id: repo.id,
+      createdAt: repo.createdAt,
+      updatedAt: repo.updatedAt,
+      userId: repo.userId,
+      repoName: repo.repoName,
+      defaultBranch: repo.defaultBranch,
+      htmlUrl: repo.htmlUrl,
+      isPrivate: repo.isPrivate,
+      isFork: repo.isFork,
+      imageUrl: repo.imageUrl,
+      description: repo.description,
+      language: repo.language,
+      ownerAvatarUrl: repo.ownerAvatarUrl,
+      synchronizedAt: repo.synchronizedAt,
+    };
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
@@ -56,22 +76,7 @@ export class RepoController {
     return {
       message: '레포지토리를 생성했습니다.',
       statusCode: HttpStatus.CREATED,
-      item: {
-        id: repo.id,
-        createdAt: repo.createdAt,
-        updatedAt: repo.updatedAt,
-        userId: repo.userId,
-        repoName: repo.repoName,
-        defaultBranch: repo.defaultBranch,
-        htmlUrl: repo.htmlUrl,
-        isPrivate: repo.isPrivate,
-        isFork: repo.isFork,
-        imageUrl: repo.imageUrl,
-        description: repo.description,
-        language: repo.language,
-        ownerAvatarUrl: repo.ownerAvatarUrl,
-        synchronizedAt: repo.synchronizedAt,
-      },
+      item: this.serialize(repo),
     };
   }
 
@@ -93,7 +98,7 @@ export class RepoController {
     @Request() req,
     @Query() query,
   ): Promise<ResFindReposDto> {
-    const repos = await this.repoService.findRepos({
+    const [repos, totalCount] = await this.repoService.findRepos({
       userId: req.user.id,
       page: query.page,
       pageSize: query.pageSize,
@@ -103,8 +108,8 @@ export class RepoController {
 
     return {
       statusCode: HttpStatus.OK,
-      message: '레포지토리 리스트를 조회했습니다.',
-      items: repos[0],
+      message: `총 ${totalCount}개중 ${repos.length}개의 레포지토리 리스트를 조회했습니다.`,
+      items: repos.map((repo) => this.serialize(repo)),
     };
   }
 
@@ -131,22 +136,7 @@ export class RepoController {
     return {
       statusCode: HttpStatus.OK,
       message: '레포지토리를 조회했습니다.',
-      item: {
-        id: repo.id,
-        createdAt: repo.createdAt,
-        updatedAt: repo.updatedAt,
-        userId: repo.userId,
-        repoName: repo.repoName,
-        defaultBranch: repo.defaultBranch,
-        htmlUrl: repo.htmlUrl,
-        isPrivate: repo.isPrivate,
-        isFork: repo.isFork,
-        imageUrl: repo.imageUrl,
-        description: repo.description,
-        language: repo.language,
-        ownerAvatarUrl: repo.ownerAvatarUrl,
-        synchronizedAt: repo.synchronizedAt,
-      },
+      item: this.serialize(repo),
     };
   }
 

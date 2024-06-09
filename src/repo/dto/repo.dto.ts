@@ -5,7 +5,7 @@ import {
   IsDate,
   IsNotEmpty,
 } from 'class-validator';
-import { ApiProperty, PickType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from 'src/common/common.dto';
 import { UserEntity } from 'src/user/user.entity';
 
@@ -74,19 +74,46 @@ export class RepoDto extends BaseDto {
   synchronizedAt: Date;
 }
 
-export class ResRepoDto extends PickType(RepoDto, [
-  'id',
-  'createdAt',
-  'updatedAt',
-  'userId',
-  'repoName',
-  'defaultBranch',
-  'htmlUrl',
-  'isPrivate',
-  'isFork',
-  'imageUrl',
-  'description',
-  'language',
-  'ownerAvatarUrl',
-  'synchronizedAt',
-] as const) {}
+export class ResRepoDto {
+  @ApiProperty()
+  'id': number;
+
+  @ApiProperty()
+  'createdAt': Date;
+
+  @ApiProperty()
+  'updatedAt': Date;
+
+  @ApiProperty()
+  'userId': number;
+
+  @ApiProperty()
+  'repoName': number;
+
+  @ApiProperty()
+  'defaultBranch': string;
+
+  @ApiProperty()
+  'htmlUrl': string;
+
+  @ApiProperty()
+  'isPrivate': boolean;
+
+  @ApiProperty()
+  'isFork': boolean;
+
+  @ApiProperty()
+  'imageUrl': string;
+
+  @ApiProperty()
+  'description': string;
+
+  @ApiProperty()
+  'language': string;
+
+  @ApiProperty()
+  'ownerAvatarUrl': string;
+
+  @ApiProperty()
+  'synchronizedAt': Date;
+}
