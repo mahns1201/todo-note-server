@@ -79,6 +79,41 @@ export class TaskController {
     };
   }
 
+  @Get('repo/:repoId/list')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '태스크 목록 조회',
+    description: '태스크 목록을 조회합니다.',
+  })
+  @ApiQuery({
+    type: PagingReqDto,
+    name: '페이징 요청',
+  })
+  @ApiOkResponse({
+    type: [ResTaskDto],
+    status: HttpStatus.OK,
+  })
+  async getTaskListByRepoId(
+    @Request() req,
+    @Query() query,
+    @Param() param,
+  ): Promise<ResFindTasksDto> {
+    const [tasks, totalCount] = await this.taskService.findTasksByRepoId({
+      userId: req.user.id,
+      repoId: param.repoId,
+      page: query.page,
+      pageSize: query.pageSize,
+      orderBy: query.orderBy,
+      sortBy: query.sortBy,
+    });
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: `총 ${totalCount}개중 ${tasks.length}개의 태스크 리스트를 조회했습니다.`,
+      items: tasks.map((task) => this.serialize(task)),
+    };
+  }
+
   @Get('list')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

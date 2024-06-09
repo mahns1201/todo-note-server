@@ -8,6 +8,7 @@ import { FindTaskByIdDto } from './dto/find-task.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { FindTasksDto } from './dto/find-tasks.dto';
 import { RepoService } from 'src/repo/repo.service';
+import { FindTasksByRepoIdDto } from './dto/find-repo-tasks.dto';
 
 @Injectable()
 export class TaskService {
@@ -42,5 +43,9 @@ export class TaskService {
 
   async findTasks(dto: FindTasksDto) {
     return await this.taskDao.find(dto);
+  }
+
+  async findTasksByRepoId(dto: FindTasksByRepoIdDto) {
+    return await this.taskDao.findByRepoId(dto);
   }
 }
