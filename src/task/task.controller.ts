@@ -23,9 +23,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ResFindTaskDto } from './dto/find-task.dto';
-import { PagingReqDto } from 'src/common/common.dto';
+// import { PagingReqDto } from 'src/common/common.dto';
 import { ResFindTasksDto } from './dto/find-tasks.dto';
 import { ResTaskDto } from './dto/task.dto';
+import { FindTaskByRepoIdQueryDto } from './dto/find-repo-tasks.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('task')
@@ -86,7 +87,7 @@ export class TaskController {
     description: '태스크 목록을 조회합니다.',
   })
   @ApiQuery({
-    type: PagingReqDto,
+    type: FindTaskByRepoIdQueryDto,
     name: '페이징 요청',
   })
   @ApiOkResponse({
@@ -101,6 +102,7 @@ export class TaskController {
     const [tasks, totalCount] = await this.taskService.findTasksByRepoId({
       userId: req.user.id,
       repoId: param.repoId,
+      sprintId: query.sprintId,
       page: query.page,
       pageSize: query.pageSize,
       orderBy: query.orderBy,
@@ -114,35 +116,35 @@ export class TaskController {
     };
   }
 
-  @Get('list')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: '태스크 목록 조회',
-    description: '태스크 목록을 조회합니다.',
-  })
-  @ApiQuery({
-    type: PagingReqDto,
-    name: '페이징 요청',
-  })
-  @ApiOkResponse({
-    type: [ResTaskDto],
-    status: HttpStatus.OK,
-  })
-  async getTaskList(@Request() req, @Query() query): Promise<ResFindTasksDto> {
-    const [tasks, totalCount] = await this.taskService.findTasks({
-      userId: req.user.id,
-      page: query.page,
-      pageSize: query.pageSize,
-      orderBy: query.orderBy,
-      sortBy: query.sortBy,
-    });
+  // @Get('list')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({
+  //   summary: '태스크 목록 조회',
+  //   description: '태스크 목록을 조회합니다.',
+  // })
+  // @ApiQuery({
+  //   type: PagingReqDto,
+  //   name: '페이징 요청',
+  // })
+  // @ApiOkResponse({
+  //   type: [ResTaskDto],
+  //   status: HttpStatus.OK,
+  // })
+  // async getTaskList(@Request() req, @Query() query): Promise<ResFindTasksDto> {
+  //   const [tasks, totalCount] = await this.taskService.findTasks({
+  //     userId: req.user.id,
+  //     page: query.page,
+  //     pageSize: query.pageSize,
+  //     orderBy: query.orderBy,
+  //     sortBy: query.sortBy,
+  //   });
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: `총 ${totalCount}개중 ${tasks.length}개의 태스크 리스트를 조회했습니다.`,
-      items: tasks.map((task) => this.serialize(task)),
-    };
-  }
+  //   return {
+  //     statusCode: HttpStatus.OK,
+  //     message: `총 ${totalCount}개중 ${tasks.length}개의 태스크 리스트를 조회했습니다.`,
+  //     items: tasks.map((task) => this.serialize(task)),
+  //   };
+  // }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)

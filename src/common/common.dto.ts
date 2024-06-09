@@ -44,11 +44,11 @@ export class TokenDto {
 }
 
 export class PagingReqDto {
-  @ApiProperty()
+  @ApiProperty({ default: 1, required: false })
   @IsNumber()
   page: number;
 
-  @ApiProperty()
+  @ApiProperty({ default: 10, required: false })
   @IsNumber()
   pageSize: number;
 
