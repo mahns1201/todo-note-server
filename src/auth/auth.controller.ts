@@ -43,16 +43,7 @@ export class AuthController {
     return {
       statusCode: HttpStatus.OK,
       message: '로그인을 성공했습니다.',
-      item: {
-        id: req.user.id,
-        createdAt: req.user.createdAt,
-        updatedAt: req.user.updatedAt,
-        email: req.user.email,
-        githubId: req.user.githubId,
-        avatarUrl: req.user.avatarUrl,
-        isGithub: req.user.isGithub,
-        accessToken: req.user.accessToken,
-      },
+      item: { accessToken: req.user.accessToken },
     };
   }
 
@@ -115,16 +106,7 @@ export class AuthController {
     return {
       statusCode: HttpStatus.OK,
       message: '깃허브 로그인을 성공했습니다.',
-      item: {
-        id: user.id,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        email: user.email,
-        githubId: user.githubId,
-        avatarUrl: user.avatarUrl,
-        isGithub: user.isGithub,
-        accessToken: user.accessToken,
-      },
+      item: { accessToken: user.accessToken },
     };
   }
 
