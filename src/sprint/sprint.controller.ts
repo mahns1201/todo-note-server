@@ -26,6 +26,7 @@ import { PagingReqDto } from 'src/common/common.dto';
 import { ResFindSprintsDto } from './dto/find-sprints.dto';
 import { ResSprintDto, ResSprintProgressDto } from './dto/sprint.dto';
 import { calcProgress } from 'src/util/progress';
+import { LessThanOrEqual } from 'typeorm';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sprint')
@@ -78,6 +79,40 @@ export class SprintController {
       statusCode: HttpStatus.CREATED,
       message: '스프린트를 생성했습니다.',
       item: this.serialize(sprint),
+    };
+  }
+
+  @Get('list/upcoming')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '마감 임박 스프린트 목록 조회',
+    description: '5일 이내로 마감될 스프린트 목록을 조회합니다.',
+  })
+  @ApiOkResponse({
+    type: [ResSprintDto],
+    status: HttpStatus.OK,
+  })
+  async getUpcomingSprintList(
+    @Request() req,
+    @Query() query: PagingReqDto,
+  ): Promise<ResFindSprintsDto> {
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 5); // 5일 이내 마감 스프린트 조회
+    const where = { endAt: LessThanOrEqual(endDate) };
+
+    const [sprints, totalCount] = await this.sprintService.findSprints({
+      userId: req.user.id,
+      page: query.page,
+      pageSize: query.pageSize,
+      orderBy: query.orderBy,
+      sortBy: query.sortBy,
+      where,
+    });
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: `총 ${totalCount}개중 ${sprints.length}개의 마감 임박 스프린트 리스트를 조회했습니다.`,
+      items: sprints.map((sprint) => this.serialize(sprint)),
     };
   }
 
