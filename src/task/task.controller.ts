@@ -19,7 +19,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { ResFindTaskDto } from './dto/find-task.dto';
@@ -86,17 +85,13 @@ export class TaskController {
     summary: '태스크 목록 조회',
     description: '태스크 목록을 조회합니다.',
   })
-  @ApiQuery({
-    type: FindTaskByRepoIdQueryDto,
-    name: '페이징 요청',
-  })
   @ApiOkResponse({
     type: [ResTaskDto],
     status: HttpStatus.OK,
   })
   async getTaskListByRepoId(
     @Request() req,
-    @Query() query,
+    @Query() query: FindTaskByRepoIdQueryDto,
     @Param() param,
   ): Promise<ResFindTasksDto> {
     const [tasks, totalCount] = await this.taskService.findTasksByRepoId({

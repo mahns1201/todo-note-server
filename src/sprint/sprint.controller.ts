@@ -19,7 +19,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { ResFindSprintDto } from './dto/find-sprint.dto';
@@ -87,17 +86,13 @@ export class SprintController {
     summary: '스프린트 목록 조회',
     description: '스프린트 목록을 조회합니다.',
   })
-  @ApiQuery({
-    type: PagingReqDto,
-    name: '페이징 요청',
-  })
   @ApiOkResponse({
     type: [ResSprintDto],
     status: HttpStatus.OK,
   })
   async getSprintList(
     @Request() req,
-    @Query() query,
+    @Query() query: PagingReqDto,
   ): Promise<ResFindSprintsDto> {
     const [sprints, totalCount] = await this.sprintService.findSprints({
       userId: req.user.id,

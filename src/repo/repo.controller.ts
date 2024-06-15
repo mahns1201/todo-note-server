@@ -20,7 +20,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { ResFindRepoDto } from './dto/find-repo.dto';
@@ -87,17 +86,13 @@ export class RepoController {
     summary: '레포지토리 리스트 조회',
     description: '레포지토리 리스트를 조회합니다.',
   })
-  @ApiQuery({
-    type: PagingReqDto,
-    name: '페이징 요청',
-  })
   @ApiOkResponse({
     type: [ResRepoDto],
     status: HttpStatus.OK,
   })
   async findUserRepos(
     @Request() req,
-    @Query() query,
+    @Query() query: PagingReqDto,
   ): Promise<ResFindReposDto> {
     const [repos, totalCount] = await this.repoService.findRepos({
       userId: req.user.id,
