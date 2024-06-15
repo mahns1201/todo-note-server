@@ -1,8 +1,9 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { BaseEntity } from 'src/common/common.entity';
 import { UserEntity } from 'src/user/user.entity';
 import { RepoEntity } from 'src/repo/repo.entity';
+import { SprintEntity } from 'src/sprint/sprint.entity';
 // import { SprintEntity } from 'src/sprint/sprint.entity';
 
 @Entity({ name: 'task' })
@@ -21,12 +22,13 @@ export class TaskEntity extends BaseEntity {
   @IsNotEmpty()
   repoId: number;
 
-  // @ManyToOne(() => SprintEntity, (sprint) => sprint.tasks, { nullable: true })
-  // sprint: SprintEntity;
-
-  // @Column()
-  // @IsOptional()
-  // sprintId: number;
+  @ManyToMany(() => SprintEntity, (sprint) => sprint.tasks)
+  @JoinTable({
+    name: 'task_sprints',
+    joinColumn: { name: 'taskId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'sprintId', referencedColumnName: 'id' },
+  })
+  sprints: SprintEntity[];
 
   @Column()
   @IsNotEmpty()
@@ -42,4 +44,9 @@ export class TaskEntity extends BaseEntity {
   @IsNotEmpty()
   @IsBoolean()
   isGithubIssue: boolean;
+
+  @Column({ default: false })
+  @IsNotEmpty()
+  @IsBoolean()
+  isClosed: boolean;
 }

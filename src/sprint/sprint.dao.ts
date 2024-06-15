@@ -24,14 +24,15 @@ export class SprintDao {
         id,
         deletedAt: null,
       },
-      relations: ['user', 'repo'],
+      relations: ['user', 'repo', 'tasks'],
     });
   }
 
   async find(dto): Promise<[SprintEntity[], number]> {
-    const { page, pageSize, orderBy, sortBy, userId } = dto;
+    const { page, pageSize, orderBy, sortBy, userId, where } = dto;
+
     const [results, total] = await this.sprintRepository.findAndCount({
-      where: { userId, deletedAt: null },
+      where: { userId, deletedAt: null, ...where },
       take: pageSize,
       skip: pageSize * (page - 1),
       order: { [orderBy]: sortBy },

@@ -5,6 +5,7 @@ import { ResSprintDto } from './sprint.dto';
 
 export class FindSprintsDto extends PagingReqDto {
   userId: number;
+  where?: object;
 }
 
 export class ResFindSprintsDto extends ResDto {

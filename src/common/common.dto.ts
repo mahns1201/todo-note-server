@@ -44,21 +44,21 @@ export class TokenDto {
 }
 
 export class PagingReqDto {
-  @ApiProperty()
+  @ApiProperty({ default: 1, required: false })
   @IsNumber()
-  page: number;
+  page: number = 1;
 
-  @ApiProperty()
+  @ApiProperty({ default: 10, required: false })
   @IsNumber()
-  pageSize: number;
+  pageSize: number = 10;
 
-  @ApiProperty()
+  @ApiProperty({ default: 'id', required: false })
   @IsString()
-  orderBy: string;
+  orderBy: string = 'id';
 
-  @ApiProperty()
+  @ApiProperty({ default: 'desc', enum: ['asc', 'desc'], required: false })
   @IsString()
-  sortBy: string;
+  sortBy: string = 'desc';
 }
 
 export class CommonResDto {

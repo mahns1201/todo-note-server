@@ -57,7 +57,7 @@ export class ResUserDto extends PickType(UserDto, [
   'isGithub',
 ] as const) {}
 
-export class ResUserTokenDto extends ResUserDto {
+export class ResUserTokenDto {
   @ApiProperty()
   @IsOptional()
   @IsBoolean()

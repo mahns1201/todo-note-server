@@ -1,14 +1,14 @@
 import { BaseEntity } from 'src/common/common.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
 import { UserEntity } from 'src/user/user.entity';
 import { RepoEntity } from 'src/repo/repo.entity';
-// import { TaskEntity } from 'src/task/task.entity';
+import { TaskEntity } from 'src/task/task.entity';
 
 @Entity({ name: 'sprint' })
 export class SprintEntity extends BaseEntity {
-  // @OneToMany(() => TaskEntity, (task) => task.sprint)
-  // tasks: TaskEntity[];
+  @ManyToMany(() => TaskEntity, (task) => task.sprints)
+  tasks: TaskEntity[];
 
   @ManyToOne(() => UserEntity, (user) => user.sprints)
   user: UserEntity;

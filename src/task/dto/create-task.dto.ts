@@ -6,9 +6,6 @@ import { ResTaskDto } from './task.dto';
 export class CreateTaskDto {
   userId: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
   repoId: number;
 
   @ApiProperty()

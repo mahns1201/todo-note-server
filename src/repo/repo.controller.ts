@@ -20,12 +20,12 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { ResFindRepoDto } from './dto/find-repo.dto';
 import { ResFindReposDto } from './dto/find-repos.dto';
 import { ResSyncRepoDto } from './dto/sync-repo.dto';
+import { ResRepoDto } from './dto/repo.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('repo')
@@ -33,6 +33,26 @@ import { ResSyncRepoDto } from './dto/sync-repo.dto';
 @ApiTags('repo')
 export class RepoController {
   constructor(private repoService: RepoService) {}
+
+  serialize(repo) {
+    return {
+      id: repo.id,
+      createdAt: repo.createdAt,
+      updatedAt: repo.updatedAt,
+      userId: repo.userId,
+      repoName: repo.repoName,
+      defaultBranch: repo.defaultBranch,
+      htmlUrl: repo.htmlUrl,
+      isPrivate: repo.isPrivate,
+      isFork: repo.isFork,
+      imageUrl: repo.imageUrl,
+      description: repo.description,
+      language: repo.language,
+      ownerAvatarUrl: repo.ownerAvatarUrl,
+      synchronizedAt: repo.synchronizedAt,
+    };
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
@@ -40,7 +60,7 @@ export class RepoController {
     description: '새로운 레포지토리를 생성합니다.',
   })
   @ApiCreatedResponse({
-    type: ResCreateRepoDto,
+    type: ResRepoDto,
     status: HttpStatus.CREATED,
     description: '레포지토리를 성공적으로 생성하였습니다.',
   })
@@ -56,22 +76,7 @@ export class RepoController {
     return {
       message: '레포지토리를 생성했습니다.',
       statusCode: HttpStatus.CREATED,
-      item: {
-        id: repo.id,
-        createdAt: repo.createdAt,
-        updatedAt: repo.updatedAt,
-        userId: repo.userId,
-        repoName: repo.repoName,
-        defaultBranch: repo.defaultBranch,
-        htmlUrl: repo.htmlUrl,
-        isPrivate: repo.isPrivate,
-        isFork: repo.isFork,
-        imageUrl: repo.imageUrl,
-        description: repo.description,
-        language: repo.language,
-        ownerAvatarUrl: repo.ownerAvatarUrl,
-        synchronizedAt: repo.synchronizedAt,
-      },
+      item: this.serialize(repo),
     };
   }
 
@@ -81,19 +86,15 @@ export class RepoController {
     summary: '레포지토리 리스트 조회',
     description: '레포지토리 리스트를 조회합니다.',
   })
-  @ApiQuery({
-    type: PagingReqDto,
-    name: '페이징 요청',
-  })
   @ApiOkResponse({
-    type: ResFindReposDto,
+    type: [ResRepoDto],
     status: HttpStatus.OK,
   })
   async findUserRepos(
     @Request() req,
-    @Query() query,
+    @Query() query: PagingReqDto,
   ): Promise<ResFindReposDto> {
-    const repos = await this.repoService.findRepos({
+    const [repos, totalCount] = await this.repoService.findRepos({
       userId: req.user.id,
       page: query.page,
       pageSize: query.pageSize,
@@ -103,8 +104,8 @@ export class RepoController {
 
     return {
       statusCode: HttpStatus.OK,
-      message: '레포지토리 리스트를 조회했습니다.',
-      items: repos[0],
+      message: `총 ${totalCount}개중 ${repos.length}개의 레포지토리 리스트를 조회했습니다.`,
+      items: repos.map((repo) => this.serialize(repo)),
     };
   }
 
@@ -119,7 +120,7 @@ export class RepoController {
     description: '레포지토리를 조회합니다.',
   })
   @ApiOkResponse({
-    type: ResFindRepoDto,
+    type: ResRepoDto,
     status: HttpStatus.OK,
   })
   async findUserRepo(@Request() req, @Param() param): Promise<ResFindRepoDto> {
@@ -131,22 +132,7 @@ export class RepoController {
     return {
       statusCode: HttpStatus.OK,
       message: '레포지토리를 조회했습니다.',
-      item: {
-        id: repo.id,
-        createdAt: repo.createdAt,
-        updatedAt: repo.updatedAt,
-        userId: repo.userId,
-        repoName: repo.repoName,
-        defaultBranch: repo.defaultBranch,
-        htmlUrl: repo.htmlUrl,
-        isPrivate: repo.isPrivate,
-        isFork: repo.isFork,
-        imageUrl: repo.imageUrl,
-        description: repo.description,
-        language: repo.language,
-        ownerAvatarUrl: repo.ownerAvatarUrl,
-        synchronizedAt: repo.synchronizedAt,
-      },
+      item: this.serialize(repo),
     };
   }
 
