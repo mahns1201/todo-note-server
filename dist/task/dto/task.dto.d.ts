@@ -6,7 +6,17 @@ export declare class TaskDto extends BaseDto {
     content: string;
     isGithubIssue: boolean;
 }
-declare const ResTaskDto_base: import("@nestjs/common").Type<Pick<TaskDto, "title" | "id" | "createdAt" | "updatedAt" | "repoId" | "userId" | "content" | "isGithubIssue">>;
-export declare class ResTaskDto extends ResTaskDto_base {
+export declare class ResTaskDto {
+    id: number;
+    createdAt: Date;
+    updatedAt: Date;
+    userId: number;
+    repoId: number;
+    title: string;
+    content: string;
+    isGithubIssue: boolean;
+    repoName: string;
+    repoHtmlUrl: string;
+    repoOwnerAvatarUrl: string;
+    repoSynchronizedAt: Date;
 }
-export {};

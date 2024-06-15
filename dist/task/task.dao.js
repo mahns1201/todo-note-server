@@ -21,8 +21,9 @@ let TaskDao = class TaskDao {
     constructor(taskRepository) {
         this.taskRepository = taskRepository;
     }
-    async create(dto) {
+    async create(dto, sprint) {
         const task = this.taskRepository.create(dto);
+        task.sprints = sprint ? [sprint] : [];
         await this.taskRepository.save(task);
         return task;
     }
@@ -43,6 +44,22 @@ let TaskDao = class TaskDao {
             skip: pageSize * (page - 1),
             order: { [orderBy]: sortBy },
             relations: ['user', 'repo'],
+        });
+        return [results, total];
+    }
+    async findByRepoId(dto) {
+        const { page, pageSize, orderBy, sortBy, userId, repoId, sprintId } = dto;
+        const [results, total] = await this.taskRepository.findAndCount({
+            where: {
+                userId,
+                repoId,
+                deletedAt: null,
+                sprints: { id: sprintId },
+            },
+            take: pageSize,
+            skip: pageSize * (page - 1),
+            order: { [orderBy]: sortBy },
+            relations: ['user', 'repo', 'sprints'],
         });
         return [results, total];
     }

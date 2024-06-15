@@ -19,6 +19,8 @@ const user_module_1 = require("../user/user.module");
 const user_service_1 = require("../user/user.service");
 const github_module_1 = require("../github/github.module");
 const github_service_1 = require("../github/github.service");
+const sprint_module_1 = require("../sprint/sprint.module");
+const sprint_service_1 = require("../sprint/sprint.service");
 let TaskModule = class TaskModule {
 };
 exports.TaskModule = TaskModule;
@@ -28,10 +30,18 @@ exports.TaskModule = TaskModule = __decorate([
             repo_module_1.RepoModule,
             user_module_1.UserModule,
             github_module_1.GithubModule,
+            sprint_module_1.SprintModule,
             typeorm_1.TypeOrmModule.forFeature([task_entity_1.TaskEntity]),
         ],
         controllers: [task_controller_1.TaskController],
-        providers: [task_service_1.TaskService, task_dao_1.TaskDao, repo_service_1.RepoService, user_service_1.UserService, github_service_1.GithubService],
+        providers: [
+            task_service_1.TaskService,
+            task_dao_1.TaskDao,
+            repo_service_1.RepoService,
+            user_service_1.UserService,
+            github_service_1.GithubService,
+            sprint_service_1.SprintService,
+        ],
         exports: [task_dao_1.TaskDao],
     })
 ], TaskModule);

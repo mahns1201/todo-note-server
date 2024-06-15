@@ -18,33 +18,41 @@ const jwt_auth_guard_1 = require("../auth/guard/jwt-auth.guard");
 const task_service_1 = require("./task.service");
 const create_task_dto_1 = require("./dto/create-task.dto");
 const swagger_1 = require("@nestjs/swagger");
-const find_task_dto_1 = require("./dto/find-task.dto");
-const common_dto_1 = require("../common/common.dto");
-const find_tasks_dto_1 = require("./dto/find-tasks.dto");
+const task_dto_1 = require("./dto/task.dto");
+const find_repo_tasks_dto_1 = require("./dto/find-repo-tasks.dto");
 let TaskController = class TaskController {
     constructor(taskService) {
         this.taskService = taskService;
     }
-    async createTask(req, body) {
-        const task = await this.taskService.createTask(Object.assign(Object.assign({}, body), { userId: req.user.id }));
+    serialize(task) {
+        return {
+            id: task.id,
+            createdAt: task.createdAt,
+            updatedAt: task.updatedAt,
+            userId: task.userId,
+            repoId: task.repoId,
+            title: task.title,
+            content: task.content,
+            isGithubIssue: task.isGithubIssue,
+            repoName: task.repo.repoName,
+            repoHtmlUrl: task.repo.htmlUrl,
+            repoOwnerAvatarUrl: task.repo.ownerAvatarUrl,
+            repoSynchronizedAt: task.repo.synchronizedAt,
+        };
+    }
+    async createTask(req, param, body) {
+        const task = await this.taskService.createTask(Object.assign(Object.assign({}, body), { repoId: param.repoId, userId: req.user.id }));
         return {
             statusCode: common_1.HttpStatus.CREATED,
             message: '태스크를 생성했습니다.',
-            item: {
-                id: task.id,
-                createdAt: task.createdAt,
-                updatedAt: task.updatedAt,
-                userId: task.userId,
-                repoId: task.repoId,
-                title: task.title,
-                content: task.content,
-                isGithubIssue: task.isGithubIssue,
-            },
+            item: this.serialize(task),
         };
     }
-    async getTaskList(req, query) {
-        const tasks = await this.taskService.findTasks({
+    async getTaskListByRepoId(req, query, param) {
+        const [tasks, totalCount] = await this.taskService.findTasksByRepoId({
             userId: req.user.id,
+            repoId: param.repoId,
+            sprintId: query.sprintId,
             page: query.page,
             pageSize: query.pageSize,
             orderBy: query.orderBy,
@@ -52,71 +60,60 @@ let TaskController = class TaskController {
         });
         return {
             statusCode: common_1.HttpStatus.OK,
-            message: '태스크 리스트를 조회했습니다.',
-            items: tasks[0],
+            message: `총 ${totalCount}개중 ${tasks.length}개의 태스크 리스트를 조회했습니다.`,
+            items: tasks.map((task) => this.serialize(task)),
         };
     }
     async findTask(req, param) {
-        const result = await this.taskService.findTask({
+        const task = await this.taskService.findTask({
             id: param.id,
             userId: req.user.id,
         });
         return {
             statusCode: common_1.HttpStatus.OK,
             message: '태스크를 조회했습니다.',
-            item: {
-                id: result.id,
-                createdAt: result.createdAt,
-                updatedAt: result.updatedAt,
-                userId: result.userId,
-                repoId: result.repoId,
-                title: result.title,
-                content: result.content,
-                isGithubIssue: result.isGithubIssue,
-            },
+            item: this.serialize(task),
         };
     }
 };
 exports.TaskController = TaskController;
 __decorate([
-    (0, common_1.Post)(),
+    (0, common_1.Post)('repo/:repoId'),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 생성',
         description: '새로운 태스크를 생성합니다.',
     }),
     (0, swagger_1.ApiCreatedResponse)({
-        type: create_task_dto_1.ResCreateTaskDto,
+        type: task_dto_1.ResTaskDto,
         status: common_1.HttpStatus.CREATED,
         description: '태스크를 성공적으로 생성하였습니다.',
     }),
     __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Body)()),
+    __param(1, (0, common_1.Param)()),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, create_task_dto_1.CreateTaskDto]),
+    __metadata("design:paramtypes", [Object, Object, create_task_dto_1.CreateTaskDto]),
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "createTask", null);
 __decorate([
-    (0, common_1.Get)('list'),
+    (0, common_1.Get)('repo/:repoId/list'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 목록 조회',
         description: '태스크 목록을 조회합니다.',
     }),
-    (0, swagger_1.ApiQuery)({
-        type: common_dto_1.PagingReqDto,
-        name: '페이징 요청',
-    }),
     (0, swagger_1.ApiOkResponse)({
-        type: find_tasks_dto_1.ResFindTasksDto,
+        type: [task_dto_1.ResTaskDto],
         status: common_1.HttpStatus.OK,
     }),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Query)()),
+    __param(2, (0, common_1.Param)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, find_repo_tasks_dto_1.FindTaskByRepoIdQueryDto, Object]),
     __metadata("design:returntype", Promise)
-], TaskController.prototype, "getTaskList", null);
+], TaskController.prototype, "getTaskListByRepoId", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
@@ -129,7 +126,7 @@ __decorate([
         name: 'id',
     }),
     (0, swagger_1.ApiOkResponse)({
-        type: find_task_dto_1.ResFindTaskDto,
+        type: task_dto_1.ResTaskDto,
         status: common_1.HttpStatus.OK,
     }),
     __param(0, (0, common_1.Request)()),

@@ -19,38 +19,40 @@ const repo_service_1 = require("./repo.service");
 const create_repo_dto_1 = require("./dto/create-repo.dto");
 const common_dto_1 = require("../common/common.dto");
 const swagger_1 = require("@nestjs/swagger");
-const find_repo_dto_1 = require("./dto/find-repo.dto");
-const find_repos_dto_1 = require("./dto/find-repos.dto");
 const sync_repo_dto_1 = require("./dto/sync-repo.dto");
+const repo_dto_1 = require("./dto/repo.dto");
 let RepoController = class RepoController {
     constructor(repoService) {
         this.repoService = repoService;
+    }
+    serialize(repo) {
+        return {
+            id: repo.id,
+            createdAt: repo.createdAt,
+            updatedAt: repo.updatedAt,
+            userId: repo.userId,
+            repoName: repo.repoName,
+            defaultBranch: repo.defaultBranch,
+            htmlUrl: repo.htmlUrl,
+            isPrivate: repo.isPrivate,
+            isFork: repo.isFork,
+            imageUrl: repo.imageUrl,
+            description: repo.description,
+            language: repo.language,
+            ownerAvatarUrl: repo.ownerAvatarUrl,
+            synchronizedAt: repo.synchronizedAt,
+        };
     }
     async createRepo(req, body) {
         const repo = await this.repoService.createRepo(Object.assign(Object.assign({}, body), { userId: req.user.id }));
         return {
             message: '레포지토리를 생성했습니다.',
             statusCode: common_1.HttpStatus.CREATED,
-            item: {
-                id: repo.id,
-                createdAt: repo.createdAt,
-                updatedAt: repo.updatedAt,
-                userId: repo.userId,
-                repoName: repo.repoName,
-                defaultBranch: repo.defaultBranch,
-                htmlUrl: repo.htmlUrl,
-                isPrivate: repo.isPrivate,
-                isFork: repo.isFork,
-                imageUrl: repo.imageUrl,
-                description: repo.description,
-                language: repo.language,
-                ownerAvatarUrl: repo.ownerAvatarUrl,
-                synchronizedAt: repo.synchronizedAt,
-            },
+            item: this.serialize(repo),
         };
     }
     async findUserRepos(req, query) {
-        const repos = await this.repoService.findRepos({
+        const [repos, totalCount] = await this.repoService.findRepos({
             userId: req.user.id,
             page: query.page,
             pageSize: query.pageSize,
@@ -59,8 +61,8 @@ let RepoController = class RepoController {
         });
         return {
             statusCode: common_1.HttpStatus.OK,
-            message: '레포지토리 리스트를 조회했습니다.',
-            items: repos[0],
+            message: `총 ${totalCount}개중 ${repos.length}개의 레포지토리 리스트를 조회했습니다.`,
+            items: repos.map((repo) => this.serialize(repo)),
         };
     }
     async findUserRepo(req, param) {
@@ -71,22 +73,7 @@ let RepoController = class RepoController {
         return {
             statusCode: common_1.HttpStatus.OK,
             message: '레포지토리를 조회했습니다.',
-            item: {
-                id: repo.id,
-                createdAt: repo.createdAt,
-                updatedAt: repo.updatedAt,
-                userId: repo.userId,
-                repoName: repo.repoName,
-                defaultBranch: repo.defaultBranch,
-                htmlUrl: repo.htmlUrl,
-                isPrivate: repo.isPrivate,
-                isFork: repo.isFork,
-                imageUrl: repo.imageUrl,
-                description: repo.description,
-                language: repo.language,
-                ownerAvatarUrl: repo.ownerAvatarUrl,
-                synchronizedAt: repo.synchronizedAt,
-            },
+            item: this.serialize(repo),
         };
     }
     async syncUserRepos(req) {
@@ -109,7 +96,7 @@ __decorate([
         description: '새로운 레포지토리를 생성합니다.',
     }),
     (0, swagger_1.ApiCreatedResponse)({
-        type: create_repo_dto_1.ResCreateRepoDto,
+        type: repo_dto_1.ResRepoDto,
         status: common_1.HttpStatus.CREATED,
         description: '레포지토리를 성공적으로 생성하였습니다.',
     }),
@@ -126,18 +113,14 @@ __decorate([
         summary: '레포지토리 리스트 조회',
         description: '레포지토리 리스트를 조회합니다.',
     }),
-    (0, swagger_1.ApiQuery)({
-        type: common_dto_1.PagingReqDto,
-        name: '페이징 요청',
-    }),
     (0, swagger_1.ApiOkResponse)({
-        type: find_repos_dto_1.ResFindReposDto,
+        type: [repo_dto_1.ResRepoDto],
         status: common_1.HttpStatus.OK,
     }),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, common_dto_1.PagingReqDto]),
     __metadata("design:returntype", Promise)
 ], RepoController.prototype, "findUserRepos", null);
 __decorate([
@@ -152,7 +135,7 @@ __decorate([
         description: '레포지토리를 조회합니다.',
     }),
     (0, swagger_1.ApiOkResponse)({
-        type: find_repo_dto_1.ResFindRepoDto,
+        type: repo_dto_1.ResRepoDto,
         status: common_1.HttpStatus.OK,
     }),
     __param(0, (0, common_1.Request)()),

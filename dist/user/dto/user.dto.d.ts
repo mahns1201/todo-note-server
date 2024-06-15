@@ -10,7 +10,7 @@ export declare class UserDto extends BaseDto {
 declare const ResUserDto_base: import("@nestjs/common").Type<Pick<UserDto, "id" | "createdAt" | "updatedAt" | "email" | "githubId" | "avatarUrl" | "isGithub">>;
 export declare class ResUserDto extends ResUserDto_base {
 }
-export declare class ResUserTokenDto extends ResUserDto {
+export declare class ResUserTokenDto {
     accessToken: string;
 }
 export {};

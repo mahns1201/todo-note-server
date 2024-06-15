@@ -6,7 +6,24 @@ export declare class SprintDto extends BaseDto {
     startAt: Date;
     endAt: Date;
 }
-declare const ResSprintDto_base: import("@nestjs/common").Type<Pick<SprintDto, "description" | "title" | "id" | "createdAt" | "updatedAt" | "userId" | "startAt" | "endAt">>;
-export declare class ResSprintDto extends ResSprintDto_base {
+export declare class ResSprintDto {
+    id: number;
+    createdAt: Date;
+    updatedAt: Date;
+    userId: number;
+    repoId: number;
+    title: string;
+    description: string;
+    startAt: Date;
+    endAt: Date;
+    repoName: string;
+    repoHtmlUrl: string;
+    repoOwnerAvatarUrl: string;
+    repoSynchronizedAt: Date;
 }
-export {};
+export declare class ResSprintProgressDto extends ResSprintDto {
+    totalCount: number;
+    openedCount: number;
+    closedCount: number;
+    progressPercent: number;
+}

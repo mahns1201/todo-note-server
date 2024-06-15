@@ -41,16 +41,55 @@ __decorate([
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], TaskDto.prototype, "isGithubIssue", void 0);
-class ResTaskDto extends (0, swagger_1.PickType)(TaskDto, [
-    'id',
-    'createdAt',
-    'updatedAt',
-    'userId',
-    'repoId',
-    'title',
-    'content',
-    'isGithubIssue',
-]) {
+class ResTaskDto {
 }
 exports.ResTaskDto = ResTaskDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ResTaskDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], ResTaskDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], ResTaskDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ResTaskDto.prototype, "userId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ResTaskDto.prototype, "repoId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResTaskDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResTaskDto.prototype, "content", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Boolean)
+], ResTaskDto.prototype, "isGithubIssue", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResTaskDto.prototype, "repoName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResTaskDto.prototype, "repoHtmlUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResTaskDto.prototype, "repoOwnerAvatarUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], ResTaskDto.prototype, "repoSynchronizedAt", void 0);
 //# sourceMappingURL=task.dto.js.map

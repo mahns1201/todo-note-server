@@ -15,9 +15,14 @@ const typeorm_1 = require("typeorm");
 const class_validator_1 = require("class-validator");
 const user_entity_1 = require("../user/user.entity");
 const repo_entity_1 = require("../repo/repo.entity");
+const task_entity_1 = require("../task/task.entity");
 let SprintEntity = class SprintEntity extends common_entity_1.BaseEntity {
 };
 exports.SprintEntity = SprintEntity;
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => task_entity_1.TaskEntity, (task) => task.sprints),
+    __metadata("design:type", Array)
+], SprintEntity.prototype, "tasks", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.UserEntity, (user) => user.sprints),
     __metadata("design:type", user_entity_1.UserEntity)

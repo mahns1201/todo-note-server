@@ -93,22 +93,63 @@ __decorate([
     (0, class_validator_1.IsDate)(),
     __metadata("design:type", Date)
 ], RepoDto.prototype, "synchronizedAt", void 0);
-class ResRepoDto extends (0, swagger_1.PickType)(RepoDto, [
-    'id',
-    'createdAt',
-    'updatedAt',
-    'userId',
-    'repoName',
-    'defaultBranch',
-    'htmlUrl',
-    'isPrivate',
-    'isFork',
-    'imageUrl',
-    'description',
-    'language',
-    'ownerAvatarUrl',
-    'synchronizedAt',
-]) {
+class ResRepoDto {
 }
 exports.ResRepoDto = ResRepoDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ResRepoDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], ResRepoDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], ResRepoDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ResRepoDto.prototype, "userId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ResRepoDto.prototype, "repoName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResRepoDto.prototype, "defaultBranch", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResRepoDto.prototype, "htmlUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Boolean)
+], ResRepoDto.prototype, "isPrivate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Boolean)
+], ResRepoDto.prototype, "isFork", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResRepoDto.prototype, "imageUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResRepoDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResRepoDto.prototype, "language", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResRepoDto.prototype, "ownerAvatarUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], ResRepoDto.prototype, "synchronizedAt", void 0);
 //# sourceMappingURL=repo.dto.js.map

@@ -21,7 +21,8 @@ let SprintService = class SprintService {
     async createSprint(dto) {
         const { repoId, userId } = dto;
         await this.repoService.findRepo({ id: repoId, userId });
-        return await this.sprintDao.create(dto);
+        const createdSprint = await this.sprintDao.create(dto);
+        return this.findSprint({ id: createdSprint.id, userId });
     }
     async findSprint(dto) {
         const { id, userId } = dto;

@@ -58,25 +58,31 @@ __decorate([
     __metadata("design:type", String)
 ], TokenDto.prototype, "githubToken", void 0);
 class PagingReqDto {
+    constructor() {
+        this.page = 1;
+        this.pageSize = 10;
+        this.orderBy = 'id';
+        this.sortBy = 'desc';
+    }
 }
 exports.PagingReqDto = PagingReqDto;
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ default: 1, required: false }),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PagingReqDto.prototype, "page", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ default: 10, required: false }),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PagingReqDto.prototype, "pageSize", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ default: 'id', required: false }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], PagingReqDto.prototype, "orderBy", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ default: 'desc', enum: ['asc', 'desc'], required: false }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], PagingReqDto.prototype, "sortBy", void 0);

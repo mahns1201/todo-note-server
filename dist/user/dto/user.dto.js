@@ -67,7 +67,7 @@ class ResUserDto extends (0, swagger_1.PickType)(UserDto, [
 ]) {
 }
 exports.ResUserDto = ResUserDto;
-class ResUserTokenDto extends ResUserDto {
+class ResUserTokenDto {
 }
 exports.ResUserTokenDto = ResUserTokenDto;
 __decorate([

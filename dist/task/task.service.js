@@ -13,15 +13,22 @@ exports.TaskService = void 0;
 const common_1 = require("@nestjs/common");
 const task_dao_1 = require("./task.dao");
 const repo_service_1 = require("../repo/repo.service");
+const sprint_service_1 = require("../sprint/sprint.service");
 let TaskService = class TaskService {
-    constructor(taskDao, repoService) {
+    constructor(taskDao, repoService, sprintService) {
         this.taskDao = taskDao;
         this.repoService = repoService;
+        this.sprintService = sprintService;
     }
     async createTask(dto) {
-        const { repoId, userId } = dto;
+        const { repoId, userId, sprintId } = dto;
         await this.repoService.findRepo({ id: repoId, userId });
-        return await this.taskDao.create(dto);
+        let sprint;
+        if (sprintId) {
+            sprint = await this.sprintService.findSprint({ id: sprintId, userId });
+        }
+        const createdTask = await this.taskDao.create(dto, sprint);
+        return this.findTask({ id: createdTask.id, userId });
     }
     async findTask(dto) {
         const { id, userId } = dto;
@@ -37,11 +44,15 @@ let TaskService = class TaskService {
     async findTasks(dto) {
         return await this.taskDao.find(dto);
     }
+    async findTasksByRepoId(dto) {
+        return await this.taskDao.findByRepoId(dto);
+    }
 };
 exports.TaskService = TaskService;
 exports.TaskService = TaskService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [task_dao_1.TaskDao,
-        repo_service_1.RepoService])
+        repo_service_1.RepoService,
+        sprint_service_1.SprintService])
 ], TaskService);
 //# sourceMappingURL=task.service.js.map

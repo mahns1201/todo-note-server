@@ -15,6 +15,7 @@ const class_validator_1 = require("class-validator");
 const common_entity_1 = require("../common/common.entity");
 const user_entity_1 = require("../user/user.entity");
 const repo_entity_1 = require("../repo/repo.entity");
+const sprint_entity_1 = require("../sprint/sprint.entity");
 let TaskEntity = class TaskEntity extends common_entity_1.BaseEntity {
 };
 exports.TaskEntity = TaskEntity;
@@ -37,6 +38,15 @@ __decorate([
     __metadata("design:type", Number)
 ], TaskEntity.prototype, "repoId", void 0);
 __decorate([
+    (0, typeorm_1.ManyToMany)(() => sprint_entity_1.SprintEntity, (sprint) => sprint.tasks),
+    (0, typeorm_1.JoinTable)({
+        name: 'task_sprints',
+        joinColumn: { name: 'taskId', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'sprintId', referencedColumnName: 'id' },
+    }),
+    __metadata("design:type", Array)
+], TaskEntity.prototype, "sprints", void 0);
+__decorate([
     (0, typeorm_1.Column)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
@@ -54,6 +64,12 @@ __decorate([
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], TaskEntity.prototype, "isGithubIssue", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], TaskEntity.prototype, "isClosed", void 0);
 exports.TaskEntity = TaskEntity = __decorate([
     (0, typeorm_1.Entity)({ name: 'task' })
 ], TaskEntity);

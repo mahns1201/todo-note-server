@@ -15,7 +15,19 @@ export declare class RepoDto extends BaseDto {
     ownerAvatarUrl: string;
     synchronizedAt: Date;
 }
-declare const ResRepoDto_base: import("@nestjs/common").Type<Pick<RepoDto, "description" | "id" | "createdAt" | "updatedAt" | "userId" | "repoName" | "defaultBranch" | "htmlUrl" | "isPrivate" | "isFork" | "imageUrl" | "language" | "ownerAvatarUrl" | "synchronizedAt">>;
-export declare class ResRepoDto extends ResRepoDto_base {
+export declare class ResRepoDto {
+    'id': number;
+    'createdAt': Date;
+    'updatedAt': Date;
+    'userId': number;
+    'repoName': number;
+    'defaultBranch': string;
+    'htmlUrl': string;
+    'isPrivate': boolean;
+    'isFork': boolean;
+    'imageUrl': string;
+    'description': string;
+    'language': string;
+    'ownerAvatarUrl': string;
+    'synchronizedAt': Date;
 }
-export {};
