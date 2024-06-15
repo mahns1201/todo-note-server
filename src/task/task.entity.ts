@@ -44,4 +44,9 @@ export class TaskEntity extends BaseEntity {
   @IsNotEmpty()
   @IsBoolean()
   isGithubIssue: boolean;
+
+  @Column({ default: false })
+  @IsNotEmpty()
+  @IsBoolean()
+  isClosed: boolean;
 }
