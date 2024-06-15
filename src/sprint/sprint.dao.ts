@@ -24,7 +24,7 @@ export class SprintDao {
         id,
         deletedAt: null,
       },
-      relations: ['user', 'repo'],
+      relations: ['user', 'repo', 'tasks'],
     });
   }
 

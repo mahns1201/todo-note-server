@@ -26,47 +26,55 @@ export class SprintDto extends BaseDto {
 
 export class ResSprintDto {
   @ApiProperty()
-  'id': number;
+  id: number;
 
   @ApiProperty()
-  'createdAt': Date;
+  createdAt: Date;
 
   @ApiProperty()
-  'updatedAt': Date;
+  updatedAt: Date;
 
   @ApiProperty()
-  'userId': number;
+  userId: number;
 
   @ApiProperty()
-  'repoId': number;
+  repoId: number;
 
   @ApiProperty()
-  'title': string;
+  title: string;
 
   @ApiProperty()
-  'description': string;
+  description: string;
 
   @ApiProperty()
-  'startAt': Date;
+  startAt: Date;
 
   @ApiProperty()
-  'endAt': Date;
+  endAt: Date;
 
   @ApiProperty()
-  'repoName': string;
+  repoName: string;
 
   @ApiProperty()
-  'repoHtmlUrl': string;
+  repoHtmlUrl: string;
 
   @ApiProperty()
-  'repoOwnerAvatarUrl': string;
+  repoOwnerAvatarUrl: string;
 
   @ApiProperty()
-  'repoSynchronizedAt': Date;
+  repoSynchronizedAt: Date;
+}
 
-  // @ApiProperty()
-  // 'openedCount': number;
+export class ResSprintProgressDto extends ResSprintDto {
+  @ApiProperty()
+  totalCount: number;
 
-  // @ApiProperty()
-  // 'closedCount': number;
+  @ApiProperty()
+  openedCount: number;
+
+  @ApiProperty()
+  closedCount: number;
+
+  @ApiProperty()
+  progressPercent: number;
 }

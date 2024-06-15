@@ -24,7 +24,8 @@ import {
 import { ResFindSprintDto } from './dto/find-sprint.dto';
 import { PagingReqDto } from 'src/common/common.dto';
 import { ResFindSprintsDto } from './dto/find-sprints.dto';
-import { ResSprintDto } from './dto/sprint.dto';
+import { ResSprintDto, ResSprintProgressDto } from './dto/sprint.dto';
+import { calcProgress } from 'src/util/progress';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sprint')
@@ -120,7 +121,7 @@ export class SprintController {
     name: 'id',
   })
   @ApiOkResponse({
-    type: ResSprintDto,
+    type: ResSprintProgressDto,
     status: HttpStatus.OK,
   })
   async findSprint(@Request() req, @Param() param): Promise<ResFindSprintDto> {
@@ -129,10 +130,22 @@ export class SprintController {
       userId: req.user.id,
     });
 
+    const [totalCount, openedCount, closedCount, progressPercent] =
+      calcProgress(
+        sprint.tasks.length,
+        sprint.tasks.filter((task) => task.isClosed).length,
+      );
+
     return {
       statusCode: HttpStatus.OK,
       message: '스프린트를 조회했습니다.',
-      item: this.serialize(sprint),
+      item: {
+        ...this.serialize(sprint),
+        totalCount,
+        openedCount,
+        closedCount,
+        progressPercent,
+      },
     };
   }
 }
