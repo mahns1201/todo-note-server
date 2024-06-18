@@ -56,4 +56,12 @@ export class GithubService {
     );
     return data;
   }
+
+  async getMilestones(githubToken: string, owner: string, repo: string) {
+    return this.callGitHubApi(
+      `GET /repos/${owner}/${repo}/milestones`,
+      githubToken,
+      { owner },
+    );
+  }
 }
