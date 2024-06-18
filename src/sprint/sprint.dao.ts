@@ -40,4 +40,10 @@ export class SprintDao {
     });
     return [results, total];
   }
+
+  async findAllByUserId(userId: number): Promise<SprintEntity[]> {
+    return await this.sprintRepository.find({
+      where: { userId, deletedAt: null },
+    });
+  }
 }
