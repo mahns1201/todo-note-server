@@ -64,4 +64,12 @@ export class GithubService {
       { owner },
     );
   }
+
+  async getIssues(githubToken: string, owner: string, repo: string) {
+    return this.callGitHubApi(
+      `GET /repos/${owner}/${repo}/issues`,
+      githubToken,
+      { owner },
+    );
+  }
 }

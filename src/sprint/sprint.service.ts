@@ -11,6 +11,7 @@ import { RepoService } from 'src/repo/repo.service';
 import { FindSprintsDto } from './dto/find-sprints.dto';
 import { UserService } from 'src/user/user.service';
 import { GithubService } from 'src/github/github.service';
+import { SyncSprintDto } from './dto/sync-sprint.dto';
 
 @Injectable()
 export class SprintService {
@@ -48,7 +49,7 @@ export class SprintService {
     return await this.sprintDao.find(dto);
   }
 
-  async syncRepoSprint(dto) {
+  async syncRepoSprint(dto: SyncSprintDto) {
     const { userId, repoId } = dto;
 
     const { githubId, githubToken } = await this.userService.findUser({
@@ -64,7 +65,7 @@ export class SprintService {
     );
 
     let syncCount = 0;
-    const syncRepoNames = [];
+    const syncSprintNames = [];
 
     for (const githubMilestone of githubMilestones) {
       const sprintExists = sprints.some(
@@ -81,12 +82,12 @@ export class SprintService {
         });
         if (createdSprint) {
           syncCount++;
-          syncRepoNames.push(createdSprint.title);
+          syncSprintNames.push(createdSprint.title);
           Logger.log(`${createdSprint.title} is synchronized`);
         }
       }
     }
 
-    return { syncRepoNames, syncCount };
+    return { syncSprintNames, syncCount };
   }
 }

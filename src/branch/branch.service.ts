@@ -27,6 +27,7 @@ export class BranchService {
     const { id, repoId, userId } = dto;
 
     await this.repoService.findRepo({ id: repoId, userId });
+    // TODO 발견한 repo에 브랜치 존재 유무 확인 -> 에러 핸들링 필요
 
     const branch = await this.branchDao.findById(id);
     if (!branch) {

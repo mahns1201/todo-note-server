@@ -27,6 +27,7 @@ import { ResFindSprintsDto } from './dto/find-sprints.dto';
 import { ResSprintDto, ResSprintProgressDto } from './dto/sprint.dto';
 import { calcProgress } from 'src/util/progress';
 import { LessThanOrEqual } from 'typeorm';
+import { ResSyncSprintDto } from './dto/sync-sprint.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sprint')
@@ -145,19 +146,19 @@ export class SprintController {
     };
   }
 
-  @Post('repoId/:repoId/sync')
+  @Post('repo/:repoId/sync')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: '스프린트 동기화',
     description: '깃허브 마일스톤을 동기화합니다.',
   })
-  // @ApiCreatedResponse({
-  //   type: ResSyncRepoDto,
-  //   status: HttpStatus.CREATED,
-  //   description: '스프린트를 성공적으로 동기화 하였습니다.',
-  // })
+  @ApiCreatedResponse({
+    type: ResSyncSprintDto,
+    status: HttpStatus.CREATED,
+    description: '스프린트를 성공적으로 동기화 하였습니다.',
+  })
   async syncRepoSprints(@Request() req, @Param() param) {
-    const { syncRepoNames, syncCount } =
+    const { syncSprintNames, syncCount } =
       await this.sprintService.syncRepoSprint({
         userId: req.user.id,
         repoId: param.repoId,
@@ -165,8 +166,8 @@ export class SprintController {
 
     return {
       statusCode: HttpStatus.CREATED,
-      message: `${syncCount}개 레포지토리가 동기화됐습니다.`,
-      items: syncRepoNames,
+      message: `${syncCount}개 스프린트가 동기화됐습니다.`,
+      items: syncSprintNames,
     };
   }
 

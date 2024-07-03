@@ -62,7 +62,7 @@ export class BranchController {
     };
   }
 
-  @Get(':repoId/:id')
+  @Get(':id/repo/:repoId')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
     name: 'id',
@@ -103,7 +103,7 @@ export class BranchController {
     };
   }
 
-  @Post(':repoId/sync')
+  @Post('/repo/:repoId/sync')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: '브랜치 동기화',

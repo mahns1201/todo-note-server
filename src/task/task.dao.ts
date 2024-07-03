@@ -57,4 +57,10 @@ export class TaskDao {
     });
     return [results, total];
   }
+
+  async findAllByUserId(userId: number): Promise<TaskEntity[]> {
+    return await this.taskRepository.find({
+      where: { userId, deletedAt: null },
+    });
+  }
 }

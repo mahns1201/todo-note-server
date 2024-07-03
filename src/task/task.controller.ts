@@ -79,6 +79,29 @@ export class TaskController {
     };
   }
 
+  // @Post('repo/:repoId/sync')
+  // @HttpCode(HttpStatus.CREATED)
+  // @ApiOperation({
+  //   summary: '태스크 동기화',
+  //   description: '깃허브 이슈를 동기화합니다.',
+  // })
+  // @ApiCreatedResponse({
+  //   type: ResSyncSprintDto,
+  //   status: HttpStatus.CREATED,
+  //   description: '스프린트를 성공적으로 동기화 하였습니다.',
+  // })
+  // async syncRepoTasks(@Request() req, @Param() param) {
+  // const { syncTaskNames, syncCount } = await this.taskService.syncRepoTask({
+  //   userId: req.user.id,
+  //   repoId: param.repoId,
+  // });
+  // return {
+  //   statusCode: HttpStatus.CREATED,
+  //   message: `${syncCount}개 태스크가 동기화됐습니다.`,
+  //   items: syncTaskNames,
+  // };
+  // }
+
   @Get('repo/:repoId/list')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
